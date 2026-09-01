@@ -5,7 +5,43 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>OOO</title>
 
+  <script>
+    // 저장된 테마를 페이지가 그려지기 전에 적용 (화면 깜빡임 방지)
+    (function () {
+      const saved = localStorage.getItem("theme");
+      if (saved === "dark" || saved === "light") {
+        document.documentElement.setAttribute("data-theme", saved);
+      }
+    })();
+  </script>
+
   <style>
+    /* ===== 테마 색상 (라이트 = 기본값) ===== */
+    :root {
+      --bg: #ffffff;
+      --text: #333333;
+      --muted: #777777;
+      --muted-2: #aaaaaa;
+      --accent: #1a4d8f;
+      --accent-hover: #143d72;
+      --border: #eeeeee;
+      --input-border: #dddddd;
+      --input-bg: #ffffff;
+    }
+
+    /* ===== 어두운 테마 (기존 파란색 계열 유지) ===== */
+    [data-theme="dark"] {
+      --bg: #12161c;
+      --text: #d6dde6;
+      --muted: #9aa4b2;
+      --muted-2: #6b7580;
+      --accent: #5b9bd5;
+      --accent-hover: #7db0e0;
+      --border: #2a323d;
+      --input-border: #3a434f;
+      --input-bg: #1a1f27;
+    }
+
     /* ===== 전체 기본 ===== */
     body {
       font-family: sans-serif;
@@ -13,20 +49,38 @@
       margin: 0 auto;
       padding: 0 20px 80px;
       line-height: 1.7;
-      color: #333;
+      background: var(--bg);
+      color: var(--text);
+      transition: background 0.2s, color 0.2s;
+    }
+
+    /* ===== 다크모드 토글 버튼 ===== */
+    .theme-toggle {
+      position: fixed;
+      top: 16px;
+      right: 16px;
+      z-index: 100;
+      font-family: inherit;
+      font-size: 0.85rem;
+      padding: 8px 14px;
+      background: var(--input-bg);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      cursor: pointer;
     }
 
     h2 {
-      color: #1a4d8f;
+      color: var(--accent);
       font-size: 1.3rem;
-      border-bottom: 2px solid #eee;
+      border-bottom: 2px solid var(--border);
       padding-bottom: 8px;
       margin-top: 60px;
       margin-bottom: 30px;
     }
 
     a {
-      color: #1a4d8f;
+      color: var(--accent);
     }
 
     /* ===== 첫 화면 ===== */
@@ -41,14 +95,14 @@
 
     .hero h1 {
       font-size: 4rem;
-      color: #1a4d8f;
+      color: var(--accent);
       margin: 0 0 8px;
       letter-spacing: -2px;
     }
 
     .hero .tagline {
       font-size: 1.1rem;
-      color: #888;
+      color: var(--muted);
       margin: 0 0 45px;
     }
 
@@ -65,10 +119,12 @@
       font-family: inherit;
       font-size: 1rem;
       padding: 14px 20px;
-      border: 1px solid #ddd;
+      border: 1px solid var(--input-border);
       border-radius: 24px;
       outline: none;
       margin-bottom: 10px;
+      background: var(--input-bg);
+      color: var(--text);
     }
 
     .guestbook textarea {
@@ -79,7 +135,7 @@
 
     .guestbook input:focus,
     .guestbook textarea:focus {
-      border-color: #1a4d8f;
+      border-color: var(--accent);
       box-shadow: 0 1px 8px rgba(0, 0, 0, 0.12);
     }
 
@@ -87,7 +143,7 @@
       font-family: inherit;
       font-size: 0.95rem;
       padding: 11px 30px;
-      background-color: #1a4d8f;
+      background-color: var(--accent);
       color: white;
       border: none;
       border-radius: 24px;
@@ -95,34 +151,34 @@
     }
 
     .guestbook button:hover {
-      background-color: #143d72;
+      background-color: var(--accent-hover);
     }
 
     .guestbook button:disabled {
-      background-color: #aaa;
+      background-color: var(--muted-2);
       cursor: default;
     }
 
     .notice {
       font-size: 0.85rem;
-      color: #aaa;
+      color: var(--muted-2);
       margin-top: 14px;
     }
 
     /* ===== 방명록 목록 ===== */
     .entry {
-      border-bottom: 1px solid #eee;
+      border-bottom: 1px solid var(--border);
       padding: 14px 0;
     }
 
     .entry .who {
       font-weight: bold;
-      color: #1a4d8f;
+      color: var(--accent);
     }
 
     .entry .when {
       font-size: 0.8rem;
-      color: #bbb;
+      color: var(--muted-2);
       margin-left: 10px;
     }
 
@@ -132,13 +188,13 @@
     }
 
     .empty {
-      color: #aaa;
+      color: var(--muted-2);
       font-size: 0.9rem;
     }
 
     /* ===== 이력 (연표) ===== */
     .timeline {
-      border-left: 2px solid #e3e3e3;
+      border-left: 2px solid var(--border);
       margin-left: 125px;
       padding-left: 28px;
     }
@@ -155,7 +211,7 @@
       top: 9px;
       width: 10px;
       height: 10px;
-      background-color: #1a4d8f;
+      background-color: var(--accent);
       border-radius: 50%;
     }
 
@@ -167,7 +223,7 @@
       text-align: right;
       white-space: nowrap;
       font-size: 0.85rem;
-      color: #999;
+      color: var(--muted);
     }
 
     .item strong {
@@ -175,7 +231,7 @@
     }
 
     .item span.detail {
-      color: #777;
+      color: var(--muted);
       font-size: 0.95rem;
     }
 
@@ -205,6 +261,9 @@
 </head>
 
 <body>
+
+  <!-- ===== 다크모드 토글 버튼 (우측 상단 고정) ===== -->
+  <button id="themeToggle" class="theme-toggle" aria-label="테마 전환">🌙 다크 모드</button>
 
   <!-- ===== 첫 화면: 이름 + 방명록 입력 ===== -->
   <div class="hero">
@@ -384,6 +443,33 @@
       list.appendChild(err);
       console.error(error);
     });
+  </script>
+
+  <script>
+    // ===== 다크모드 토글 =====
+    (function () {
+      const toggle = document.querySelector("#themeToggle");
+      const root = document.documentElement;
+
+      // 현재 테마 (data-theme 속성이 없으면 라이트)
+      function currentTheme() {
+        return root.getAttribute("data-theme") === "dark" ? "dark" : "light";
+      }
+
+      // 버튼 문구를 현재 테마에 맞게 갱신
+      function updateLabel() {
+        toggle.textContent = currentTheme() === "dark" ? "☀️ 라이트 모드" : "🌙 다크 모드";
+      }
+
+      updateLabel();
+
+      toggle.onclick = function () {
+        const next = currentTheme() === "dark" ? "light" : "dark";
+        root.setAttribute("data-theme", next);
+        localStorage.setItem("theme", next);  // 새로고침해도 유지
+        updateLabel();
+      };
+    })();
   </script>
 
 </body>
