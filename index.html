@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OOO</title>
+
+  <style>
+    /* ===== 전체 기본 ===== */
+    body {
+      font-family: sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 0 20px 80px;
+      line-height: 1.7;
+      color: #333;
+    }
+
+    h2 {
+      color: #1a4d8f;
+      font-size: 1.3rem;
+      border-bottom: 2px solid #eee;
+      padding-bottom: 8px;
+      margin-top: 60px;
+      margin-bottom: 30px;
+    }
+
+    a {
+      color: #1a4d8f;
+    }
+
+    /* ===== 첫 화면 ===== */
+    .hero {
+      min-height: 85vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+    }
+
+    .hero h1 {
+      font-size: 4rem;
+      color: #1a4d8f;
+      margin: 0 0 8px;
+      letter-spacing: -2px;
+    }
+
+    .hero .tagline {
+      font-size: 1.1rem;
+      color: #888;
+      margin: 0 0 45px;
+    }
+
+    /* ===== 방명록 입력 ===== */
+    .guestbook {
+      width: 100%;
+      max-width: 480px;
+    }
+
+    .guestbook input,
+    .guestbook textarea {
+      width: 100%;
+      box-sizing: border-box;
+      font-family: inherit;
+      font-size: 1rem;
+      padding: 14px 20px;
+      border: 1px solid #ddd;
+      border-radius: 24px;
+      outline: none;
+      margin-bottom: 10px;
+    }
+
+    .guestbook textarea {
+      border-radius: 18px;
+      resize: none;
+      height: 90px;
+    }
+
+    .guestbook input:focus,
+    .guestbook textarea:focus {
+      border-color: #1a4d8f;
+      box-shadow: 0 1px 8px rgba(0, 0, 0, 0.12);
+    }
+
+    .guestbook button {
+      font-family: inherit;
+      font-size: 0.95rem;
+      padding: 11px 30px;
+      background-color: #1a4d8f;
+      color: white;
+      border: none;
+      border-radius: 24px;
+      cursor: pointer;
+    }
+
+    .guestbook button:hover {
+      background-color: #143d72;
+    }
+
+    .guestbook button:disabled {
+      background-color: #aaa;
+      cursor: default;
+    }
+
+    .notice {
+      font-size: 0.85rem;
+      color: #aaa;
+      margin-top: 14px;
+    }
+
+    /* ===== 방명록 목록 ===== */
+    .entry {
+      border-bottom: 1px solid #eee;
+      padding: 14px 0;
+    }
+
+    .entry .who {
+      font-weight: bold;
+      color: #1a4d8f;
+    }
+
+    .entry .when {
+      font-size: 0.8rem;
+      color: #bbb;
+      margin-left: 10px;
+    }
+
+    .entry .msg {
+      margin: 4px 0 0;
+      white-space: pre-wrap;
+    }
+
+    .empty {
+      color: #aaa;
+      font-size: 0.9rem;
+    }
+
+    /* ===== 이력 (연표) ===== */
+    .timeline {
+      border-left: 2px solid #e3e3e3;
+      margin-left: 125px;
+      padding-left: 28px;
+    }
+
+    .item {
+      position: relative;
+      margin-bottom: 28px;
+    }
+
+    .item::before {
+      content: "";
+      position: absolute;
+      left: -35px;
+      top: 9px;
+      width: 10px;
+      height: 10px;
+      background-color: #1a4d8f;
+      border-radius: 50%;
+    }
+
+    .year {
+      position: absolute;
+      left: -155px;
+      top: 2px;
+      width: 110px;
+      text-align: right;
+      white-space: nowrap;
+      font-size: 0.85rem;
+      color: #999;
+    }
+
+    .item strong {
+      font-size: 1.05rem;
+    }
+
+    .item span.detail {
+      color: #777;
+      font-size: 0.95rem;
+    }
+
+    /* ===== 연락처 ===== */
+    .contact p {
+      margin: 8px 0;
+    }
+
+    /* ===== 화면이 좁을 때 (모바일) ===== */
+    @media (max-width: 600px) {
+      .timeline {
+        margin-left: 8px;
+      }
+
+      .year {
+        position: static;
+        display: block;
+        width: auto;
+        text-align: left;
+      }
+
+      .hero h1 {
+        font-size: 2.8rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ===== 첫 화면: 이름 + 방명록 입력 ===== -->
+  <div class="hero">
+    <h1>OOO</h1>
+    <p class="tagline">개인 프로필</p>
+
+    <div class="guestbook">
+      <input type="text" placeholder="이름">
+      <textarea placeholder="방명록 작성"></textarea>
+      <button>남기기</button>
+      <p class="notice">※ 남겨주신 글은 모두에게 공개됩니다</p>
+    </div>
+  </div>
+
+  <!-- ===== 방명록 목록 ===== -->
+  <h2>방명록</h2>
+  <div id="list">
+    <p class="empty">불러오는 중...</p>
+  </div>
+
+  <!-- ===== 이력 ===== -->
+  <h2>이력</h2>
+  <div class="timeline">
+
+    <div class="item">
+      <span class="year">2025.07 – 현재</span>
+      <strong>OO대학교 OOO연구실 학부연구생</strong><br>
+      <span class="detail">지도교수: OOO · OOO 관련 연구 수행</span>
+    </div>
+
+    <div class="item">
+      <span class="year">2023 – 현재</span>
+      <strong>OO대학교 OOOOO학과</strong><br>
+      <span class="detail">학사 과정 재학 중</span>
+    </div>
+
+    <div class="item">
+      <span class="year">2021 – 2022</span>
+      <strong>OOOOOOOO OOOOO</strong><br>
+      <span class="detail">병장 만기전역</span>
+    </div>
+
+    <div class="item">
+      <span class="year">2020 – 2023</span>
+      <strong>OO대학교 OOOOOO학과</strong><br>
+      <span class="detail">자퇴</span>
+    </div>
+
+    <div class="item">
+      <span class="year">2020</span>
+      <strong>OO고등학교 졸업</strong>
+    </div>
+
+  </div>
+
+  <!-- ===== 연락처 ===== -->
+  <h2>연락처</h2>
+  <div class="contact">
+    <p>이메일 · OOOOO [at] OOOOOO</p>
+    <p>GitHub · <a href="https://github.com/afoc824">github.com/afoc824</a></p>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+    import {
+      getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
+
+    // Firebase 콘솔에서 복사한 설정값
+    const firebaseConfig = {
+      apiKey: "AIzaSyCiuEisvgKaSyMAP4hLM5qk_L94oK6oyP4",
+      authDomain: "afoc824-52dad.firebaseapp.com",
+      projectId: "afoc824-52dad",
+      storageBucket: "afoc824-52dad.firebasestorage.app",
+      messagingSenderId: "638791232483",
+      appId: "1:638791232483:web:0b8bb7e968c985face8ed6"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    const button = document.querySelector(".guestbook button");
+    const nameInput = document.querySelector(".guestbook input");
+    const textInput = document.querySelector(".guestbook textarea");
+    const list = document.querySelector("#list");
+
+    // ===== 글 남기기 =====
+    button.onclick = async function () {
+      const name = nameInput.value.trim();
+      const text = textInput.value.trim();
+
+      if (name === "" || text === "") {
+        alert("이름과 내용을 모두 입력해주세요.");
+        return;
+      }
+
+      if (name.length > 20 || text.length > 500) {
+        alert("이름은 20자, 내용은 500자까지 입력할 수 있습니다.");
+        return;
+      }
+
+      button.disabled = true;
+      button.textContent = "저장 중...";
+
+      try {
+        await addDoc(collection(db, "guestbook"), {
+          name: name,
+          text: text,
+          createdAt: serverTimestamp()
+        });
+
+        nameInput.value = "";
+        textInput.value = "";
+        nameInput.focus();
+      } catch (error) {
+        alert("저장에 실패했습니다. 잠시 후 다시 시도해주세요.");
+        console.error(error);
+      }
+
+      button.disabled = false;
+      button.textContent = "남기기";
+    };
+
+    // ===== 날짜를 보기 좋게 바꾸기 =====
+    function formatDate(timestamp) {
+      if (!timestamp) {
+        return "";
+      }
+      const d = timestamp.toDate();
+      return d.getFullYear() + "." +
+             (d.getMonth() + 1) + "." +
+             d.getDate();
+    }
+
+    // ===== 글 목록 실시간 표시 =====
+    const q = query(collection(db, "guestbook"), orderBy("createdAt", "desc"));
+
+    onSnapshot(q, function (snapshot) {
+      list.innerHTML = "";
+
+      if (snapshot.empty) {
+        const empty = document.createElement("p");
+        empty.className = "empty";
+        empty.textContent = "아직 남겨진 글이 없습니다.";
+        list.appendChild(empty);
+        return;
+      }
+
+      snapshot.forEach(function (docSnap) {
+        const data = docSnap.data();
+
+        const entry = document.createElement("div");
+        entry.className = "entry";
+
+        const who = document.createElement("span");
+        who.className = "who";
+        who.textContent = data.name;
+
+        const when = document.createElement("span");
+        when.className = "when";
+        when.textContent = formatDate(data.createdAt);
+
+        const msg = document.createElement("p");
+        msg.className = "msg";
+        msg.textContent = data.text;
+
+        entry.appendChild(who);
+        entry.appendChild(when);
+        entry.appendChild(msg);
+        list.appendChild(entry);
+      });
+    }, function (error) {
+      list.innerHTML = "";
+      const err = document.createElement("p");
+      err.className = "empty";
+      err.textContent = "방명록을 불러오지 못했습니다.";
+      list.appendChild(err);
+      console.error(error);
+    });
+  </script>
+
+</body>
+</html>
