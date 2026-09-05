@@ -5,6 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>OOO</title>
 
+  <!-- Pretendard 폰트 (CDN) -->
+  <link rel="stylesheet" as="style" crossorigin
+    href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
+
   <script>
     // 저장된 테마를 페이지가 그려지기 전에 적용 (화면 깜빡임 방지)
     (function () {
@@ -12,54 +16,109 @@
       if (saved === "dark" || saved === "light") {
         document.documentElement.setAttribute("data-theme", saved);
       }
+      // JS 활성 표시: 등장 모션용 '숨김' 초기 상태는 이 클래스가 있을 때만 적용
+      document.documentElement.classList.add("js");
     })();
   </script>
 
   <style>
     /* ===== 테마 색상 (라이트 = 기본값) ===== */
     :root {
-      --bg: #ffffff;
-      --text: #333333;
-      --muted: #777777;
-      --muted-2: #aaaaaa;
-      --accent: #1a4d8f;
-      --accent-hover: #143d72;
-      --border: #eeeeee;
-      --input-border: #dddddd;
+      --bg: #fbfaf8;
+      --text: #2b2a28;
+      --muted: #7a7873;
+      --muted-2: #a8a6a0;
+      --accent: #6b6a66;
+      --accent-hover: #2b2a28;
+      --border: #e8e5df;
+      --input-border: #d9d5cd;
       --input-bg: #ffffff;
     }
 
-    /* ===== 어두운 테마 (기존 파란색 계열 유지) ===== */
+    /* ===== 어두운 테마 ===== */
     [data-theme="dark"] {
-      --bg: #12161c;
-      --text: #d6dde6;
-      --muted: #9aa4b2;
-      --muted-2: #6b7580;
-      --accent: #5b9bd5;
-      --accent-hover: #7db0e0;
-      --border: #2a323d;
-      --input-border: #3a434f;
-      --input-bg: #1a1f27;
+      --bg: #161513;
+      --text: #e2e0da;
+      --muted: #94918a;
+      --muted-2: #6a6862;
+      --accent: #b8b5ad;
+      --accent-hover: #e2e0da;
+      --border: #2c2a27;
+      --input-border: #3a3733;
+      --input-bg: #1e1c1a;
+    }
+
+    /* ===== 앵커 클릭 시 부드럽게 스크롤 + 세로 스크롤 스냅 ===== */
+    html {
+      scroll-behavior: smooth;
+      scroll-snap-type: y mandatory;
+    }
+
+    /* JS가 켜져 있으면 페이지 이동을 스크립트가 전담한다(한 번에 한 챕터).
+       CSS 스냅은 JS가 없을 때만 쓰는 대비책. */
+    html.js {
+      scroll-snap-type: none;
     }
 
     /* ===== 전체 기본 ===== */
     body {
-      font-family: sans-serif;
-      max-width: 800px;
+      font-family: "Pretendard Variable", Pretendard, sans-serif;
       margin: 0 auto;
-      padding: 0 20px 80px;
+      padding: 0 clamp(20px, 5vw, 100px);
       line-height: 1.7;
       background: var(--bg);
       color: var(--text);
       transition: background 0.2s, color 0.2s;
     }
 
+    /* ===== 상단 앵커 내비게이션 ===== */
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 14px;
+      /* 바탕과 아래 경계선은 화면 전체 폭으로 늘리고, 내용은 본문과 같은 좌우 여백 */
+      margin: 0 calc(-1 * clamp(20px, 5vw, 100px));
+      padding: 12px clamp(20px, 5vw, 100px);
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav a {
+      font-size: 1rem;
+      color: var(--muted);
+      text-decoration: none;
+      transition: color 0.25s;
+    }
+
+    .nav a:hover {
+      color: var(--accent);
+    }
+
+    /* 스크롤 위치에 따른 현재 챕터 표시 */
+    .nav a.active {
+      color: var(--text);
+    }
+
+    /* 내비 링크 앞 번호: 라벨보다 작게, 위첨자처럼 살짝 올려 장식 */
+    .nav a .idx {
+      margin-right: 6px;
+      font-size: 0.7rem;
+      letter-spacing: 0.05em;
+      color: var(--muted-2);
+      vertical-align: 0.15em;
+    }
+
+    /* 다크모드 버튼을 내비 오른쪽 끝으로 밀어냄 */
+    .nav .theme-toggle {
+      margin-left: auto;
+    }
+
     /* ===== 다크모드 토글 버튼 ===== */
     .theme-toggle {
-      position: fixed;
-      top: 16px;
-      right: 16px;
-      z-index: 100;
       font-family: inherit;
       font-size: 0.85rem;
       padding: 8px 14px;
@@ -71,12 +130,22 @@
     }
 
     h2 {
-      color: var(--accent);
-      font-size: 1.3rem;
-      border-bottom: 2px solid var(--border);
-      padding-bottom: 8px;
-      margin-top: 60px;
-      margin-bottom: 30px;
+      color: var(--text);
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      font-weight: 500;
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+      margin-top: 120px;
+      margin-bottom: 24px;
+    }
+
+    /* 섹션 번호 (01, 02 …) — 제목 위 별도 줄에 아주 작게 */
+    h2 .num {
+      display: block;
+      margin-bottom: 12px;
+      color: var(--muted-2);
+      font-size: 0.75rem;
+      letter-spacing: 0.1em;
     }
 
     a {
@@ -85,7 +154,7 @@
 
     /* ===== 첫 화면 ===== */
     .hero {
-      min-height: 85vh;
+      min-height: 100svh;
       display: flex;
       flex-direction: column;
       justify-content: center;
@@ -94,8 +163,8 @@
     }
 
     .hero h1 {
-      font-size: 4rem;
-      color: var(--accent);
+      font-size: clamp(2.5rem, 10vw, 5rem);
+      color: var(--text);
       margin: 0 0 8px;
       letter-spacing: -2px;
     }
@@ -189,72 +258,447 @@
 
     .empty {
       color: var(--muted-2);
-      font-size: 0.9rem;
+      font-size: 1.1rem;
     }
 
     /* ===== 이력 (연표) ===== */
     .timeline {
-      border-left: 2px solid var(--border);
-      margin-left: 125px;
-      padding-left: 28px;
+      position: relative;
     }
 
+    /* 연도 칸 오른쪽 경계를 따라 내려가며 항목들을 잇는 세로 줄 */
+    .timeline::before {
+      content: "";
+      position: absolute;
+      left: 110px;
+      top: 6px;
+      bottom: 6px;
+      width: 1px;
+      background: var(--border);
+    }
+
+    /* 각 항목을 flex 2열(연도 | 내용)로, 항목 위쪽에 가로 구분선 */
     .item {
       position: relative;
-      margin-bottom: 28px;
+      display: flex;
+      gap: 24px;
+      margin-top: 28px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border);
     }
 
+    /* 세로 줄 위에 찍히는 각 항목의 시점 표시 점 */
     .item::before {
       content: "";
       position: absolute;
-      left: -35px;
-      top: 9px;
-      width: 10px;
-      height: 10px;
-      background-color: var(--accent);
+      left: 110px;
+      top: 26px;
+      width: 7px;
+      height: 7px;
+      margin-left: -3px;
       border-radius: 50%;
+      background: var(--muted);
     }
 
     .year {
-      position: absolute;
-      left: -155px;
-      top: 2px;
+      flex-shrink: 0;
       width: 110px;
-      text-align: right;
       white-space: nowrap;
       font-size: 0.85rem;
       color: var(--muted);
     }
 
     .item strong {
-      font-size: 1.05rem;
+      font-size: 1.3rem;
+    }
+
+    /* ===== 소개 · 근황 본문: 조금 크게 ===== */
+    #intro p,
+    #now p {
+      font-size: 1.25rem;
+      line-height: 1.8;
     }
 
     .item span.detail {
       color: var(--muted);
-      font-size: 0.95rem;
+      font-size: 1.05rem;
     }
 
-    /* ===== 연락처 ===== */
-    .contact p {
-      margin: 8px 0;
+    /* ===== 연락처: 방명록 페이지 하단의 푸터 ===== */
+    .footer {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 24px;
+      padding: 24px 0;
+      border-top: 1px solid var(--border);
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    /* 푸터 링크는 주변 글자색과 같게 (차분하게) */
+    .footer a {
+      color: inherit;
+      transition: color 0.25s;
+    }
+
+    /* ===== 섹션: 앵커 이동 시 고정 내비에 제목이 가리지 않도록 여백 ===== */
+    section {
+      scroll-margin-top: 64px;
+    }
+
+    /* ===== 섹션 2열 레이아웃 (왼쪽: 라벨 / 오른쪽: 본문), 히어로는 제외 ===== */
+    section:not(.hero) {
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      gap: 60px;
+    }
+
+    /* 왼쪽 라벨: 해당 섹션을 스크롤하는 동안 화면 왼쪽에 머무름 */
+    section > h2 {
+      grid-column: 1;
+      align-self: start;
+      position: sticky;
+      top: 80px;
+      margin: 0;
+    }
+
+    /* 오른쪽 본문 묶음 */
+    section > .section-body {
+      grid-column: 2;
+      min-width: 0;
+    }
+
+    /* 본문 글줄 길이 제한 */
+    section .section-body p {
+      max-width: 640px;
+    }
+
+    /* ===== 스크롤 스냅 챕터: 스냅 정렬 ===== */
+    #top,
+    #intro,
+    #interests,
+    #history,
+    #posts,
+    #now,
+    #guestbook {
+      position: relative;
+      scroll-snap-align: start;
+    }
+
+    /* 히어로를 뺀 나머지 챕터: 기본은 한 화면 높이.
+       내용이 화면보다 크면(큰 글씨·낮은 창 등) 잘리지 않고 늘어나며,
+       그 챕터에서는 끝까지 훑은 뒤 다음 페이지로 넘어간다(스크립트가 처리). */
+    #intro,
+    #interests,
+    #history,
+    #posts,
+    #now,
+    #guestbook {
+      min-height: 100svh;
+    }
+
+    /* 그리드 챕터의 본문은 세로 가운데 정렬 */
+    #intro,
+    #interests,
+    #history,
+    #posts,
+    #now {
+      align-items: center;
+    }
+
+    /* 방명록도 다른 챕터처럼 딱 한 화면. 페이지 안에서는 스크롤하지 않는다.
+       본문(위) + 연락처 푸터(아래) 2행 구성 */
+    #guestbook {
+      padding: 72px 0 16px;
+      grid-template-rows: 1fr auto;
+      gap: 24px 60px;
+      align-items: stretch;
+    }
+
+    /* 방명록 본문: 왼쪽 작성 폼 / 오른쪽 게시판 2열 */
+    #guestbook .section-body {
+      display: grid;
+      grid-template-columns: minmax(0, 360px) 1fr;
+      gap: 48px;
+      align-items: start;
+      min-height: 0;
+    }
+
+    /* 왼쪽 작성 폼은 위에 고정 */
+    #guestbook .guestbook {
+      align-self: start;
+    }
+
+    /* 오른쪽 '글이 모이는 공간' — 글이 많으면 방명록 페이지가 그만큼 길어지고,
+       스크립트가 그 안을 끝까지 훑은 뒤 다음 페이지로 넘긴다 */
+    #guestbook #list {
+      align-self: start;
+    }
+
+    /* 연락처 푸터: 방명록 페이지 맨 아래에 함께 표시 */
+    #guestbook > .footer {
+      grid-column: 1 / -1;
+      grid-row: 2;
+    }
+
+    /* 다음 챕터로 넘어간다는 표시 (챕터 하단 가운데) */
+    .next-hint {
+      position: absolute;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: var(--muted-2);
+      font-size: 0.8rem;
+    }
+
+    /* ===== 01 소개 ===== */
+    /* 본문 텍스트 왼쪽 / 사진 오른쪽 2열 (섹션의 라벨 열은 유지) */
+    #intro .section-body {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 320px);
+      gap: 48px;
+      align-items: start;
+    }
+
+    /* 사진 자리: 180px 정사각형 → 세로로 긴 형태 */
+    .photo {
+      width: 100%;
+      max-width: 320px;
+      aspect-ratio: 3 / 4;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px dashed var(--input-border);
+      border-radius: 8px;
+      color: var(--muted-2);
+      font-size: 0.9rem;
+    }
+
+    /* ===== 전폭 챕터 공통 (02·04·05): 라벨 열 제거, 내용을 세로 가운데로 =====
+       h2·본문을 한 덩어리로 화면 중앙에 놓는다. h2는 sticky(top:80px)를 유지해
+       위로 밀려도 상단 내비 바에 가리지 않는다. */
+    #interests,
+    #posts,
+    #now {
+      grid-template-columns: 1fr;
+      align-content: center;
+    }
+
+    #interests > h2,
+    #posts > h2,
+    #now > h2 {
+      grid-column: 1 / -1;
+    }
+
+    #interests > .section-body,
+    #posts > .section-body,
+    #now > .section-body {
+      grid-column: 1 / -1;
+    }
+
+    /* ===== 02 연구 관심사: 전폭 + 우측 정렬 + 아주 큰 키워드 ===== */
+    #interests {
+      text-align: right;
+    }
+
+    .keywords {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .keywords li {
+      color: var(--muted);
+      font-size: clamp(2.5rem, 7vw, 5rem);
+      line-height: 1.1;
+      transition: color 0.3s;
+    }
+
+    .keywords li:hover {
+      color: var(--text);
+    }
+
+    /* ===== 04 글: 전폭. 목록 항목이 생기면 적용 ===== */
+    .post-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    .post-list li {
+      padding: 24px 0;
+      font-size: clamp(1.5rem, 3vw, 2.2rem);
+    }
+
+    /* 각 항목 사이 구분선 */
+    .post-list li + li {
+      border-top: 1px solid var(--border);
+    }
+
+    /* ===== 05 근황: 전폭 + 화면 정중앙, h2는 그 위에 작게 ===== */
+    #now {
+      text-align: center;
+      justify-items: center;
+    }
+
+    #now > h2 {
+      font-size: clamp(1rem, 2vw, 1.3rem);
+    }
+
+    #now .section-body p {
+      font-size: clamp(1.5rem, 3vw, 2.4rem);
+      max-width: 800px;
+      margin-inline: auto;   /* 폭 제한된 문단을 가로 정중앙에 */
+      line-height: 1.6;
+    }
+
+    /* ===== 태블릿·모바일: 2열 → 1열로 되돌림 ===== */
+    @media (max-width: 900px) {
+      section:not(.hero) {
+        grid-template-columns: 1fr;
+        gap: 12px;
+        margin-top: 100px;      /* 섹션 간격 */
+      }
+
+      section > h2 {
+        position: static;       /* 라벨 고정 해제 */
+        font-size: clamp(1.6rem, 6vw, 2.2rem);
+      }
+
+      #intro,
+      #interests,
+      #history,
+      #posts,
+      #now,
+      #guestbook {
+        min-height: 0;          /* 한 화면 높이 강제 해제 → 일반 흐름 */
+        align-items: start;
+      }
+
+      #guestbook {
+        padding: 0;
+      }
+
+      /* 방명록도 1열로: 작성 폼 아래 게시판 */
+      #guestbook .section-body {
+        grid-template-columns: 1fr;
+        gap: 28px;
+      }
+
+      /* 01 소개: 사진을 본문 아래로 (1열) */
+      #intro .section-body {
+        grid-template-columns: 1fr;
+        gap: 24px;
+      }
+
+      /* 02·05: 우측/중앙 정렬 해제 → 좌측 정렬 */
+      #interests,
+      #now {
+        text-align: left;
+      }
+
+      #now {
+        align-content: start;
+        justify-items: start;
+      }
     }
 
     /* ===== 화면이 좁을 때 (모바일) ===== */
     @media (max-width: 600px) {
-      .timeline {
-        margin-left: 8px;
+      .item {
+        flex-direction: column;
+        gap: 4px;
       }
 
       .year {
-        position: static;
-        display: block;
         width: auto;
-        text-align: left;
       }
 
-      .hero h1 {
-        font-size: 2.8rem;
+      /* 1열로 접히면 세로 줄·점은 위치가 안 맞으므로 숨김 */
+      .timeline::before,
+      .item::before {
+        display: none;
+      }
+
+      .nav {
+        gap: 10px;
+      }
+
+      .nav a {
+        font-size: 0.8rem;
+      }
+    }
+
+    /* ===== 스크롤 등장 모션 =====
+       .js가 있을 때만(=JS 동작 시) 숨김 상태로 시작하고,
+       IntersectionObserver가 챕터에 .is-visible을 붙이면 나타난다. */
+    .js section:not(.hero) > h2,
+    .js section:not(.hero) > .section-body,
+    .js .hero > h1,
+    .js .hero > .tagline {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+
+    /* .next-hint는 가로 중앙(translateX(-50%))을 유지해야 하므로 따로 */
+    .js section > .next-hint {
+      opacity: 0;
+      transform: translate(-50%, 24px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+
+    .js section.is-visible > h2,
+    .js section.is-visible > .section-body,
+    .js .hero.is-visible > h1,
+    .js .hero.is-visible > .tagline {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .js section.is-visible > .next-hint {
+      opacity: 1;
+      transform: translate(-50%, 0);
+    }
+
+    /* 챕터 안 시차: h2(0s) → 본문(0.1s) → 나머지(0.2s) */
+    .js section > .section-body,
+    .js .hero > .tagline {
+      transition-delay: 0.1s;
+    }
+
+    .js section > .next-hint {
+      transition-delay: 0.2s;
+    }
+
+    /* ===== 접근성: 모션 최소화 설정이면 모든 모션 끄기 ===== */
+    @media (prefers-reduced-motion: reduce) {
+      html {
+        scroll-behavior: auto;
+      }
+
+      *,
+      *::before,
+      *::after {
+        transition: none !important;
+        animation: none !important;
+      }
+
+      /* 등장 모션 요소가 숨은 채 남지 않도록 강제로 보이게 */
+      .js section > h2,
+      .js section > .section-body,
+      .js .hero > h1,
+      .js .hero > .tagline {
+        opacity: 1 !important;
+        transform: none !important;
+      }
+
+      .js section > .next-hint {
+        opacity: 1 !important;
+        transform: translateX(-50%) !important;
       }
     }
   </style>
@@ -262,69 +706,137 @@
 
 <body>
 
-  <!-- ===== 다크모드 토글 버튼 (우측 상단 고정) ===== -->
-  <button id="themeToggle" class="theme-toggle" aria-label="테마 전환">🌙 다크 모드</button>
+  <!-- ===== 상단 앵커 내비게이션 (다크모드 버튼 포함) ===== -->
+  <nav class="nav">
+    <a href="#intro"><span class="idx">01</span>소개</a>
+    <a href="#interests"><span class="idx">02</span>연구 관심사</a>
+    <a href="#history"><span class="idx">03</span>이력</a>
+    <a href="#posts"><span class="idx">04</span>글</a>
+    <a href="#now"><span class="idx">05</span>근황</a>
+    <a href="#guestbook"><span class="idx">06</span>방명록</a>
+    <button id="themeToggle" class="theme-toggle" aria-label="테마 전환">🌙 다크 모드</button>
+  </nav>
 
-  <!-- ===== 첫 화면: 이름 + 방명록 입력 ===== -->
-  <div class="hero">
+  <!-- ===== 1. 히어로: 이름 + 한 줄 소개 ===== -->
+  <section id="top" class="hero">
     <h1>OOO</h1>
-    <p class="tagline">개인 프로필</p>
+    <p class="tagline">OOO</p>
+    <div class="next-hint" aria-hidden="true">↓</div>
+  </section>
 
-    <div class="guestbook">
-      <input type="text" placeholder="이름">
-      <textarea placeholder="방명록 작성"></textarea>
-      <button>남기기</button>
-      <p class="notice">※ 남겨주신 글은 모두에게 공개됩니다</p>
+  <!-- ===== 2. 소개: 텍스트 + 사진 자리 ===== -->
+  <section id="intro">
+    <h2><span class="num">01</span>소개</h2>
+    <div class="section-body">
+      <p>OOO</p>
+      <div class="photo">사진</div>
     </div>
-  </div>
+    <div class="next-hint" aria-hidden="true">↓</div>
+  </section>
 
-  <!-- ===== 방명록 목록 ===== -->
-  <h2>방명록</h2>
-  <div id="list">
-    <p class="empty">불러오는 중...</p>
-  </div>
+  <!-- ===== 3. 연구 관심사: 키워드 3개 ===== -->
+  <section id="interests">
+    <h2><span class="num">02</span>연구 관심사</h2>
+    <div class="section-body">
+      <ul class="keywords">
+        <li>OOO</li>
+        <li>OOO</li>
+        <li>OOO</li>
+      </ul>
+    </div>
+    <div class="next-hint" aria-hidden="true">↓</div>
+  </section>
 
-  <!-- ===== 이력 ===== -->
-  <h2>이력</h2>
-  <div class="timeline">
+  <!-- ===== 4. 이력 ===== -->
+  <section id="history">
+    <h2><span class="num">03</span>이력</h2>
+    <div class="section-body">
+      <div class="timeline">
 
-    <div class="item">
-      <span class="year">2025.07 – 현재</span>
-      <strong>OO대학교 OOO연구실 학부연구생</strong><br>
-      <span class="detail">지도교수: OOO · OOO 관련 연구 수행</span>
+        <div class="item">
+          <span class="year">2025.07 – 현재</span>
+          <div class="content">
+            <strong>OO대학교 OOO연구실 학부연구생</strong><br>
+            <span class="detail">지도교수: OOO · OOO 관련 연구 수행</span>
+          </div>
+        </div>
+
+        <div class="item">
+          <span class="year">2023 – 현재</span>
+          <div class="content">
+            <strong>OO대학교 OOOOO학과</strong><br>
+            <span class="detail">학사 과정 재학 중</span>
+          </div>
+        </div>
+
+        <div class="item">
+          <span class="year">2021 – 2022</span>
+          <div class="content">
+            <strong>OOOOOOOO OOOOO</strong><br>
+            <span class="detail">병장 만기전역</span>
+          </div>
+        </div>
+
+        <div class="item">
+          <span class="year">2020 – 2023</span>
+          <div class="content">
+            <strong>OO대학교 OOOOOO학과</strong><br>
+            <span class="detail">자퇴</span>
+          </div>
+        </div>
+
+        <div class="item">
+          <span class="year">2020</span>
+          <div class="content">
+            <strong>OO고등학교 졸업</strong>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <div class="next-hint" aria-hidden="true">↓</div>
+  </section>
+
+  <!-- ===== 5. 글: 제목 목록 (지금은 비어 있음) ===== -->
+  <section id="posts">
+    <h2><span class="num">04</span>글</h2>
+    <div class="section-body">
+      <p class="empty">아직 작성한 글이 없습니다.</p>
+    </div>
+    <div class="next-hint" aria-hidden="true">↓</div>
+  </section>
+
+  <!-- ===== 6. 근황: 한 문단 ===== -->
+  <section id="now">
+    <h2><span class="num">05</span>근황</h2>
+    <div class="section-body">
+      <p>OOO</p>
+    </div>
+  </section>
+
+  <!-- ===== 7. 방명록: 기존 기능 그대로 (입력창 + 목록), 위치만 이동 ===== -->
+  <section id="guestbook">
+    <h2><span class="num">06</span>방명록</h2>
+
+    <div class="section-body">
+      <div class="guestbook">
+        <input type="text" placeholder="이름">
+        <textarea placeholder="방명록 작성"></textarea>
+        <button>남기기</button>
+        <p class="notice">※ 남겨주신 글은 모두에게 공개됩니다</p>
+      </div>
+
+      <div id="list">
+        <p class="empty">불러오는 중...</p>
+      </div>
     </div>
 
-    <div class="item">
-      <span class="year">2023 – 현재</span>
-      <strong>OO대학교 OOOOO학과</strong><br>
-      <span class="detail">학사 과정 재학 중</span>
-    </div>
-
-    <div class="item">
-      <span class="year">2021 – 2022</span>
-      <strong>OOOOOOOO OOOOO</strong><br>
-      <span class="detail">병장 만기전역</span>
-    </div>
-
-    <div class="item">
-      <span class="year">2020 – 2023</span>
-      <strong>OO대학교 OOOOOO학과</strong><br>
-      <span class="detail">자퇴</span>
-    </div>
-
-    <div class="item">
-      <span class="year">2020</span>
-      <strong>OO고등학교 졸업</strong>
-    </div>
-
-  </div>
-
-  <!-- ===== 연락처 ===== -->
-  <h2>연락처</h2>
-  <div class="contact">
-    <p>이메일 · OOOOO [at] OOOOOO</p>
-    <p>GitHub · <a href="https://github.com/afoc824">github.com/afoc824</a></p>
-  </div>
+    <!-- ===== 연락처: 방명록 페이지 맨 아래에 함께 표시 ===== -->
+    <footer class="footer">
+      <span>이메일 · OOOOO [at] OOOOOO</span>
+      <span>GitHub · <a href="https://github.com/afoc824">github.com/afoc824</a></span>
+    </footer>
+  </section>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
@@ -469,6 +981,212 @@
         localStorage.setItem("theme", next);  // 새로고침해도 유지
         updateLabel();
       };
+    })();
+  </script>
+
+  <script>
+    // ===== 스크롤 모션: 챕터 등장 + 내비 현재 챕터 표시 =====
+    (function () {
+      var sections = document.querySelectorAll("section");
+      var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+      // --- 1) 챕터가 화면에 들어오면 .is-visible (한 번만, 이후 유지) ---
+      if (reduce || !("IntersectionObserver" in window)) {
+        // 모션을 끄는 환경이면 바로 다 보이게
+        sections.forEach(function (s) { s.classList.add("is-visible"); });
+      } else {
+        var revealObserver = new IntersectionObserver(function (entries) {
+          entries.forEach(function (entry) {
+            if (entry.isIntersecting) {
+              entry.target.classList.add("is-visible");
+              revealObserver.unobserve(entry.target);  // 다시 사라지지 않게
+            }
+          });
+        }, { threshold: 0.15 });
+
+        sections.forEach(function (s) { revealObserver.observe(s); });
+      }
+
+      // --- 2) 스크롤 위치에 해당하는 내비 링크에 .active ---
+      var navLinks = document.querySelectorAll(".nav a");
+      var linkById = {};
+      navLinks.forEach(function (a) {
+        linkById[a.getAttribute("href").slice(1)] = a;
+      });
+
+      function setActive(id) {
+        navLinks.forEach(function (a) { a.classList.remove("active"); });
+        if (linkById[id]) linkById[id].classList.add("active");
+      }
+
+      if ("IntersectionObserver" in window) {
+        // 화면 중앙을 지나는 챕터를 현재 챕터로 본다
+        var spyObserver = new IntersectionObserver(function (entries) {
+          entries.forEach(function (entry) {
+            if (entry.isIntersecting) { setActive(entry.target.id); }
+          });
+        }, { rootMargin: "-45% 0px -45% 0px", threshold: 0 });
+
+        sections.forEach(function (s) {
+          if (linkById[s.id]) { spyObserver.observe(s); }
+        });
+      }
+    })();
+  </script>
+
+  <script>
+    // ===== 풀페이지 스크롤 =====
+    // 한 제스처 = 한 페이지 이동. 단, 그 페이지 내용이 화면보다 크면(큰 글씨·낮은
+    // 창 등) 잘리지 않도록 그 안에서는 일반 스크롤을 허용하고, 끝에 닿았을 때만
+    // 다음/이전 페이지로 넘어간다. 화면 크기가 바뀌어도 자동으로 맞춰 동작한다.
+    (function () {
+      var pages = Array.prototype.slice.call(document.querySelectorAll("section"));
+      if (pages.length === 0) { return; }
+
+      var reduce = window.matchMedia("(prefers-reduced-motion: reduce)");
+      // 좁은 화면(태블릿·모바일)은 페이징을 끄고 완전히 일반 스크롤
+      var narrow = window.matchMedia("(max-width: 900px)");
+
+      var current = 0;
+      var locked = false;
+      var unlockTimer = null;
+      var minUnlockAt = 0;
+      var settleTimer = null;
+
+      function pagingOn() { return !narrow.matches; }
+
+      function scheduleUnlock(gap) {
+        window.clearTimeout(unlockTimer);
+        var wait = Math.max(gap, minUnlockAt - Date.now());
+        unlockTimer = window.setTimeout(function () { locked = false; }, wait);
+      }
+
+      // 뷰포트 맨 위를 차지하고 있는 섹션 = 현재 페이지
+      function sectionAtTop() {
+        var y = window.pageYOffset + 4;
+        for (var i = pages.length - 1; i >= 0; i--) {
+          if (pages[i].offsetTop <= y) { return i; }
+        }
+        return 0;
+      }
+
+      // 현재 섹션이 화면보다 커서, 주어진 방향으로 아직 더 볼 내용이 있는가
+      function canScrollWithin(dir) {
+        var r = pages[current].getBoundingClientRect();
+        var vh = window.innerHeight;
+        if (r.height <= vh + 2) { return false; }      // 한 화면에 다 들어옴
+        if (dir > 0) { return r.bottom > vh + 2; }     // 아래로 더 있음
+        return r.top < -2;                              // 위로 더 있음
+      }
+
+      function goTo(index, align) {
+        index = Math.max(0, Math.min(pages.length - 1, index));
+        current = index;
+        locked = true;
+        minUnlockAt = Date.now() + (reduce.matches ? 100 : 700);
+        scheduleUnlock(0);
+
+        var sec = pages[index];
+        var top = sec.offsetTop;
+        // 위로 이동할 때, 대상 섹션이 화면보다 크면 그 '끝'이 보이도록 맞춘다
+        if (align === "bottom") {
+          top = Math.max(top, sec.offsetTop + sec.offsetHeight - window.innerHeight);
+        }
+        window.scrollTo({
+          top: Math.max(0, top),
+          behavior: reduce.matches ? "auto" : "smooth"
+        });
+      }
+
+      function step(dir) { goTo(current + dir, dir < 0 ? "bottom" : "top"); }
+
+      // --- 마우스 휠 / 트랙패드 ---
+      window.addEventListener("wheel", function (e) {
+        if (!pagingOn()) { return; }
+        if (e.target && e.target.closest && e.target.closest("textarea")) { return; }
+
+        // 이동 중에는 아무 스크롤도 받지 않고, 관성 이벤트가 멈출 때까지 잠금 연장
+        if (locked) { e.preventDefault(); scheduleUnlock(160); return; }
+
+        var dir = e.deltaY > 0 ? 1 : -1;
+        if (canScrollWithin(dir)) { return; }   // 긴 섹션은 그 안에서 일반 스크롤
+
+        e.preventDefault();
+        if (Math.abs(e.deltaY) < 1) { return; }
+        step(dir);
+      }, { passive: false });
+
+      // --- 키보드 ---
+      window.addEventListener("keydown", function (e) {
+        if (!pagingOn()) { return; }
+        var t = e.target;
+        if (t && /^(INPUT|TEXTAREA|BUTTON|A|SELECT)$/.test(t.tagName || "")) { return; }
+        if (t && t.isContentEditable) { return; }
+
+        var dir = 0;
+        if (e.key === "ArrowDown" || e.key === "PageDown" || e.key === " " || e.key === "Spacebar") { dir = 1; }
+        else if (e.key === "ArrowUp" || e.key === "PageUp") { dir = -1; }
+        else if (e.key === "Home") { e.preventDefault(); goTo(0); return; }
+        else if (e.key === "End") { e.preventDefault(); goTo(pages.length - 1); return; }
+        if (dir === 0) { return; }
+
+        if (locked) { e.preventDefault(); return; }
+        if (canScrollWithin(dir)) { return; }   // 긴 섹션 안에서는 기본 스크롤 허용
+        e.preventDefault();
+        step(dir);
+      });
+
+      // --- 터치 스와이프 ---
+      var touchY = null;
+      window.addEventListener("touchstart", function (e) {
+        touchY = e.touches[0].clientY;
+      }, { passive: true });
+
+      window.addEventListener("touchmove", function (e) {
+        if (!pagingOn()) { return; }
+        if (touchY === null) { return; }
+        var dy = touchY - e.touches[0].clientY;
+        var dir = dy > 0 ? 1 : -1;
+        if (locked) { e.preventDefault(); return; }
+        if (canScrollWithin(dir)) { return; }   // 긴 섹션은 그 안에서 스크롤
+        e.preventDefault();
+        if (Math.abs(dy) > 40) {
+          step(dir);
+          touchY = null;
+        }
+      }, { passive: false });
+
+      // --- 내비 링크 클릭도 페이저로 처리 ---
+      document.querySelectorAll(".nav a").forEach(function (a) {
+        a.addEventListener("click", function (e) {
+          if (!pagingOn()) { return; }
+          var id = a.getAttribute("href").slice(1);
+          for (var i = 0; i < pages.length; i++) {
+            if (pages[i].id === id) { e.preventDefault(); goTo(i); return; }
+          }
+        });
+      });
+
+      // --- 스크롤이 멈추면 현재 페이지 번호를 실제 위치에 맞춤 ---
+      window.addEventListener("scroll", function () {
+        if (locked) { return; }
+        window.clearTimeout(settleTimer);
+        settleTimer = window.setTimeout(function () {
+          current = sectionAtTop();
+        }, 120);
+      }, { passive: true });
+
+      // --- 창 크기가 바뀌면 현재 페이지 맨 위로 다시 맞춤 ---
+      window.addEventListener("resize", function () {
+        window.clearTimeout(settleTimer);
+        if (!pagingOn()) { return; }
+        settleTimer = window.setTimeout(function () {
+          window.scrollTo({ top: pages[current].offsetTop, behavior: "auto" });
+        }, 150);
+      });
+
+      // 새로고침으로 중간에서 시작했을 때 현재 페이지 파악
+      current = sectionAtTop();
     })();
   </script>
 
