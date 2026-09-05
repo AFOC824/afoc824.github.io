@@ -69,6 +69,8 @@
       background: var(--bg);
       color: var(--text);
       transition: background 0.2s, color 0.2s;
+      /* 가로 넘침 방지. hidden 대신 clip을 써서 상단 내비의 sticky 동작을 깨지 않는다 */
+      overflow-x: clip;
     }
 
     /* ===== 상단 앵커 내비게이션 ===== */
@@ -166,7 +168,8 @@
       font-size: clamp(2.5rem, 10vw, 5rem);
       color: var(--text);
       margin: 0 0 8px;
-      letter-spacing: -2px;
+      /* 글자 크기에 비례하는 자간(px 고정값이면 작은 화면에서 과하게 좁아짐) */
+      letter-spacing: -0.02em;
     }
 
     .hero .tagline {
@@ -186,7 +189,8 @@
       width: 100%;
       box-sizing: border-box;
       font-family: inherit;
-      font-size: 1rem;
+      /* iOS에서 16px 미만이면 입력 시 화면이 자동 확대됨 → 16px로 고정 */
+      font-size: 16px;
       padding: 14px 20px;
       border: 1px solid var(--input-border);
       border-radius: 24px;
@@ -515,6 +519,8 @@
       font-size: clamp(2.5rem, 7vw, 5rem);
       line-height: 1.1;
       transition: color 0.3s;
+      /* 긴 단어가 화면 밖으로 넘치지 않도록 필요하면 줄바꿈 */
+      overflow-wrap: break-word;
     }
 
     .keywords li:hover {
@@ -561,6 +567,39 @@
         grid-template-columns: 1fr;
         gap: 12px;
         margin-top: 100px;      /* 섹션 간격 */
+      }
+
+      /* --- 내비게이션: 여러 줄 접힘 대신 한 줄 가로 스크롤 --- */
+      .nav {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;   /* iOS 관성 스크롤 */
+        scrollbar-width: none;               /* 파이어폭스: 스크롤바 숨김 */
+      }
+
+      .nav::-webkit-scrollbar {
+        display: none;                       /* 크롬·사파리: 스크롤바 숨김 */
+      }
+
+      .nav a {
+        white-space: nowrap;                 /* 링크 글자가 줄바꿈되지 않게 */
+        flex-shrink: 0;                      /* 좁아도 눌려서 겹치지 않게 */
+      }
+
+      /* 다크모드 버튼: 밀어내기(margin-left:auto) 해제, 크기만 유지하고 줄 끝에 */
+      .nav .theme-toggle {
+        margin-left: 0;
+        flex-shrink: 0;
+      }
+
+      /* 앵커 이동 시 제목이 고정된 모바일 내비(약 60px)에 가리지 않도록 여백 조정 */
+      section {
+        scroll-margin-top: 72px;
+      }
+
+      /* 02 연구 관심사 키워드: 모바일에서 한 단계 작게 */
+      .keywords li {
+        font-size: clamp(1.8rem, 8vw, 2.5rem);
       }
 
       section > h2 {
@@ -1006,6 +1045,17 @@
 
         sections.forEach(function (s) { revealObserver.observe(s); });
       }
+
+      // --- 1-b) 안전장치: 관찰자가 동작하지 않거나 3초 안에 .is-visible이
+      //         붙지 않으면 모든 섹션을 강제로 보이게 한다.
+      //         (내용이 opacity:0 상태로 영영 안 보이는 사고 방지) ---
+      window.setTimeout(function () {
+        sections.forEach(function (s) {
+          if (!s.classList.contains("is-visible")) {
+            s.classList.add("is-visible");
+          }
+        });
+      }, 3000);
 
       // --- 2) 스크롤 위치에 해당하는 내비 링크에 .active ---
       var navLinks = document.querySelectorAll(".nav a");
