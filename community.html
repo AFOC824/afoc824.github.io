@@ -1,0 +1,1020 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>함께 쓰는 공간 · OOO</title>
+  <meta name="description" content="게시판, 평점, 방명록 — 누구나 글을 남길 수 있는 공간입니다.">
+
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="함께 쓰는 공간 · OOO">
+  <meta property="og:description" content="게시판, 평점, 방명록 — 누구나 글을 남길 수 있는 공간입니다.">
+
+  <script>
+    (function () {
+      var saved = localStorage.getItem("theme");
+      if (saved === "dark" || saved === "light") {
+        document.documentElement.setAttribute("data-theme", saved);
+      } else if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+        document.documentElement.setAttribute("data-theme", "dark");
+      }
+      document.documentElement.classList.add("js");
+    })();
+  </script>
+
+  <link rel="stylesheet" as="style" crossorigin
+    href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+
+  <style>
+    /* ============================================================
+       1. 색상 토큰 — index.html과 동일하게 유지할 것
+       ============================================================ */
+    :root {
+      --bg: #faf9f7;
+      --surface: #ffffff;
+      --text: #1a1a18;
+      --muted: #78766f;
+      --faint: #a8a5a0;
+      --line: #e4e1da;
+      --field: #ffffff;
+      --shell: 1400px;
+      --gutter: clamp(20px, 5vw, 80px);
+    }
+
+    [data-theme="dark"] {
+      --bg: #101010;
+      --surface: #171716;
+      --text: #ececea;
+      --muted: #8f8d87;
+      --faint: #5e5c57;
+      --line: #2a2a28;
+      --field: #1a1a19;
+    }
+
+    /* ============================================================
+       2. 기본
+       ============================================================ */
+    *, *::before, *::after { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+
+    body {
+      margin: 0;
+      overflow-x: hidden;
+      font-family: "Pretendard Variable", Pretendard, -apple-system, system-ui, sans-serif;
+      font-size: 16px;
+      line-height: 1.7;
+      background: var(--bg);
+      color: var(--text);
+      transition: background 0.3s, color 0.3s;
+    }
+
+    a { color: inherit; }
+
+    .shell {
+      max-width: var(--shell);
+      margin: 0 auto;
+      padding-inline: var(--gutter);
+    }
+
+    ::selection { background: var(--text); color: var(--bg); }
+
+    /* ============================================================
+       3. 내비
+       ============================================================ */
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: color-mix(in srgb, var(--bg) 88%, transparent);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid transparent;
+      transition: border-color 0.3s;
+    }
+
+    .nav.scrolled { border-bottom-color: var(--line); }
+
+    .nav-inner {
+      max-width: var(--shell);
+      margin: 0 auto;
+      padding: 14px var(--gutter);
+      display: flex;
+      align-items: center;
+      gap: 28px;
+    }
+
+    .nav-brand {
+      font-size: 0.9rem;
+      color: var(--muted);
+      text-decoration: none;
+      white-space: nowrap;
+      flex-shrink: 0;
+      transition: color 0.2s;
+    }
+
+    .nav-brand:hover { color: var(--text); }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 22px;
+      margin-left: auto;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+
+    .nav-links::-webkit-scrollbar { display: none; }
+
+    .nav-links a {
+      font-size: 0.9rem;
+      color: var(--muted);
+      text-decoration: none;
+      white-space: nowrap;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover, .nav-links a.active { color: var(--text); }
+
+    .theme-toggle {
+      flex-shrink: 0;
+      width: 34px;
+      height: 34px;
+      display: grid;
+      place-items: center;
+      font-size: 0.9rem;
+      font-family: inherit;
+      background: transparent;
+      color: var(--muted);
+      border: 1px solid var(--line);
+      border-radius: 2px;
+      cursor: pointer;
+      transition: color 0.2s, border-color 0.2s;
+    }
+
+    .theme-toggle:hover { color: var(--text); border-color: var(--muted); }
+
+    /* ============================================================
+       4. 히어로 — 반전 배경으로 "다른 공간"임을 표시
+       ============================================================ */
+    .hero {
+      background: var(--text);
+      color: var(--bg);
+    }
+
+    .hero-inner {
+      max-width: var(--shell);
+      margin: 0 auto;
+      padding: clamp(70px, 14vh, 150px) var(--gutter);
+    }
+
+    .hero .eyebrow {
+      margin: 0 0 20px;
+      font-size: 0.8rem;
+      letter-spacing: 0.12em;
+      opacity: 0.55;
+    }
+
+    .hero h1 {
+      margin: 0;
+      font-size: clamp(2.4rem, 8vw, 6rem);
+      font-weight: 600;
+      line-height: 1;
+      letter-spacing: -0.04em;
+    }
+
+    .hero p.sub {
+      margin: 28px 0 0;
+      max-width: 46ch;
+      font-size: clamp(1rem, 1.6vw, 1.2rem);
+      opacity: 0.68;
+    }
+
+    /* ============================================================
+       5. 섹션 공통
+       ============================================================ */
+    .section {
+      display: grid;
+      grid-template-columns: 240px minmax(0, 1fr);
+      gap: 0 64px;
+      padding-block: clamp(80px, 11vh, 140px);
+      border-top: 1px solid var(--line);
+    }
+
+    .section:first-of-type { border-top: none; }
+
+    .section-label {
+      position: sticky;
+      top: 100px;
+      align-self: start;
+      margin: 0;
+      font-size: 0.8rem;
+      font-weight: 400;
+      letter-spacing: 0.12em;
+      color: var(--muted);
+      display: flex;
+      gap: 12px;
+    }
+
+    .section-label .num { color: var(--faint); }
+
+    .section-body { min-width: 0; }
+
+    .section-note {
+      margin: 0 0 32px;
+      max-width: 52ch;
+      font-size: 0.95rem;
+      color: var(--muted);
+    }
+
+    /* ============================================================
+       6. 입력 폼 — 밑줄 스타일
+       ============================================================ */
+    .form { margin-bottom: 44px; }
+
+    .form-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px 20px;
+      margin-bottom: 14px;
+    }
+
+    .form input[type="text"],
+    .form textarea,
+    .form select {
+      font-family: inherit;
+      font-size: 16px;
+      color: var(--text);
+      background: transparent;
+      border: none;
+      border-bottom: 1px solid var(--line);
+      border-radius: 0;
+      padding: 10px 2px;
+      outline: none;
+      transition: border-color 0.2s;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+
+    .form input[type="text"]:focus,
+    .form textarea:focus,
+    .form select:focus { border-bottom-color: var(--text); }
+
+    .form input::placeholder,
+    .form textarea::placeholder { color: var(--faint); }
+
+    .form .grow { flex: 1 1 200px; min-width: 0; }
+
+    .form textarea {
+      width: 100%;
+      max-width: 640px;
+      min-height: 96px;
+      resize: vertical;
+      line-height: 1.6;
+    }
+
+    .form select {
+      border-bottom: 1px solid var(--line);
+      cursor: pointer;
+      padding-right: 18px;
+    }
+
+    .form button {
+      font-family: inherit;
+      font-size: 0.9rem;
+      padding: 10px 26px;
+      background: transparent;
+      color: var(--text);
+      border: 1px solid var(--text);
+      border-radius: 2px;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+    }
+
+    .form button:hover:not(:disabled) { background: var(--text); color: var(--bg); }
+
+    .form button:disabled {
+      color: var(--faint);
+      border-color: var(--line);
+      cursor: default;
+    }
+
+    .form .notice {
+      margin: 14px 0 0;
+      font-size: 0.8rem;
+      color: var(--faint);
+    }
+
+    .empty { margin: 0; font-size: 0.95rem; color: var(--faint); }
+
+    /* ============================================================
+       7. A 게시판 — 카드 격자
+       ============================================================ */
+    .board-list {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 20px;
+    }
+
+    .board-list .empty { grid-column: 1 / -1; }
+
+    .card {
+      padding: 22px 24px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+    }
+
+    .card .head {
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+
+    .card .who { font-weight: 600; font-size: 0.95rem; }
+    .card .when { margin-left: auto; font-size: 0.78rem; color: var(--faint); }
+
+    .card .msg {
+      margin: 0;
+      font-size: 0.98rem;
+      line-height: 1.7;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    /* ============================================================
+       8. B 평점 — 세로선 계층
+       ============================================================ */
+    .rating-list { display: grid; gap: 44px; }
+
+    .rating-item {
+      padding-left: 22px;
+      border-left: 2px solid var(--line);
+    }
+
+    .rating-item .head {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: 6px 14px;
+    }
+
+    .rating-item .name {
+      font-size: clamp(1.3rem, 2.6vw, 1.9rem);
+      font-weight: 500;
+      letter-spacing: -0.02em;
+    }
+
+    .rating-item .stars { font-size: 1.1rem; letter-spacing: 0.05em; }
+    .rating-item .author { font-size: 0.82rem; color: var(--faint); }
+
+    .sub-form {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 12px 16px;
+      margin: 18px 0 6px;
+    }
+
+    .sub-form select,
+    .sub-form input[type="text"] {
+      font-family: inherit;
+      font-size: 16px;
+      color: var(--text);
+      background: transparent;
+      border: none;
+      border-bottom: 1px solid var(--line);
+      border-radius: 0;
+      padding: 8px 2px;
+      outline: none;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+
+    .sub-form input[type="text"] { flex: 1 1 220px; min-width: 0; }
+
+    .sub-form select:focus,
+    .sub-form input[type="text"]:focus { border-bottom-color: var(--text); }
+
+    .sub-form button {
+      font-family: inherit;
+      font-size: 0.82rem;
+      padding: 7px 18px;
+      background: transparent;
+      color: var(--muted);
+      border: 1px solid var(--line);
+      border-radius: 2px;
+      cursor: pointer;
+      transition: color 0.2s, border-color 0.2s;
+    }
+
+    .sub-form button:hover:not(:disabled) { color: var(--text); border-color: var(--text); }
+    .sub-form button:disabled { color: var(--faint); cursor: default; }
+
+    .sub-list { margin-top: 10px; }
+
+    .sub-list .comment {
+      display: flex;
+      gap: 12px;
+      padding: 8px 0 8px 16px;
+      border-left: 1px solid var(--line);
+      font-size: 0.92rem;
+    }
+
+    .sub-list .comment .stars { color: var(--muted); white-space: nowrap; }
+    .sub-list .comment .text { word-break: break-word; }
+
+    /* ============================================================
+       9. C 방명록 — 메모 블록
+       ============================================================ */
+    .guest-list { display: grid; gap: 10px; max-width: 720px; }
+
+    .entry {
+      padding: 16px 20px;
+      background: var(--surface);
+      border-radius: 3px;
+    }
+
+    .entry .head { display: flex; align-items: baseline; gap: 12px; }
+    .entry .who { font-weight: 600; font-size: 0.92rem; }
+    .entry .when { margin-left: auto; font-size: 0.78rem; color: var(--faint); }
+
+    .entry .msg {
+      margin: 6px 0 0;
+      font-size: 0.98rem;
+      line-height: 1.7;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    /* ============================================================
+       10. 돌아가기 + 푸터
+       ============================================================ */
+    .backlink {
+      border-top: 1px solid var(--line);
+      padding-block: clamp(70px, 12vh, 130px);
+    }
+
+    .backlink a {
+      display: inline-block;
+      font-size: clamp(1.6rem, 5vw, 3.4rem);
+      font-weight: 600;
+      letter-spacing: -0.035em;
+      text-decoration: none;
+      border-bottom: 2px solid transparent;
+      transition: border-color 0.25s;
+    }
+
+    .backlink a:hover { border-bottom-color: var(--text); }
+
+    .footer {
+      padding-block: 40px 64px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px 32px;
+      font-size: 0.85rem;
+      color: var(--muted);
+      border-top: 1px solid var(--line);
+    }
+
+    .footer .spacer { margin-left: auto; }
+    .footer a { text-decoration: none; border-bottom: 1px solid var(--line); }
+
+    /* ============================================================
+       11. 등장 모션
+       ============================================================ */
+    .js .reveal {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+
+    .js .reveal.in { opacity: 1; transform: none; }
+    .js .reveal.d1 { transition-delay: 0.08s; }
+
+    /* ============================================================
+       12. 좁은 화면
+       ============================================================ */
+    @media (max-width: 900px) {
+      .section {
+        grid-template-columns: 1fr;
+        gap: 24px;
+        padding-block: 64px;
+      }
+
+      .section-label { position: static; }
+      .board-list { grid-template-columns: 1fr; }
+      .nav-inner { gap: 16px; }
+      .nav-links { gap: 16px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+      }
+      .js .reveal { opacity: 1; transform: none; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <nav class="nav" id="nav">
+    <div class="nav-inner">
+      <a class="nav-brand" href="index.html">← OOO</a>
+      <div class="nav-links">
+        <a href="#board">A 게시판</a>
+        <a href="#ratings">B 평점</a>
+        <a href="#guestbook">C 방명록</a>
+      </div>
+      <button class="theme-toggle" id="themeToggle" aria-label="테마 전환">☾</button>
+    </div>
+  </nav>
+
+  <!-- ===== 히어로 (반전 배경) ===== -->
+  <header class="hero">
+    <div class="hero-inner">
+      <p class="eyebrow">FOR VISITORS</p>
+      <h1>함께 쓰는 공간</h1>
+      <p class="sub">누구나 글을 남길 수 있습니다. 남겨주신 글은 모두에게 공개됩니다.</p>
+    </div>
+  </header>
+
+  <main class="shell">
+
+    <!-- ===== A 게시판 ===== -->
+    <section class="section" id="board">
+      <h2 class="section-label reveal"><span class="num">A</span> 게시판</h2>
+      <div class="section-body reveal d1">
+        <p class="section-note">자유롭게 이야기를 남겨주세요.</p>
+
+        <div class="form">
+          <div class="form-row">
+            <input class="grow" type="text" id="boardName" maxlength="20" placeholder="이름">
+          </div>
+          <textarea id="boardText" maxlength="2000" placeholder="글 작성"></textarea>
+          <div class="form-row" style="margin-top:14px">
+            <button id="boardButton">남기기</button>
+          </div>
+          <p class="notice">※ 남겨주신 글은 모두에게 공개됩니다</p>
+        </div>
+
+        <div class="board-list" id="boardList">
+          <p class="empty">불러오는 중…</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== B 평점 ===== -->
+    <section class="section" id="ratings">
+      <h2 class="section-label reveal"><span class="num">B</span> 평점</h2>
+      <div class="section-body reveal d1">
+        <p class="section-note">항목을 등록하면 다른 사람들이 그 아래에 별점과 한줄평을 남길 수 있습니다.</p>
+
+        <div class="form">
+          <div class="form-row">
+            <input class="grow" type="text" id="ratingAuthor" maxlength="20" placeholder="작성자 이름">
+            <input class="grow" type="text" id="ratingName" maxlength="60" placeholder="항목 이름">
+            <select id="ratingStars">
+              <option value="5">★★★★★</option>
+              <option value="4">★★★★☆</option>
+              <option value="3">★★★☆☆</option>
+              <option value="2">★★☆☆☆</option>
+              <option value="1">★☆☆☆☆</option>
+            </select>
+            <button id="ratingButton">등록</button>
+          </div>
+        </div>
+
+        <div class="rating-list" id="ratingList">
+          <p class="empty">불러오는 중…</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== C 방명록 ===== -->
+    <section class="section" id="guestbook">
+      <h2 class="section-label reveal"><span class="num">C</span> 방명록</h2>
+      <div class="section-body reveal d1">
+        <p class="section-note">짧은 인사를 남겨주세요.</p>
+
+        <div class="form">
+          <div class="form-row">
+            <input class="grow" type="text" id="guestName" maxlength="20" placeholder="이름">
+          </div>
+          <textarea id="guestText" maxlength="500" placeholder="방명록 작성"></textarea>
+          <div class="form-row" style="margin-top:14px">
+            <button id="guestButton">남기기</button>
+          </div>
+          <p class="notice">※ 남겨주신 글은 모두에게 공개됩니다</p>
+        </div>
+
+        <div class="guest-list" id="guestList">
+          <p class="empty">불러오는 중…</p>
+        </div>
+      </div>
+    </section>
+
+    <div class="backlink">
+      <a href="index.html">← 돌아가기</a>
+    </div>
+
+  </main>
+
+  <footer class="footer shell">
+    <span>이메일 · OOOOO [at] OOOOOO</span>
+    <span>GitHub · <a href="https://github.com/afoc824">github.com/afoc824</a></span>
+    <span class="spacer">© 2026 OOO</span>
+  </footer>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+    import {
+      getFirestore, collection, addDoc, query, orderBy, limit, onSnapshot, serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCiuEisvgKaSyMAP4hLM5qk_L94oK6oyP4",
+      authDomain: "afoc824-52dad.firebaseapp.com",
+      projectId: "afoc824-52dad",
+      storageBucket: "afoc824-52dad.firebasestorage.app",
+      messagingSenderId: "638791232483",
+      appId: "1:638791232483:web:0b8bb7e968c985face8ed6"
+    };
+
+    const db = getFirestore(initializeApp(firebaseConfig));
+
+    // ===== 공통 도구 =====
+    function formatDate(ts) {
+      if (!ts) return "";
+      const d = ts.toDate();
+      const p = (n) => String(n).padStart(2, "0");
+      return d.getFullYear() + "." + p(d.getMonth() + 1) + "." + p(d.getDate());
+    }
+
+    function starString(n) {
+      n = Math.max(0, Math.min(5, Number(n) || 0));
+      return "★".repeat(n) + "☆".repeat(5 - n);
+    }
+
+    function showEmpty(box, msg) {
+      box.innerHTML = "";
+      const p = document.createElement("p");
+      p.className = "empty";
+      p.textContent = msg;
+      box.appendChild(p);
+    }
+
+    // ===== A 게시판 =====
+    (function () {
+      const nameInput = document.querySelector("#boardName");
+      const textInput = document.querySelector("#boardText");
+      const button = document.querySelector("#boardButton");
+      const list = document.querySelector("#boardList");
+
+      button.onclick = async function () {
+        const name = nameInput.value.trim();
+        const text = textInput.value.trim();
+
+        if (!name || !text) { alert("이름과 내용을 모두 입력해주세요."); return; }
+        if (name.length > 20 || text.length > 2000) {
+          alert("이름은 20자, 내용은 2000자까지 입력할 수 있습니다."); return;
+        }
+
+        button.disabled = true;
+        button.textContent = "저장 중…";
+        try {
+          await addDoc(collection(db, "board"), {
+            name: name, text: text, createdAt: serverTimestamp()
+          });
+          nameInput.value = "";
+          textInput.value = "";
+          nameInput.focus();
+        } catch (err) {
+          alert("저장에 실패했습니다. 잠시 후 다시 시도해주세요.");
+          console.error(err);
+        }
+        button.disabled = false;
+        button.textContent = "남기기";
+      };
+
+      onSnapshot(
+        query(collection(db, "board"), orderBy("createdAt", "desc"), limit(50)),
+        function (snap) {
+          if (snap.empty) { showEmpty(list, "아직 남겨진 글이 없습니다."); return; }
+          list.innerHTML = "";
+          snap.forEach(function (docSnap) {
+            const d = docSnap.data();
+            const card = document.createElement("article");
+            card.className = "card";
+
+            const head = document.createElement("div");
+            head.className = "head";
+
+            const who = document.createElement("span");
+            who.className = "who";
+            who.textContent = d.name;
+
+            const when = document.createElement("span");
+            when.className = "when";
+            when.textContent = formatDate(d.createdAt);
+
+            head.append(who, when);
+
+            const msg = document.createElement("p");
+            msg.className = "msg";
+            msg.textContent = d.text;
+
+            card.append(head, msg);
+            list.appendChild(card);
+          });
+        },
+        function (err) { showEmpty(list, "게시판을 불러오지 못했습니다."); console.error(err); }
+      );
+    })();
+
+    // ===== B 평점 =====
+    (function () {
+      const authorInput = document.querySelector("#ratingAuthor");
+      const nameInput = document.querySelector("#ratingName");
+      const starsSelect = document.querySelector("#ratingStars");
+      const button = document.querySelector("#ratingButton");
+      const list = document.querySelector("#ratingList");
+
+      let unsubs = [];
+      function clearSubs() {
+        unsubs.forEach(function (fn) { fn(); });
+        unsubs = [];
+      }
+
+      button.onclick = async function () {
+        const author = authorInput.value.trim();
+        const name = nameInput.value.trim();
+
+        if (!author || !name) { alert("작성자와 항목 이름을 모두 입력해주세요."); return; }
+        if (author.length > 20 || name.length > 60) {
+          alert("작성자는 20자, 항목 이름은 60자까지 입력할 수 있습니다."); return;
+        }
+
+        button.disabled = true;
+        try {
+          await addDoc(collection(db, "ratings"), {
+            author: author,
+            name: name,
+            stars: Number(starsSelect.value),
+            createdAt: serverTimestamp()
+          });
+          authorInput.value = "";
+          nameInput.value = "";
+          authorInput.focus();
+        } catch (err) {
+          alert("저장에 실패했습니다. 잠시 후 다시 시도해주세요.");
+          console.error(err);
+        }
+        button.disabled = false;
+      };
+
+      onSnapshot(
+        query(collection(db, "ratings"), orderBy("createdAt", "desc"), limit(30)),
+        function (snap) {
+          clearSubs();
+          if (snap.empty) { showEmpty(list, "아직 등록된 항목이 없습니다."); return; }
+          list.innerHTML = "";
+
+          snap.forEach(function (docSnap) {
+            const d = docSnap.data();
+            const itemId = docSnap.id;
+
+            const item = document.createElement("div");
+            item.className = "rating-item";
+
+            const head = document.createElement("div");
+            head.className = "head";
+
+            const name = document.createElement("span");
+            name.className = "name";
+            name.textContent = d.name;
+
+            const stars = document.createElement("span");
+            stars.className = "stars";
+            stars.textContent = starString(d.stars);
+
+            const author = document.createElement("span");
+            author.className = "author";
+            author.textContent = d.author ? "by " + d.author : "";
+
+            head.append(name, stars, author);
+            item.appendChild(head);
+
+            // 방문자용 별점 · 한줄평 폼
+            const subForm = document.createElement("div");
+            subForm.className = "sub-form";
+
+            const subSelect = document.createElement("select");
+            [5, 4, 3, 2, 1].forEach(function (n) {
+              const opt = document.createElement("option");
+              opt.value = String(n);
+              opt.textContent = starString(n);
+              subSelect.appendChild(opt);
+            });
+
+            const subInput = document.createElement("input");
+            subInput.type = "text";
+            subInput.maxLength = 200;
+            subInput.placeholder = "한줄평";
+
+            const subButton = document.createElement("button");
+            subButton.type = "button";
+            subButton.textContent = "남기기";
+
+            subForm.append(subSelect, subInput, subButton);
+            item.appendChild(subForm);
+
+            const subList = document.createElement("div");
+            subList.className = "sub-list";
+            item.appendChild(subList);
+
+            subButton.onclick = async function () {
+              const text = subInput.value.trim();
+              if (!text) { alert("한줄평을 입력해주세요."); return; }
+              if (text.length > 200) { alert("한줄평은 200자까지 입력할 수 있습니다."); return; }
+
+              subButton.disabled = true;
+              try {
+                await addDoc(collection(db, "ratings", itemId, "comments"), {
+                  stars: Number(subSelect.value),
+                  text: text,
+                  createdAt: serverTimestamp()
+                });
+                subInput.value = "";
+              } catch (err) {
+                alert("저장에 실패했습니다. 잠시 후 다시 시도해주세요.");
+                console.error(err);
+              }
+              subButton.disabled = false;
+            };
+
+            const unsub = onSnapshot(
+              query(collection(db, "ratings", itemId, "comments"), orderBy("createdAt", "desc"), limit(50)),
+              function (cs) {
+                subList.innerHTML = "";
+                cs.forEach(function (c) {
+                  const cd = c.data();
+                  const row = document.createElement("div");
+                  row.className = "comment";
+
+                  const s = document.createElement("span");
+                  s.className = "stars";
+                  s.textContent = starString(cd.stars);
+
+                  const t = document.createElement("span");
+                  t.className = "text";
+                  t.textContent = cd.text;
+
+                  row.append(s, t);
+                  subList.appendChild(row);
+                });
+              },
+              function (err) { console.error(err); }
+            );
+
+            unsubs.push(unsub);
+            list.appendChild(item);
+          });
+        },
+        function (err) { showEmpty(list, "평점을 불러오지 못했습니다."); console.error(err); }
+      );
+    })();
+
+    // ===== C 방명록 =====
+    (function () {
+      const nameInput = document.querySelector("#guestName");
+      const textInput = document.querySelector("#guestText");
+      const button = document.querySelector("#guestButton");
+      const list = document.querySelector("#guestList");
+
+      button.onclick = async function () {
+        const name = nameInput.value.trim();
+        const text = textInput.value.trim();
+
+        if (!name || !text) { alert("이름과 내용을 모두 입력해주세요."); return; }
+        if (name.length > 20 || text.length > 500) {
+          alert("이름은 20자, 내용은 500자까지 입력할 수 있습니다."); return;
+        }
+
+        button.disabled = true;
+        button.textContent = "저장 중…";
+        try {
+          await addDoc(collection(db, "guestbook"), {
+            name: name, text: text, createdAt: serverTimestamp()
+          });
+          nameInput.value = "";
+          textInput.value = "";
+          nameInput.focus();
+        } catch (err) {
+          alert("저장에 실패했습니다. 잠시 후 다시 시도해주세요.");
+          console.error(err);
+        }
+        button.disabled = false;
+        button.textContent = "남기기";
+      };
+
+      onSnapshot(
+        query(collection(db, "guestbook"), orderBy("createdAt", "desc"), limit(100)),
+        function (snap) {
+          if (snap.empty) { showEmpty(list, "아직 남겨진 글이 없습니다."); return; }
+          list.innerHTML = "";
+          snap.forEach(function (docSnap) {
+            const d = docSnap.data();
+            const entry = document.createElement("div");
+            entry.className = "entry";
+
+            const head = document.createElement("div");
+            head.className = "head";
+
+            const who = document.createElement("span");
+            who.className = "who";
+            who.textContent = d.name;
+
+            const when = document.createElement("span");
+            when.className = "when";
+            when.textContent = formatDate(d.createdAt);
+
+            head.append(who, when);
+
+            const msg = document.createElement("p");
+            msg.className = "msg";
+            msg.textContent = d.text;
+
+            entry.append(head, msg);
+            list.appendChild(entry);
+          });
+        },
+        function (err) { showEmpty(list, "방명록을 불러오지 못했습니다."); console.error(err); }
+      );
+    })();
+  </script>
+
+  <script>
+    // ===== 테마 토글 =====
+    (function () {
+      var toggle = document.getElementById("themeToggle");
+      var root = document.documentElement;
+      function current() { return root.getAttribute("data-theme") === "dark" ? "dark" : "light"; }
+      function label() { toggle.textContent = current() === "dark" ? "☀" : "☾"; }
+      label();
+      toggle.onclick = function () {
+        var next = current() === "dark" ? "light" : "dark";
+        root.setAttribute("data-theme", next);
+        localStorage.setItem("theme", next);
+        label();
+      };
+    })();
+
+    // ===== 내비 경계선 =====
+    (function () {
+      var nav = document.getElementById("nav");
+      function onScroll() { nav.classList.toggle("scrolled", window.scrollY > 8); }
+      onScroll();
+      window.addEventListener("scroll", onScroll, { passive: true });
+    })();
+
+    // ===== 등장 모션 =====
+    (function () {
+      var targets = document.querySelectorAll(".reveal");
+      function showAll() { targets.forEach(function (el) { el.classList.add("in"); }); }
+      if (!("IntersectionObserver" in window)) { showAll(); return; }
+
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+          if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); }
+        });
+      }, { threshold: 0.12, rootMargin: "0px 0px -8% 0px" });
+
+      targets.forEach(function (el) { io.observe(el); });
+      setTimeout(function () {
+        if (!document.querySelector(".reveal.in")) showAll();
+      }, 3000);
+    })();
+
+    // ===== 현재 섹션 표시 =====
+    (function () {
+      var links = document.querySelectorAll(".nav-links a[href^='#']");
+      var map = {};
+      links.forEach(function (a) { map[a.getAttribute("href").slice(1)] = a; });
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+          var a = map[e.target.id];
+          if (a) a.classList.toggle("active", e.isIntersecting);
+        });
+      }, { rootMargin: "-45% 0px -50% 0px" });
+      Object.keys(map).forEach(function (id) {
+        var el = document.getElementById(id);
+        if (el) io.observe(el);
+      });
+    })();
+  </script>
+
+</body>
+</html>

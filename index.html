@@ -2,1942 +2,711 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>OOO</title>
+  <meta name="description" content="OOO · OO대학교 OOOO학과 학부연구생">
 
-  <!-- Pretendard 폰트 (CDN) -->
-  <link rel="stylesheet" as="style" crossorigin
-    href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" />
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="OOO">
+  <meta property="og:description" content="OOO · OO대학교 OOOO학과 학부연구생">
 
   <script>
-    // 저장된 테마를 페이지가 그려지기 전에 적용 (화면 깜빡임 방지)
+    // 테마를 화면이 그려지기 전에 적용 (깜빡임 방지)
     (function () {
-      const saved = localStorage.getItem("theme");
+      var saved = localStorage.getItem("theme");
       if (saved === "dark" || saved === "light") {
         document.documentElement.setAttribute("data-theme", saved);
+      } else if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+        document.documentElement.setAttribute("data-theme", "dark");
       }
-      // JS 활성 표시: 등장 모션용 '숨김' 초기 상태는 이 클래스가 있을 때만 적용
       document.documentElement.classList.add("js");
     })();
   </script>
 
+  <link rel="stylesheet" as="style" crossorigin
+    href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+
   <style>
-    /* ===== 테마 색상 (라이트 = 기본값) — 누런 기 없는 순수 흰/검 + 중립 회색 ===== */
+    /* ============================================================
+       1. 색상 토큰
+       ============================================================ */
     :root {
-      --bg: #ffffff;
-      --text: #000000;
-      --muted: #3f3f3f;        /* 보조 텍스트도 또렷하게 (기존보다 진하게) */
-      --muted-2: #6a6a6a;      /* 번호·날짜 등 아주 작은 글자 */
-      --accent: #1a1a1a;
-      --accent-hover: #000000;
-      --border: #dcdcdc;
-      --input-border: #bdbdbd;
-      --input-bg: #ffffff;
+      --bg: #faf9f7;
+      --surface: #ffffff;
+      --text: #1a1a18;
+      --muted: #78766f;
+      --faint: #a8a5a0;
+      --line: #e4e1da;
+      --field: #ffffff;
+      --shell: 1400px;
+      --gutter: clamp(20px, 5vw, 80px);
     }
 
-    /* ===== 어두운 테마 — 순수 검/흰 ===== */
     [data-theme="dark"] {
-      --bg: #000000;
-      --text: #ffffff;
-      --muted: #c2c2c2;
-      --muted-2: #8f8f8f;
-      --accent: #e6e6e6;
-      --accent-hover: #ffffff;
-      --border: #333333;
-      --input-border: #4d4d4d;
-      --input-bg: #101010;
+      --bg: #101010;
+      --surface: #171716;
+      --text: #ececea;
+      --muted: #8f8d87;
+      --faint: #5e5c57;
+      --line: #2a2a28;
+      --field: #1a1a19;
     }
 
-    /* ===== 앵커 클릭 시 부드럽게 스크롤 + 세로 스크롤 스냅 ===== */
+    /* ============================================================
+       2. 기본
+       ============================================================ */
+    *, *::before, *::after { box-sizing: border-box; }
+
     html {
       scroll-behavior: smooth;
-      scroll-snap-type: y mandatory;
+      -webkit-text-size-adjust: 100%;
     }
 
-    /* JS가 켜져 있으면 페이지 이동을 스크립트가 전담한다(한 번에 한 챕터).
-       CSS 스냅은 JS가 없을 때만 쓰는 대비책. */
-    html.js {
-      scroll-snap-type: none;
-    }
-
-    /* ===== 전체 기본 ===== */
     body {
-      font-family: "Pretendard Variable", Pretendard, sans-serif;
-      margin: 0 auto;
-      padding: 0 clamp(18px, 4vw, 60px);
-      line-height: 1.65;
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden;
+      font-family: "Pretendard Variable", Pretendard, -apple-system, system-ui, sans-serif;
+      font-size: 16px;
+      line-height: 1.7;
       background: var(--bg);
       color: var(--text);
-      transition: background 0.2s, color 0.2s;
-      /* 가로 넘침 방지. hidden 대신 clip을 써서 상단 내비의 sticky 동작을 깨지 않는다 */
-      overflow-x: clip;
+      transition: background 0.3s, color 0.3s;
+      font-feature-settings: "tnum";
     }
 
-    /* ===== 상단 앵커 내비게이션 ===== */
+    a { color: inherit; }
+
+    .shell {
+      max-width: var(--shell);
+      margin: 0 auto;
+      padding-inline: var(--gutter);
+    }
+
+    ::selection { background: var(--text); color: var(--bg); }
+
+    /* ============================================================
+       3. 상단 내비
+       ============================================================ */
     .nav {
       position: sticky;
       top: 0;
-      z-index: 100;
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 14px;
-      /* 바탕과 아래 경계선은 화면 전체 폭으로 늘리고, 내용은 본문과 같은 좌우 여백 */
-      margin: 0 calc(-1 * clamp(18px, 4vw, 60px));
-      padding: 12px clamp(18px, 4vw, 60px);
-      background: var(--bg);
-      border-bottom: 1px solid var(--border);
+      z-index: 50;
+      background: color-mix(in srgb, var(--bg) 88%, transparent);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid transparent;
+      transition: border-color 0.3s;
     }
 
-    .nav a {
-      font-size: 1.05rem;
+    .nav.scrolled { border-bottom-color: var(--line); }
+
+    .nav-inner {
+      max-width: var(--shell);
+      margin: 0 auto;
+      padding: 14px var(--gutter);
+      display: flex;
+      align-items: center;
+      gap: 28px;
+    }
+
+    .nav-brand {
+      font-size: 0.95rem;
+      font-weight: 600;
+      text-decoration: none;
+      letter-spacing: -0.01em;
+      flex-shrink: 0;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 22px;
+      margin-left: auto;
+      overflow-x: auto;
+      scrollbar-width: none;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .nav-links::-webkit-scrollbar { display: none; }
+
+    .nav-links a {
+      font-size: 0.9rem;
       color: var(--muted);
       text-decoration: none;
-      transition: color 0.25s;
-    }
-
-    .nav a:hover {
-      color: var(--accent);
-    }
-
-    /* 스크롤 위치에 따른 현재 챕터 표시 */
-    .nav a.active {
-      color: var(--text);
-    }
-
-    /* 내비 링크 앞 번호: 라벨보다 작게, 위첨자처럼 살짝 올려 장식 */
-    .nav a .idx {
-      margin-right: 6px;
-      font-size: 0.8rem;
-      letter-spacing: 0.05em;
-      color: var(--muted-2);
-      vertical-align: 0.15em;
-    }
-
-    /* 다크모드 버튼을 내비 오른쪽 끝으로 밀어냄 */
-    .nav .theme-toggle {
-      margin-left: auto;
-    }
-
-    /* ===== 다크모드 토글 버튼 (아이콘만) ===== */
-    .theme-toggle {
-      font-family: inherit;
-      font-size: 1.2rem;
-      line-height: 1;
-      padding: 7px 11px;
-      background: var(--input-bg);
-      color: var(--text);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      cursor: pointer;
-    }
-
-    /* ===== 위/아래 페이지 이동 버튼 — 채운 원으로 또렷하게 ===== */
-    .pager-nav {
-      position: fixed;
-      right: clamp(16px, 4vw, 44px);
-      bottom: clamp(16px, 5vh, 52px);
-      z-index: 200;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .pager-btn {
-      width: 52px;
-      height: 52px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-family: inherit;
-      font-size: 1.6rem;
-      line-height: 1;
-      color: var(--bg);
-      background: var(--text);
-      border: 2px solid var(--text);
-      border-radius: 50%;
-      cursor: pointer;
-      transition: background 0.2s, border-color 0.2s, opacity 0.2s;
-    }
-
-    .pager-btn:hover {
-      opacity: 0.72;
-    }
-
-    .pager-btn:disabled {
-      opacity: 0.25;
-      cursor: default;
-    }
-
-    h2 {
-      color: var(--text);
-      font-size: clamp(2rem, 4vw, 3.2rem);
-      font-weight: 500;
-      letter-spacing: -0.02em;
-      line-height: 1.2;
-      margin-top: 120px;
-      margin-bottom: 24px;
-    }
-
-    /* 섹션 번호 (01, 02 …) — 제목 위 별도 줄에 작게 */
-    h2 .num {
-      display: block;
-      margin-bottom: 10px;
-      color: var(--muted-2);
-      font-size: 0.9rem;
-      letter-spacing: 0.1em;
-    }
-
-    a {
-      color: var(--accent);
-    }
-
-    /* ===== 첫 화면 ===== */
-    .hero {
-      min-height: 100svh;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      text-align: center;
-    }
-
-    .hero h1 {
-      font-size: clamp(2.5rem, 10vw, 5rem);
-      color: var(--text);
-      margin: 0 0 8px;
-      /* 글자 크기에 비례하는 자간(px 고정값이면 작은 화면에서 과하게 좁아짐) */
-      letter-spacing: -0.02em;
-    }
-
-    .hero .tagline {
-      font-size: 1.3rem;
-      color: var(--muted);
-      margin: 0 0 20px;
-    }
-
-    /* 첫 화면 안내: 이 사이트는 데스크톱 기준으로 만들어졌다는 표시 (작고 차분하게) */
-    .hero .platform-note {
-      margin: 0 0 40px;
-      font-size: 0.9rem;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      color: var(--muted-2);
-    }
-
-    /* ===== 방명록 입력 ===== */
-    .guestbook {
-      width: 100%;
-      max-width: 480px;
-    }
-
-    .guestbook input,
-    .guestbook textarea {
-      width: 100%;
-      box-sizing: border-box;
-      font-family: inherit;
-      /* iOS에서 16px 미만이면 입력 시 화면이 자동 확대됨 → 16px로 고정 */
-      font-size: 16px;
-      padding: 14px 20px;
-      border: 1px solid var(--input-border);
-      border-radius: 24px;
-      outline: none;
-      margin-bottom: 10px;
-      background: var(--input-bg);
-      color: var(--text);
-    }
-
-    .guestbook textarea {
-      border-radius: 18px;
-      resize: none;
-      height: 90px;
-    }
-
-    .guestbook input:focus,
-    .guestbook textarea:focus {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 3px var(--input-border);
-    }
-
-    .guestbook button {
-      font-family: inherit;
-      font-size: 1.05rem;
-      padding: 12px 32px;
-      background-color: var(--accent);
-      color: var(--bg);
-      border: none;
-      border-radius: 24px;
-      cursor: pointer;
-    }
-
-    .guestbook button:hover {
-      background-color: var(--accent-hover);
-    }
-
-    .guestbook button:disabled {
-      background-color: var(--muted-2);
-      cursor: default;
-    }
-
-    .notice {
-      font-size: 0.95rem;
-      color: var(--muted-2);
-      margin-top: 12px;
-    }
-
-    /* ===== 방명록 목록 ===== */
-    .entry {
-      border-bottom: 1px solid var(--border);
-      padding: 14px 0;
-    }
-
-    .entry .who {
-      font-weight: bold;
-      color: var(--accent);
-    }
-
-    .entry .when {
-      font-size: 0.9rem;
-      color: var(--muted-2);
-      margin-left: 10px;
-    }
-
-    .entry .msg {
-      margin: 4px 0 0;
-      white-space: pre-wrap;
-    }
-
-    .empty {
-      color: var(--muted-2);
-      font-size: 1.1rem;
-    }
-
-    /* ===== 이력 (연표) ===== */
-    .timeline {
-      position: relative;
-    }
-
-    /* 연도 칸 오른쪽 경계를 따라 내려가며 항목들을 잇는 세로 줄 */
-    .timeline::before {
-      content: "";
-      position: absolute;
-      left: 110px;
-      top: 6px;
-      bottom: 6px;
-      width: 1px;
-      background: var(--border);
-    }
-
-    /* 각 항목을 flex 2열(연도 | 내용)로, 항목 위쪽에 가로 구분선 */
-    .item {
-      position: relative;
-      display: flex;
-      gap: 24px;
-      margin-top: 20px;
-      padding-top: 16px;
-      border-top: 1px solid var(--border);
-    }
-
-    /* 세로 줄 위에 찍히는 각 항목의 시점 표시 점 */
-    .item::before {
-      content: "";
-      position: absolute;
-      left: 110px;
-      top: 26px;
-      width: 7px;
-      height: 7px;
-      margin-left: -3px;
-      border-radius: 50%;
-      background: var(--muted);
-    }
-
-    .year {
-      flex-shrink: 0;
-      width: 110px;
       white-space: nowrap;
-      font-size: 0.95rem;
-      color: var(--muted);
+      transition: color 0.2s;
     }
 
-    .item strong {
-      font-size: 1.35rem;
-    }
+    .nav-links a:hover,
+    .nav-links a.active { color: var(--text); }
 
-    /* ===== 소개 본문: 조금 크게 ===== */
-    #intro p {
-      font-size: 1.3rem;
-      line-height: 1.7;
-    }
-
-    .item span.detail {
-      color: var(--muted);
-      font-size: 1.1rem;
-    }
-
-    /* ===== 연락처: 방명록 페이지 하단의 푸터 ===== */
-    .footer {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px 24px;
-      padding: 20px 0;
-      border-top: 1px solid var(--border);
-      font-size: 0.95rem;
-      color: var(--muted);
-    }
-
-    /* 푸터 링크는 주변 글자색과 같게 (차분하게) */
-    .footer a {
-      color: inherit;
-      transition: color 0.25s;
-    }
-
-    /* ===== 섹션: 앵커 이동 시 고정 내비에 제목이 가리지 않도록 여백 ===== */
-    section {
-      scroll-margin-top: 64px;
-    }
-
-    /* ===== 섹션 2열 레이아웃 (왼쪽: 라벨 / 오른쪽: 본문), 히어로는 제외 ===== */
-    section:not(.hero) {
-      display: grid;
-      grid-template-columns: 240px 1fr;
-      gap: 44px;
-    }
-
-    /* 왼쪽 라벨: 해당 섹션을 스크롤하는 동안 화면 왼쪽에 머무름 */
-    section > h2 {
-      grid-column: 1;
-      align-self: start;
-      position: sticky;
-      top: 80px;
-      margin: 0;
-    }
-
-    /* 오른쪽 본문 묶음 */
-    section > .section-body {
-      grid-column: 2;
-      min-width: 0;
-    }
-
-    /* 본문 글줄 길이 제한 */
-    section .section-body p {
-      max-width: 640px;
-    }
-
-    /* ===== 스크롤 스냅 챕터: 스냅 정렬 ===== */
-    #top,
-    #intro,
-    #interests,
-    #history,
-    #posts,
-    #board,
-    #ratings,
-    #guestbook {
-      position: relative;
-      scroll-snap-align: start;
-    }
-
-    /* 히어로를 뺀 나머지 챕터: 기본은 한 화면 높이.
-       내용이 화면보다 크면(큰 글씨·낮은 창 등) 잘리지 않고 늘어나며,
-       그 챕터에서는 끝까지 훑은 뒤 다음 페이지로 넘어간다(스크립트가 처리). */
-    #intro,
-    #interests,
-    #history,
-    #posts,
-    #board,
-    #ratings,
-    #guestbook {
-      min-height: 100svh;
-    }
-
-    /* 그리드 챕터의 본문은 세로 가운데 정렬 */
-    #intro,
-    #interests,
-    #history,
-    #posts {
-      align-items: center;
-    }
-
-    /* 방명록·게시판·평점도 다른 챕터처럼 딱 한 화면.
-       라벨 열 없이 전폭으로: 제목(위) → 본문(작성 폼 + 목록) → (방명록만) 연락처 3행 구성 */
-    #guestbook,
-    #board,
-    #ratings {
-      padding: 104px 0 16px;
-      grid-template-columns: 1fr;
-      grid-template-rows: auto 1fr auto;
-      gap: 32px 0;
-      align-items: stretch;
-    }
-
-    /* 제목·본문·연락처를 전폭으로 위에서 아래로 쌓는다.
-       (제목이 왼쪽 사이드바가 아니라 맨 위 한 줄 전체를 차지하므로,
-       section > h2의 기본 sticky는 여기서 풀어야 본문과 겹치지 않는다) */
-    #guestbook > h2,
-    #board > h2,
-    #ratings > h2 {
-      grid-column: 1 / -1;
-      grid-row: 1;
-      position: static;
-    }
-
-    #guestbook > .section-body,
-    #board > .section-body,
-    #ratings > .section-body {
-      grid-column: 1 / -1;
-      grid-row: 2;
-    }
-
-    /* 각 섹션 본문: 왼쪽 작성 폼 / 오른쪽 목록 2열 (페이지 전체 폭을 쓴다) */
-    #guestbook .section-body,
-    #board .section-body,
-    #ratings .section-body {
-      display: grid;
-      grid-template-columns: minmax(0, 360px) 1fr;
-      gap: 48px;
-      align-items: start;
-      min-height: 0;
-    }
-
-    /* 왼쪽 작성 폼은 위에 고정 */
-    #guestbook .guestbook,
-    #board .board-form,
-    #ratings .board-form {
-      align-self: start;
-    }
-
-    /* 오른쪽 '글이 모이는 공간' — 글이 많으면 페이지가 그만큼 길어지고,
-       스크립트가 그 안을 끝까지 훑은 뒤 다음 페이지로 넘긴다 */
-    #guestbook #list,
-    #board #boardList,
-    #ratings #ratingList {
-      align-self: start;
-    }
-
-    /* 연락처 푸터: 방명록 페이지 맨 아래에 함께 표시 */
-    #guestbook > .footer {
-      grid-column: 1 / -1;
-      grid-row: 3;
-    }
-
-    /* ===== 데스크톱: 게시판·평점·방명록은 항상 딱 한 화면 높이로 고정.
-       목록이 길어져도 섹션 자체는 커지지 않고, 목록 칸 안에서만 스크롤되게 해서
-       스크롤 한 번 = 페이지 이동이 항상 유지되도록 한다. (모바일은 기존 동작 유지) */
-    @media (min-width: 901px) {
-      #guestbook,
-      #board,
-      #ratings {
-        height: 100svh;
-        box-sizing: border-box;
-        overflow: hidden;
-      }
-
-      #guestbook .section-body,
-      #board .section-body,
-      #ratings .section-body {
-        grid-template-rows: minmax(0, 1fr);
-      }
-
-      #guestbook #list,
-      #board #boardList,
-      #ratings #ratingList {
-        align-self: stretch;
-        min-height: 0;
-        overflow-y: auto;
-      }
-    }
-
-    /* ===== 게시판·평점 작성 폼 (방명록과 같은 모양이지만 별도 클래스) ===== */
-    .board-form {
-      width: 100%;
-      max-width: 480px;
-    }
-
-    .board-form input,
-    .board-form textarea,
-    .board-form select {
-      width: 100%;
-      box-sizing: border-box;
-      font-family: inherit;
-      font-size: 16px;
-      border-radius: 4px;
-      outline: none;
-      margin-bottom: 10px;
+    .nav-links .to-community {
       color: var(--text);
+      border: 1px solid var(--line);
+      border-radius: 2px;
+      padding: 4px 12px;
     }
 
-    /* 입력창·셀렉트: 사방 테두리 대신 아래쪽 밑줄만 */
-    .board-form input,
-    .board-form select {
-      padding: 12px 2px;
-      border: none;
-      border-bottom: 1px solid var(--input-border);
-      background: transparent;
-    }
-
-    /* textarea만 사방 테두리 유지 */
-    .board-form textarea {
-      padding: 14px 20px;
-      border: 1px solid var(--input-border);
-      background: var(--input-bg);
-      resize: none;
-      height: 90px;
-    }
-
-    .board-form input:focus,
-    .board-form select:focus {
-      border-bottom-color: var(--text);
-    }
-
-    .board-form textarea:focus {
+    .nav-links .to-community:hover {
+      background: var(--text);
+      color: var(--bg);
       border-color: var(--text);
     }
 
-    .board-form button {
-      font-family: inherit;
-      font-size: 1.05rem;
-      padding: 12px 32px;
-      background: transparent;
-      color: var(--text);
-      border: 1px solid var(--text);
-      border-radius: 4px;
-      cursor: pointer;
-    }
-
-    .board-form button:hover {
-      background: var(--text);
-      color: var(--bg);
-    }
-
-    .board-form button:disabled {
-      border-color: var(--muted-2);
-      color: var(--muted-2);
-      background: transparent;
-      cursor: default;
-    }
-
-    /* ===== 05 게시판: 목록을 2열 카드 격자로 ===== */
-    #board #boardList {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 20px;
-    }
-
-    #board #boardList .entry {
-      border: 1px solid var(--border);
-      padding: 20px;
-    }
-
-    @media (max-width: 900px) {
-      #board #boardList {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    /* ===== 06 평점: 별점을 주인공으로, 왼쪽 세로선으로 계층 표현 ===== */
-    .rating-item {
-      padding: 20px 0 20px 20px;
-      margin-bottom: 40px;
-      border-left: 2px solid var(--border);
-    }
-
-    .rating-item .head {
-      display: flex;
-      align-items: baseline;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-
-    .rating-item .name {
-      font-weight: 500;
-      color: var(--text);
-      font-size: 1.4rem;
-    }
-
-    .rating-item .stars {
-      color: var(--text);
-      font-size: 1.3rem;
-      letter-spacing: 0.05em;
-    }
-
-    .rating-item .author {
-      font-size: 0.9rem;
-      color: var(--muted-2);
-    }
-
-    /* 방문자가 별점·한줄평을 남기는 작은 입력줄 */
-    .rating-item .sub-form {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin: 14px 0 10px;
-    }
-
-    .rating-item .sub-form select,
-    .rating-item .sub-form input {
-      font-family: inherit;
-      font-size: 0.95rem;
-      padding: 12px 2px;
-      border: none;
-      border-bottom: 1px solid var(--input-border);
-      border-radius: 4px;
-      outline: none;
-      background: transparent;
-      color: var(--text);
-    }
-
-    .rating-item .sub-form input {
-      flex: 1;
-      min-width: 0;
-    }
-
-    .rating-item .sub-form select:focus,
-    .rating-item .sub-form input:focus {
-      border-bottom-color: var(--text);
-    }
-
-    .rating-item .sub-form button {
-      font-family: inherit;
-      font-size: 0.95rem;
-      padding: 8px 18px;
-      background: transparent;
-      color: var(--text);
-      border: 1px solid var(--text);
-      border-radius: 4px;
-      cursor: pointer;
+    .theme-toggle {
       flex-shrink: 0;
-    }
-
-    .rating-item .sub-form button:hover {
-      background: var(--text);
-      color: var(--bg);
-    }
-
-    .rating-item .sub-form button:disabled {
-      border-color: var(--muted-2);
-      color: var(--muted-2);
-      background: transparent;
-      cursor: default;
-    }
-
-    /* 방문자들이 남긴 별점·한줄평 목록: 답글처럼 들여쓰기 */
-    .rating-item .sub-list .comment {
-      font-size: 0.92rem;
-      color: var(--muted);
-      padding: 6px 0 6px 16px;
-      border-left: 1px solid var(--border);
-    }
-
-    .rating-item .sub-list .comment .stars {
-      margin-right: 8px;
-      color: inherit;
-      font-size: inherit;
-    }
-
-    /* ===== 07 방명록: 목록을 메모 블록으로 ===== */
-    #guestbook .entry {
-      background: var(--input-bg);
-      padding: 16px 18px;
-      border-radius: 4px;
-      margin-bottom: 10px;
-      border: none;
-    }
-
-    #guestbook .entry .head {
-      display: flex;
-      align-items: baseline;
-    }
-
-    #guestbook .entry .who {
-      color: var(--text);
-    }
-
-    #guestbook .entry .when {
-      margin-left: auto;
-    }
-
-    /* 다음 챕터로 넘어간다는 표시 (챕터 하단 가운데) */
-    .next-hint {
-      position: absolute;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      color: var(--muted-2);
-      font-size: 0.95rem;
-    }
-
-    /* ===== 01 소개 ===== */
-    /* 본문 텍스트 왼쪽 / 사진 오른쪽 2열 (섹션의 라벨 열은 유지) */
-    #intro .section-body {
+      width: 34px;
+      height: 34px;
       display: grid;
-      grid-template-columns: minmax(0, 1fr) minmax(0, 320px);
-      gap: 48px;
+      place-items: center;
+      font-size: 0.9rem;
+      font-family: inherit;
+      background: transparent;
+      color: var(--muted);
+      border: 1px solid var(--line);
+      border-radius: 2px;
+      cursor: pointer;
+      transition: color 0.2s, border-color 0.2s;
+    }
+
+    .theme-toggle:hover { color: var(--text); border-color: var(--muted); }
+
+    /* ============================================================
+       4. 히어로
+       ============================================================ */
+    .hero {
+      min-height: calc(100svh - 63px);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding-block: 80px 40px;
+    }
+
+    .hero h1 {
+      margin: 0;
+      font-size: clamp(3.2rem, 13vw, 10rem);
+      font-weight: 600;
+      line-height: 0.92;
+      letter-spacing: -0.045em;
+    }
+
+    .hero-line {
+      margin: 32px 0 0;
+      max-width: 40ch;
+      font-size: clamp(1.05rem, 2.2vw, 1.5rem);
+      line-height: 1.5;
+      color: var(--muted);
+    }
+
+    .hero-line b { color: var(--text); font-weight: 500; }
+
+    .hero-foot {
+      margin-top: auto;
+      padding-top: 56px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: 12px 28px;
+      font-size: 0.85rem;
+      color: var(--faint);
+    }
+
+    .hero-foot a {
+      color: var(--muted);
+      text-decoration: none;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 2px;
+      transition: color 0.2s, border-color 0.2s;
+    }
+
+    .hero-foot a:hover { color: var(--text); border-color: var(--text); }
+
+    /* ============================================================
+       5. 섹션 공통 — 왼쪽 라벨 + 오른쪽 본문
+       ============================================================ */
+    .section {
+      display: grid;
+      grid-template-columns: 240px minmax(0, 1fr);
+      gap: 0 64px;
+      padding-block: clamp(90px, 12vh, 160px);
+      border-top: 1px solid var(--line);
+    }
+
+    .section-label {
+      position: sticky;
+      top: 100px;
+      align-self: start;
+      margin: 0;
+      font-size: 0.8rem;
+      font-weight: 400;
+      letter-spacing: 0.12em;
+      color: var(--muted);
+      display: flex;
+      gap: 12px;
+    }
+
+    .section-label .num {
+      color: var(--faint);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .section-body { min-width: 0; }
+
+    .lead {
+      margin: 0 0 1.4em;
+      max-width: 58ch;
+      font-size: clamp(1.15rem, 1.8vw, 1.4rem);
+      line-height: 1.75;
+    }
+
+    .lead:last-child { margin-bottom: 0; }
+    .lead + .lead { color: var(--muted); }
+
+    /* ---- 01 소개 ---- */
+    .intro-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 300px;
+      gap: 56px;
       align-items: start;
     }
 
-    /* 사진 자리: 180px 정사각형 → 세로로 긴 형태 */
     .photo {
-      width: 100%;
-      max-width: 320px;
       aspect-ratio: 3 / 4;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border: 1px dashed var(--input-border);
-      border-radius: 8px;
-      color: var(--muted-2);
-      font-size: 1rem;
+      display: grid;
+      place-items: center;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      color: var(--faint);
+      font-size: 0.85rem;
+      overflow: hidden;
     }
 
-    /* ===== 전폭 챕터 공통 (02·04): 라벨 열 제거, 내용을 세로 가운데로 =====
-       h2·본문을 한 덩어리로 화면 중앙에 놓는다. h2는 sticky(top:80px)를 유지해
-       위로 밀려도 상단 내비 바에 가리지 않는다. */
-    #interests,
-    #posts {
-      grid-template-columns: 1fr;
-      align-content: center;
-    }
+    .photo img { width: 100%; height: 100%; object-fit: cover; }
 
-    #interests > h2,
-    #posts > h2 {
-      grid-column: 1 / -1;
-    }
-
-    #interests > .section-body,
-    #posts > .section-body {
-      grid-column: 1 / -1;
-    }
-
-    /* ===== 02 연구 관심사: 전폭 + 우측 정렬 + 아주 큰 키워드 ===== */
-    #interests {
-      text-align: right;
-    }
-
-    .keywords {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-      display: flex;
-      flex-direction: column;
-      gap: 0;
-    }
+    /* ---- 02 연구 관심사 ---- */
+    .keywords { list-style: none; margin: 0; padding: 0; }
 
     .keywords li {
-      color: var(--muted);
-      font-size: clamp(2.5rem, 7vw, 5rem);
+      padding: 22px 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .keywords li:first-child { padding-top: 0; }
+
+    .keywords .kw {
+      display: block;
+      font-size: clamp(1.9rem, 4.5vw, 3.4rem);
+      font-weight: 500;
       line-height: 1.1;
-      transition: color 0.3s;
-      /* 긴 단어가 화면 밖으로 넘치지 않도록 필요하면 줄바꿈 */
-      overflow-wrap: break-word;
+      letter-spacing: -0.03em;
     }
 
-    .keywords li:hover {
-      color: var(--text);
+    .keywords .kw-desc {
+      display: block;
+      margin-top: 10px;
+      max-width: 52ch;
+      font-size: 0.98rem;
+      color: var(--muted);
     }
 
-    /* ===== 04 글: 전폭. 목록 항목이 생기면 적용 ===== */
-    .post-list {
-      list-style: none;
+    /* ---- 03 이력 ---- */
+    .timeline { display: grid; }
+
+    .item {
+      display: grid;
+      grid-template-columns: 150px minmax(0, 1fr);
+      gap: 8px 32px;
+      padding: 26px 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .item:first-child { padding-top: 0; }
+
+    .item .year {
+      font-size: 0.85rem;
+      color: var(--faint);
+      white-space: nowrap;
+      padding-top: 5px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .item .role {
+      font-size: clamp(1.05rem, 1.6vw, 1.3rem);
+      font-weight: 500;
+      line-height: 1.4;
+    }
+
+    .item .detail {
+      display: block;
+      margin-top: 4px;
+      font-size: 0.95rem;
+      color: var(--muted);
+    }
+
+    /* ---- 04 글 ---- */
+    .posts { display: grid; }
+
+    .post {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: 6px 20px;
+      padding: 22px 0;
+      border-bottom: 1px solid var(--line);
+      text-decoration: none;
+      transition: opacity 0.2s;
+    }
+
+    .post:first-child { padding-top: 0; }
+    .post:hover { opacity: 0.55; }
+
+    .post .title {
+      font-size: clamp(1.1rem, 2vw, 1.6rem);
+      font-weight: 500;
+      letter-spacing: -0.02em;
+    }
+
+    .post .date {
+      margin-left: auto;
+      font-size: 0.82rem;
+      color: var(--faint);
+    }
+
+    .empty {
       margin: 0;
-      padding: 0;
+      font-size: 1rem;
+      color: var(--faint);
     }
 
-    .post-list li {
-      padding: 24px 0;
-      font-size: clamp(1.5rem, 3vw, 2.2rem);
+    /* ============================================================
+       6. 참여 공간으로 넘어가는 전환 블록 (배경 반전)
+       ============================================================ */
+    .crossover {
+      margin-top: clamp(60px, 10vh, 120px);
+      background: var(--text);
+      color: var(--bg);
     }
 
-    /* 각 항목 사이 구분선 */
-    .post-list li + li {
-      border-top: 1px solid var(--border);
+    .crossover-inner {
+      max-width: var(--shell);
+      margin: 0 auto;
+      padding: clamp(80px, 14vh, 170px) var(--gutter);
     }
 
-    /* ===== 태블릿·모바일: 2열 → 1열로 되돌림 ===== */
+    .crossover .eyebrow {
+      margin: 0 0 20px;
+      font-size: 0.8rem;
+      letter-spacing: 0.12em;
+      opacity: 0.55;
+    }
+
+    .crossover a.big {
+      display: inline-block;
+      font-size: clamp(2rem, 6.5vw, 5rem);
+      font-weight: 600;
+      line-height: 1.05;
+      letter-spacing: -0.04em;
+      text-decoration: none;
+      border-bottom: 2px solid transparent;
+      transition: border-color 0.25s;
+    }
+
+    .crossover a.big:hover { border-bottom-color: currentColor; }
+
+    .crossover .sub {
+      margin: 28px 0 0;
+      max-width: 44ch;
+      font-size: 1rem;
+      opacity: 0.65;
+    }
+
+    /* ============================================================
+       7. 푸터
+       ============================================================ */
+    .footer {
+      padding-block: 48px 64px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px 32px;
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    .footer .spacer { margin-left: auto; }
+    .footer a { text-decoration: none; border-bottom: 1px solid var(--line); }
+    .footer a:hover { border-color: var(--muted); }
+
+    /* ============================================================
+       8. 등장 모션
+       ============================================================ */
+    .js .reveal {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+
+    .js .reveal.in { opacity: 1; transform: none; }
+    .js .reveal.d1 { transition-delay: 0.08s; }
+    .js .reveal.d2 { transition-delay: 0.16s; }
+
+    /* ============================================================
+       9. 좁은 화면
+       ============================================================ */
     @media (max-width: 900px) {
-      section:not(.hero) {
-        grid-template-columns: 1fr;
-        gap: 12px;
-        /* 섹션 사이 간격 없음 — PC처럼 한 화면당 한 섹션 */
-
-        /* 한 화면 안에 들어가도록: 위쪽은 고정 내비(약 60px)만큼 비우고,
-           padding을 min-height(100svh) 안에 포함시켜 화면 높이를 넘지 않게 한다 */
-        box-sizing: border-box;
-        padding-top: 64px;
-        padding-bottom: 20px;
-      }
-
-      /* --- 내비게이션: 여러 줄 접힘 대신 한 줄 가로 스크롤 --- */
-      .nav {
-        flex-wrap: nowrap;
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;   /* iOS 관성 스크롤 */
-        scrollbar-width: none;               /* 파이어폭스: 스크롤바 숨김 */
-      }
-
-      .nav::-webkit-scrollbar {
-        display: none;                       /* 크롬·사파리: 스크롤바 숨김 */
-      }
-
-      .nav a {
-        white-space: nowrap;                 /* 링크 글자가 줄바꿈되지 않게 */
-        flex-shrink: 0;                      /* 좁아도 눌려서 겹치지 않게 */
-      }
-
-      /* 다크모드 버튼: 밀어내기(margin-left:auto) 해제, 크기만 유지하고 줄 끝에 */
-      .nav .theme-toggle {
-        margin-left: 0;
-        flex-shrink: 0;
-      }
-
-      /* 앵커 이동 시 제목이 고정된 모바일 내비(약 60px)에 가리지 않도록 여백 조정 */
-      section {
-        scroll-margin-top: 72px;
-      }
-
-      /* 02 연구 관심사 키워드: 모바일에서 한 단계 작게 */
-      .keywords li {
-        font-size: clamp(1.8rem, 8vw, 2.5rem);
-      }
-
-      section > h2 {
-        position: static;       /* 라벨 고정 해제 */
-        font-size: clamp(1.6rem, 6vw, 2.2rem);
-        margin-bottom: 18px;    /* 제목 아래 간격 축소 */
-      }
-
-      /* 라벨 열(왼쪽 260px) 해제: 제목과 본문을 좁은 2칸이 아니라 세로로 쌓는다 */
-      section > h2,
-      section > .section-body {
-        grid-column: 1 / -1;
-      }
-
-      /* --- 한 화면에 담기도록 큰 글자·넓은 여백을 모바일에서 한 단계 축소 --- */
-
-      /* 03 이력: 항목 간격·글자 축소 */
-      .item {
-        margin-top: 16px;
-        padding-top: 14px;
-      }
-
-      .item strong {
-        font-size: 1.15rem;
-      }
-
-      .item span.detail {
-        font-size: 1rem;
-      }
-
-      /* 01 소개 본문 글자 (모바일에서 한 단계만 작게) */
-      #intro p {
-        font-size: 1.12rem;
-        line-height: 1.6;
-      }
-
-      /* 01 소개 사진: 세로로 길어 화면을 넘기 쉬우므로 축소 */
-      .photo {
-        max-width: 180px;
-      }
-
-      /* 각 챕터는 모바일에서도 한 화면(100svh)을 채운다 — 페이지 단위 스크롤 유지.
-         내용이 화면보다 크면 그 안에서 스크롤한 뒤 다음 챕터로 넘어간다(스크립트 처리). */
-
-      /* 방명록·게시판·평점: 라벨 열(그리드)을 풀어 제목 → 작성 폼 → 목록 순으로 세로로 쌓는다.
-         (그리드 상태에서는 작성 폼이 제목 오른쪽의 좁은 칸에 밀려 있었음) */
-      #guestbook,
-      #board,
-      #ratings {
-        display: block;
-        padding: 64px 0 20px;   /* 다른 챕터와 같은 상·하 여백 */
-      }
-
-      /* 제목과 작성 폼 사이 간격 */
-      #guestbook > h2,
-      #board > h2,
-      #ratings > h2 {
-        margin-bottom: 36px;
-      }
-
-      /* 작성 폼(위) / 목록(아래) 1열. 목록은 가로 전체 폭을 쓴다 */
-      #guestbook .section-body,
-      #board .section-body,
-      #ratings .section-body {
-        grid-template-columns: 1fr;
-        gap: 32px;
-      }
-
-      /* 연락처는 방명록 맨 아래에 여유를 두고 */
-      #guestbook > .footer {
-        margin-top: 40px;
-      }
-
-      /* 01 소개: 사진을 본문 아래로 (1열) */
-      #intro .section-body {
+      .section {
         grid-template-columns: 1fr;
         gap: 24px;
+        padding-block: 72px;
       }
 
-      /* 02: 우측 정렬 해제 → 좁은 화면에서는 좌측 정렬이 읽기 편함 */
-      #interests {
-        text-align: left;
-      }
+      .section-label { position: static; }
+
+      .intro-grid { grid-template-columns: 1fr; gap: 32px; }
+      .photo { max-width: 260px; }
+
+      .item { grid-template-columns: 1fr; gap: 2px; }
+      .item .year { padding-top: 0; }
+
+      .post .date { margin-left: 0; }
+
+      .nav-inner { gap: 16px; }
+      .nav-links { gap: 16px; }
     }
 
-    /* ===== 화면이 좁을 때 (모바일) ===== */
-    @media (max-width: 600px) {
-      .item {
-        flex-direction: column;
-        gap: 4px;
-      }
-
-      .year {
-        width: auto;
-      }
-
-      /* 1열로 접히면 세로 줄·점은 위치가 안 맞으므로 숨김 */
-      .timeline::before,
-      .item::before {
-        display: none;
-      }
-
-      .nav {
-        gap: 10px;
-      }
-
-      .nav a {
-        font-size: 0.9rem;
-      }
-    }
-
-    /* ===== 스크롤 등장 모션 =====
-       .js가 있을 때만(=JS 동작 시) 숨김 상태로 시작하고,
-       IntersectionObserver가 챕터에 .is-visible을 붙이면 나타난다. */
-    .js section:not(.hero) > h2,
-    .js section:not(.hero) > .section-body,
-    .js .hero > h1,
-    .js .hero > .tagline,
-    .js .hero > .platform-note {
-      opacity: 0;
-      transform: translateY(24px);
-      transition: opacity 0.7s ease, transform 0.7s ease;
-    }
-
-    /* .next-hint는 가로 중앙(translateX(-50%))을 유지해야 하므로 따로 */
-    .js section > .next-hint {
-      opacity: 0;
-      transform: translate(-50%, 24px);
-      transition: opacity 0.7s ease, transform 0.7s ease;
-    }
-
-    .js section.is-visible > h2,
-    .js section.is-visible > .section-body,
-    .js .hero.is-visible > h1,
-    .js .hero.is-visible > .tagline,
-    .js .hero.is-visible > .platform-note {
-      opacity: 1;
-      transform: translateY(0);
-    }
-
-    .js section.is-visible > .next-hint {
-      opacity: 1;
-      transform: translate(-50%, 0);
-    }
-
-    /* 챕터 안 시차: h2(0s) → 본문(0.1s) → 나머지(0.2s) */
-    .js section > .section-body,
-    .js .hero > .tagline {
-      transition-delay: 0.1s;
-    }
-
-    .js section > .next-hint,
-    .js .hero > .platform-note {
-      transition-delay: 0.2s;
-    }
-
-    /* ===== 접근성: 모션 최소화 설정이면 모든 모션 끄기 ===== */
     @media (prefers-reduced-motion: reduce) {
-      html {
-        scroll-behavior: auto;
+      html { scroll-behavior: auto; }
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
       }
-
-      *,
-      *::before,
-      *::after {
-        transition: none !important;
-        animation: none !important;
-      }
-
-      /* 등장 모션 요소가 숨은 채 남지 않도록 강제로 보이게 */
-      .js section > h2,
-      .js section > .section-body,
-      .js .hero > h1,
-      .js .hero > .tagline,
-      .js .hero > .platform-note {
-        opacity: 1 !important;
-        transform: none !important;
-      }
-
-      .js section > .next-hint {
-        opacity: 1 !important;
-        transform: translateX(-50%) !important;
-      }
+      .js .reveal { opacity: 1; transform: none; }
     }
   </style>
 </head>
 
 <body>
 
-  <!-- ===== 상단 앵커 내비게이션 (다크모드 버튼 포함) ===== -->
-  <nav class="nav">
-    <a href="#intro"><span class="idx">01</span>소개</a>
-    <a href="#interests"><span class="idx">02</span>연구 관심사</a>
-    <a href="#history"><span class="idx">03</span>이력</a>
-    <a href="#posts"><span class="idx">04</span>글</a>
-    <a href="#board"><span class="idx">05</span>게시판</a>
-    <a href="#ratings"><span class="idx">06</span>평점</a>
-    <a href="#guestbook"><span class="idx">07</span>방명록</a>
-    <button id="themeToggle" class="theme-toggle" aria-label="테마 전환">🌙</button>
+  <!-- ===== 내비 ===== -->
+  <nav class="nav" id="nav">
+    <div class="nav-inner">
+      <a class="nav-brand" href="#top">OOO</a>
+      <div class="nav-links">
+        <a href="#intro"><span class="num">01</span> 소개</a>
+        <a href="#interests">02 연구 관심사</a>
+        <a href="#history">03 이력</a>
+        <a href="#posts">04 글</a>
+        <a class="to-community" href="community.html">함께 쓰는 공간 →</a>
+      </div>
+      <button class="theme-toggle" id="themeToggle" aria-label="테마 전환">☾</button>
+    </div>
   </nav>
 
-  <!-- ===== 위/아래 페이지 이동 버튼 (한 번 누르면 한 페이지 이동) ===== -->
-  <div class="pager-nav">
-    <button id="pagePrev" class="pager-btn" type="button" aria-label="이전 페이지" title="이전 페이지">↑</button>
-    <button id="pageNext" class="pager-btn" type="button" aria-label="다음 페이지" title="다음 페이지">↓</button>
-  </div>
+  <main class="shell" id="top">
 
-  <!-- ===== 1. 히어로: 이름 + 한 줄 소개 ===== -->
-  <section id="top" class="hero">
-    <h1>824</h1>
-    <p class="tagline">OOO</p>
-    <p class="platform-note">Designed for desktop</p>
-    <div class="next-hint" aria-hidden="true">↓</div>
-  </section>
+    <!-- ===== 히어로 ===== -->
+    <header class="hero">
+      <h1 class="reveal">OOO</h1>
+      <p class="hero-line reveal d1">
+        <b>OO대학교 OOOO학과</b> 학부연구생.<br>
+        OOO을 공부하며 OOO에 관심을 두고 있습니다.
+      </p>
+      <div class="hero-foot reveal d2">
+        <span>Scroll ↓</span>
+        <a href="community.html">방명록 남기기 →</a>
+        <span class="spacer"></span>
+      </div>
+    </header>
 
-  <!-- ===== 2. 소개: 텍스트 + 사진 자리 ===== -->
-  <section id="intro">
-    <h2><span class="num">01</span>소개</h2>
-    <div class="section-body">
-      <p>OOO</p>
-      <div class="photo">사진</div>
-    </div>
-    <div class="next-hint" aria-hidden="true">↓</div>
-  </section>
-
-  <!-- ===== 3. 연구 관심사: 키워드 3개 ===== -->
-  <section id="interests">
-    <h2><span class="num">02</span>연구 관심사</h2>
-    <div class="section-body">
-      <ul class="keywords">
-        <li>OOO</li>
-        <li>OOO</li>
-        <li>OOO</li>
-      </ul>
-    </div>
-    <div class="next-hint" aria-hidden="true">↓</div>
-  </section>
-
-  <!-- ===== 4. 이력 ===== -->
-  <section id="history">
-    <h2><span class="num">03</span>이력</h2>
-    <div class="section-body">
-      <div class="timeline">
-
-        <div class="item">
-          <span class="year">2025.07 – 현재</span>
-          <div class="content">
-            <strong>OO대학교 OOO연구실 학부연구생</strong><br>
-            <span class="detail">지도교수: OOO · OOO 관련 연구 수행</span>
+    <!-- ===== 01 소개 ===== -->
+    <section class="section" id="intro">
+      <h2 class="section-label reveal"><span class="num">01</span> 소개</h2>
+      <div class="section-body reveal d1">
+        <div class="intro-grid">
+          <div>
+            <p class="lead">OOO</p>
+            <p class="lead">OOO</p>
           </div>
+          <div class="photo">사진</div>
         </div>
+      </div>
+    </section>
 
-        <div class="item">
-          <span class="year">2023 – 현재</span>
-          <div class="content">
-            <strong>OO대학교 OOOOO학과</strong><br>
-            <span class="detail">학사 과정 재학 중</span>
+    <!-- ===== 02 연구 관심사 ===== -->
+    <section class="section" id="interests">
+      <h2 class="section-label reveal"><span class="num">02</span> 연구 관심사</h2>
+      <div class="section-body reveal d1">
+        <ul class="keywords">
+          <li>
+            <span class="kw">OOO</span>
+            <span class="kw-desc">OOO</span>
+          </li>
+          <li>
+            <span class="kw">OOO</span>
+            <span class="kw-desc">OOO</span>
+          </li>
+          <li>
+            <span class="kw">OOO</span>
+            <span class="kw-desc">OOO</span>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ===== 03 이력 ===== -->
+    <section class="section" id="history">
+      <h2 class="section-label reveal"><span class="num">03</span> 이력</h2>
+      <div class="section-body reveal d1">
+        <div class="timeline">
+
+          <div class="item">
+            <span class="year">2025.07 — 현재</span>
+            <div>
+              <span class="role">OO대학교 OOO연구실 학부연구생</span>
+              <span class="detail">지도교수 OOO · OOO 관련 연구 수행</span>
+            </div>
           </div>
-        </div>
 
-        <div class="item">
-          <span class="year">2021 – 2022</span>
-          <div class="content">
-            <strong>OOOOOOOO OOOOO</strong><br>
-            <span class="detail">병장 만기전역</span>
+          <div class="item">
+            <span class="year">2023 — 현재</span>
+            <div>
+              <span class="role">OO대학교 OOOOO학과</span>
+              <span class="detail">학사 과정 재학 중</span>
+            </div>
           </div>
-        </div>
 
-        <div class="item">
-          <span class="year">2020 – 2023</span>
-          <div class="content">
-            <strong>OO대학교 OOOOOO학과</strong><br>
-            <span class="detail">자퇴</span>
+          <div class="item">
+            <span class="year">2021 — 2022</span>
+            <div>
+              <span class="role">OOOOOOOO OOOOO</span>
+              <span class="detail">병장 만기전역</span>
+            </div>
           </div>
-        </div>
 
-        <div class="item">
-          <span class="year">2020</span>
-          <div class="content">
-            <strong>OO고등학교 졸업</strong>
+          <div class="item">
+            <span class="year">2020 — 2023</span>
+            <div>
+              <span class="role">OO대학교 OOOOOO학과</span>
+              <span class="detail">자퇴</span>
+            </div>
           </div>
+
+          <div class="item">
+            <span class="year">2020</span>
+            <div>
+              <span class="role">OO고등학교 졸업</span>
+            </div>
+          </div>
+
         </div>
-
       </div>
+    </section>
+
+    <!-- ===== 04 글 ===== -->
+    <section class="section" id="posts">
+      <h2 class="section-label reveal"><span class="num">04</span> 글</h2>
+      <div class="section-body reveal d1">
+        <div class="posts">
+          <p class="empty">아직 작성한 글이 없습니다.</p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ===== 참여 공간 전환 ===== -->
+  <section class="crossover reveal">
+    <div class="crossover-inner">
+      <p class="eyebrow">FOR VISITORS</p>
+      <a class="big" href="community.html">함께 쓰는 공간 →</a>
+      <p class="sub">게시판, 평점, 방명록. 누구나 글을 남길 수 있는 공간입니다.</p>
     </div>
-    <div class="next-hint" aria-hidden="true">↓</div>
   </section>
 
-  <!-- ===== 5. 글: 제목 목록 (지금은 비어 있음) ===== -->
-  <section id="posts">
-    <h2><span class="num">04</span>글</h2>
-    <div class="section-body">
-      <p class="empty">아직 작성한 글이 없습니다.</p>
-    </div>
-    <div class="next-hint" aria-hidden="true">↓</div>
-  </section>
-
-  <!-- ===== 6. 게시판: 방명록과 같은 방식(Firebase 실시간)의 글쓰기 공간 ===== -->
-  <section id="board">
-    <h2><span class="num">05</span>게시판</h2>
-
-    <div class="section-body">
-      <div class="board-form">
-        <input type="text" id="boardName" placeholder="이름">
-        <textarea id="boardText" placeholder="글 작성"></textarea>
-        <button id="boardButton">남기기</button>
-        <p class="notice">※ 남겨주신 글은 모두에게 공개됩니다</p>
-      </div>
-
-      <div id="boardList">
-        <p class="empty">불러오는 중...</p>
-      </div>
-    </div>
-    <div class="next-hint" aria-hidden="true">↓</div>
-  </section>
-
-  <!-- ===== 7. 평점: 이름 + 별점을 등록하고, 방문자가 그 아래에 별점·한줄평을 남긴다 ===== -->
-  <section id="ratings">
-    <h2><span class="num">06</span>평점</h2>
-
-    <div class="section-body">
-      <div class="board-form">
-        <input type="text" id="ratingAuthor" placeholder="작성자 이름">
-        <input type="text" id="ratingName" placeholder="이름">
-        <select id="ratingStars">
-          <option value="5">★★★★★ (5)</option>
-          <option value="4">★★★★☆ (4)</option>
-          <option value="3">★★★☆☆ (3)</option>
-          <option value="2">★★☆☆☆ (2)</option>
-          <option value="1">★☆☆☆☆ (1)</option>
-        </select>
-        <button id="ratingButton">등록</button>
-      </div>
-
-      <div id="ratingList">
-        <p class="empty">불러오는 중...</p>
-      </div>
-    </div>
-    <div class="next-hint" aria-hidden="true">↓</div>
-  </section>
-
-  <!-- ===== 8. 방명록: 기존 기능 그대로 (입력창 + 목록), 위치·번호만 이동 ===== -->
-  <section id="guestbook">
-    <h2><span class="num">07</span>방명록</h2>
-
-    <div class="section-body">
-      <div class="guestbook">
-        <input type="text" placeholder="이름">
-        <textarea placeholder="방명록 작성"></textarea>
-        <button>남기기</button>
-        <p class="notice">※ 남겨주신 글은 모두에게 공개됩니다</p>
-      </div>
-
-      <div id="list">
-        <p class="empty">불러오는 중...</p>
-      </div>
-    </div>
-
-    <!-- ===== 연락처: 방명록 페이지 맨 아래에 함께 표시 ===== -->
-    <footer class="footer">
-      <span>이메일 · OOOOO [at] OOOOOO</span>
-      <span>GitHub · <a href="https://github.com/afoc824">github.com/afoc824</a></span>
-    </footer>
-  </section>
-
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
-    import {
-      getFirestore, collection, addDoc, query, orderBy, onSnapshot, serverTimestamp
-    } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
-
-    // Firebase 콘솔에서 복사한 설정값
-    const firebaseConfig = {
-      apiKey: "AIzaSyCiuEisvgKaSyMAP4hLM5qk_L94oK6oyP4",
-      authDomain: "afoc824-52dad.firebaseapp.com",
-      projectId: "afoc824-52dad",
-      storageBucket: "afoc824-52dad.firebasestorage.app",
-      messagingSenderId: "638791232483",
-      appId: "1:638791232483:web:0b8bb7e968c985face8ed6"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-
-    const button = document.querySelector(".guestbook button");
-    const nameInput = document.querySelector(".guestbook input");
-    const textInput = document.querySelector(".guestbook textarea");
-    const list = document.querySelector("#list");
-
-    // ===== 글 남기기 =====
-    button.onclick = async function () {
-      const name = nameInput.value.trim();
-      const text = textInput.value.trim();
-
-      if (name === "" || text === "") {
-        alert("이름과 내용을 모두 입력해주세요.");
-        return;
-      }
-
-      if (name.length > 20 || text.length > 500) {
-        alert("이름은 20자, 내용은 500자까지 입력할 수 있습니다.");
-        return;
-      }
-
-      button.disabled = true;
-      button.textContent = "저장 중...";
-
-      try {
-        await addDoc(collection(db, "guestbook"), {
-          name: name,
-          text: text,
-          createdAt: serverTimestamp()
-        });
-
-        nameInput.value = "";
-        textInput.value = "";
-        nameInput.focus();
-      } catch (error) {
-        alert("저장에 실패했습니다. 잠시 후 다시 시도해주세요.");
-        console.error(error);
-      }
-
-      button.disabled = false;
-      button.textContent = "남기기";
-    };
-
-    // ===== 날짜를 보기 좋게 바꾸기 =====
-    function formatDate(timestamp) {
-      if (!timestamp) {
-        return "";
-      }
-      const d = timestamp.toDate();
-      return d.getFullYear() + "." +
-             (d.getMonth() + 1) + "." +
-             d.getDate();
-    }
-
-    // ===== 글 목록 실시간 표시 =====
-    const q = query(collection(db, "guestbook"), orderBy("createdAt", "desc"));
-
-    onSnapshot(q, function (snapshot) {
-      list.innerHTML = "";
-
-      if (snapshot.empty) {
-        const empty = document.createElement("p");
-        empty.className = "empty";
-        empty.textContent = "아직 남겨진 글이 없습니다.";
-        list.appendChild(empty);
-        return;
-      }
-
-      snapshot.forEach(function (docSnap) {
-        const data = docSnap.data();
-
-        const entry = document.createElement("div");
-        entry.className = "entry";
-
-        const head = document.createElement("div");
-        head.className = "head";
-
-        const who = document.createElement("span");
-        who.className = "who";
-        who.textContent = data.name;
-
-        const when = document.createElement("span");
-        when.className = "when";
-        when.textContent = formatDate(data.createdAt);
-
-        const msg = document.createElement("p");
-        msg.className = "msg";
-        msg.textContent = data.text;
-
-        head.appendChild(who);
-        head.appendChild(when);
-        entry.appendChild(head);
-        entry.appendChild(msg);
-        list.appendChild(entry);
-      });
-    }, function (error) {
-      list.innerHTML = "";
-      const err = document.createElement("p");
-      err.className = "empty";
-      err.textContent = "방명록을 불러오지 못했습니다.";
-      list.appendChild(err);
-      console.error(error);
-    });
-
-    // ===== 06 게시판 (방명록과 같은 방식, 별도 컬렉션 "board") =====
-    const boardButton = document.querySelector("#boardButton");
-    const boardNameInput = document.querySelector("#boardName");
-    const boardTextInput = document.querySelector("#boardText");
-    const boardList = document.querySelector("#boardList");
-
-    boardButton.onclick = async function () {
-      const name = boardNameInput.value.trim();
-      const text = boardTextInput.value.trim();
-
-      if (name === "" || text === "") {
-        alert("이름과 내용을 모두 입력해주세요.");
-        return;
-      }
-
-      if (name.length > 20 || text.length > 500) {
-        alert("이름은 20자, 내용은 500자까지 입력할 수 있습니다.");
-        return;
-      }
-
-      boardButton.disabled = true;
-      boardButton.textContent = "저장 중...";
-
-      try {
-        await addDoc(collection(db, "board"), {
-          name: name,
-          text: text,
-          createdAt: serverTimestamp()
-        });
-
-        boardNameInput.value = "";
-        boardTextInput.value = "";
-        boardNameInput.focus();
-      } catch (error) {
-        alert("저장에 실패했습니다. 잠시 후 다시 시도해주세요.");
-        console.error(error);
-      }
-
-      boardButton.disabled = false;
-      boardButton.textContent = "남기기";
-    };
-
-    const boardQuery = query(collection(db, "board"), orderBy("createdAt", "desc"));
-
-    onSnapshot(boardQuery, function (snapshot) {
-      boardList.innerHTML = "";
-
-      if (snapshot.empty) {
-        const empty = document.createElement("p");
-        empty.className = "empty";
-        empty.textContent = "아직 남겨진 글이 없습니다.";
-        boardList.appendChild(empty);
-        return;
-      }
-
-      snapshot.forEach(function (docSnap) {
-        const data = docSnap.data();
-
-        const entry = document.createElement("div");
-        entry.className = "entry";
-
-        const who = document.createElement("span");
-        who.className = "who";
-        who.textContent = data.name;
-
-        const when = document.createElement("span");
-        when.className = "when";
-        when.textContent = formatDate(data.createdAt);
-
-        const msg = document.createElement("p");
-        msg.className = "msg";
-        msg.textContent = data.text;
-
-        entry.appendChild(who);
-        entry.appendChild(when);
-        entry.appendChild(msg);
-        boardList.appendChild(entry);
-      });
-    }, function (error) {
-      boardList.innerHTML = "";
-      const err = document.createElement("p");
-      err.className = "empty";
-      err.textContent = "게시판을 불러오지 못했습니다.";
-      boardList.appendChild(err);
-      console.error(error);
-    });
-
-    // ===== 07 평점: 항목(이름 + 주인 별점) 등록 + 항목마다 방문자 별점·한줄평 =====
-    const ratingButton = document.querySelector("#ratingButton");
-    const ratingAuthorInput = document.querySelector("#ratingAuthor");
-    const ratingNameInput = document.querySelector("#ratingName");
-    const ratingStarsSelect = document.querySelector("#ratingStars");
-    const ratingList = document.querySelector("#ratingList");
-
-    function starString(n) {
-      return "★".repeat(n) + "☆".repeat(5 - n);
-    }
-
-    ratingButton.onclick = async function () {
-      const author = ratingAuthorInput.value.trim();
-      const name = ratingNameInput.value.trim();
-      const stars = Number(ratingStarsSelect.value);
-
-      if (author === "" || name === "") {
-        alert("작성자 이름과 항목 이름을 모두 입력해주세요.");
-        return;
-      }
-
-      if (author.length > 20 || name.length > 40) {
-        alert("작성자 이름은 20자, 항목 이름은 40자까지 입력할 수 있습니다.");
-        return;
-      }
-
-      ratingButton.disabled = true;
-      ratingButton.textContent = "저장 중...";
-
-      try {
-        await addDoc(collection(db, "ratings"), {
-          author: author,
-          name: name,
-          stars: stars,
-          createdAt: serverTimestamp()
-        });
-
-        ratingAuthorInput.value = "";
-        ratingNameInput.value = "";
-        ratingAuthorInput.focus();
-      } catch (error) {
-        alert("저장에 실패했습니다. 잠시 후 다시 시도해주세요.");
-        console.error(error);
-      }
-
-      ratingButton.disabled = false;
-      ratingButton.textContent = "등록";
-    };
-
-    // 항목 목록이 바뀔 때마다 이전 "방문자 한줄평" 구독을 정리하고 새로 건다
-    let commentUnsubscribes = [];
-
-    function clearCommentSubscriptions() {
-      commentUnsubscribes.forEach(function (unsub) { unsub(); });
-      commentUnsubscribes = [];
-    }
-
-    const ratingsQuery = query(collection(db, "ratings"), orderBy("createdAt", "desc"));
-
-    onSnapshot(ratingsQuery, function (snapshot) {
-      clearCommentSubscriptions();
-      ratingList.innerHTML = "";
-
-      if (snapshot.empty) {
-        const empty = document.createElement("p");
-        empty.className = "empty";
-        empty.textContent = "아직 등록된 항목이 없습니다.";
-        ratingList.appendChild(empty);
-        return;
-      }
-
-      snapshot.forEach(function (docSnap) {
-        const data = docSnap.data();
-        const itemId = docSnap.id;
-
-        const item = document.createElement("div");
-        item.className = "rating-item";
-
-        const head = document.createElement("div");
-        head.className = "head";
-
-        const name = document.createElement("span");
-        name.className = "name";
-        name.textContent = data.name;
-
-        const stars = document.createElement("span");
-        stars.className = "stars";
-        stars.textContent = starString(data.stars || 0);
-
-        const author = document.createElement("span");
-        author.className = "author";
-        author.textContent = data.author ? "by " + data.author : "";
-
-        head.appendChild(name);
-        head.appendChild(stars);
-        head.appendChild(author);
-        item.appendChild(head);
-
-        // ----- 방문자용 별점·한줄평 미니 폼 -----
-        const subForm = document.createElement("div");
-        subForm.className = "sub-form";
-
-        const subSelect = document.createElement("select");
-        [5, 4, 3, 2, 1].forEach(function (n) {
-          const opt = document.createElement("option");
-          opt.value = String(n);
-          opt.textContent = starString(n);
-          subSelect.appendChild(opt);
-        });
-
-        const subInput = document.createElement("input");
-        subInput.type = "text";
-        subInput.placeholder = "한줄평";
-
-        const subButton = document.createElement("button");
-        subButton.type = "button";
-        subButton.textContent = "남기기";
-
-        subForm.appendChild(subSelect);
-        subForm.appendChild(subInput);
-        subForm.appendChild(subButton);
-        item.appendChild(subForm);
-
-        // ----- 방문자 한줄평 목록 -----
-        const subList = document.createElement("div");
-        subList.className = "sub-list";
-        item.appendChild(subList);
-
-        subButton.onclick = async function () {
-          const text = subInput.value.trim();
-
-          if (text === "") {
-            alert("한줄평을 입력해주세요.");
-            return;
-          }
-
-          if (text.length > 200) {
-            alert("한줄평은 200자까지 입력할 수 있습니다.");
-            return;
-          }
-
-          subButton.disabled = true;
-
-          try {
-            await addDoc(collection(db, "ratings", itemId, "comments"), {
-              stars: Number(subSelect.value),
-              text: text,
-              createdAt: serverTimestamp()
-            });
-            subInput.value = "";
-          } catch (error) {
-            alert("저장에 실패했습니다. 잠시 후 다시 시도해주세요.");
-            console.error(error);
-          }
-
-          subButton.disabled = false;
-        };
-
-        const commentsQuery = query(
-          collection(db, "ratings", itemId, "comments"),
-          orderBy("createdAt", "desc")
-        );
-
-        const unsub = onSnapshot(commentsQuery, function (commentSnap) {
-          subList.innerHTML = "";
-
-          commentSnap.forEach(function (c) {
-            const cdata = c.data();
-
-            const comment = document.createElement("div");
-            comment.className = "comment";
-
-            const commentStars = document.createElement("span");
-            commentStars.className = "stars";
-            commentStars.textContent = starString(cdata.stars || 0);
-
-            const commentText = document.createElement("span");
-            commentText.textContent = cdata.text;
-
-            comment.appendChild(commentStars);
-            comment.appendChild(commentText);
-            subList.appendChild(comment);
-          });
-        });
-
-        commentUnsubscribes.push(unsub);
-        ratingList.appendChild(item);
-      });
-    }, function (error) {
-      ratingList.innerHTML = "";
-      const err = document.createElement("p");
-      err.className = "empty";
-      err.textContent = "평점을 불러오지 못했습니다.";
-      ratingList.appendChild(err);
-      console.error(error);
-    });
-  </script>
+  <!-- ===== 푸터 ===== -->
+  <footer class="footer shell">
+    <span>이메일 · OOOOO [at] OOOOOO</span>
+    <span>GitHub · <a href="https://github.com/afoc824">github.com/afoc824</a></span>
+    <span class="spacer">© 2026 OOO</span>
+  </footer>
 
   <script>
-    // ===== 다크모드 토글 =====
+    // ===== 테마 토글 =====
     (function () {
-      const toggle = document.querySelector("#themeToggle");
-      const root = document.documentElement;
+      var toggle = document.getElementById("themeToggle");
+      var root = document.documentElement;
 
-      // 현재 테마 (data-theme 속성이 없으면 라이트)
-      function currentTheme() {
+      function current() {
         return root.getAttribute("data-theme") === "dark" ? "dark" : "light";
       }
 
-      // 버튼 아이콘을 현재 테마에 맞게 갱신 (글자 없이 아이콘만)
-      function updateLabel() {
-        toggle.textContent = currentTheme() === "dark" ? "☀️" : "🌙";
+      function label() {
+        toggle.textContent = current() === "dark" ? "☀" : "☾";
       }
 
-      updateLabel();
+      label();
 
       toggle.onclick = function () {
-        const next = currentTheme() === "dark" ? "light" : "dark";
+        var next = current() === "dark" ? "light" : "dark";
         root.setAttribute("data-theme", next);
-        localStorage.setItem("theme", next);  // 새로고침해도 유지
-        updateLabel();
+        localStorage.setItem("theme", next);
+        label();
       };
     })();
-  </script>
 
-  <script>
-    // ===== 스크롤 모션: 챕터 등장 + 내비 현재 챕터 표시 =====
+    // ===== 내비 경계선 =====
     (function () {
-      var sections = document.querySelectorAll("section");
-      var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-      // --- 1) 챕터가 화면에 들어오면 .is-visible (한 번만, 이후 유지) ---
-      if (reduce || !("IntersectionObserver" in window)) {
-        // 모션을 끄는 환경이면 바로 다 보이게
-        sections.forEach(function (s) { s.classList.add("is-visible"); });
-      } else {
-        var revealObserver = new IntersectionObserver(function (entries) {
-          entries.forEach(function (entry) {
-            if (entry.isIntersecting) {
-              entry.target.classList.add("is-visible");
-              revealObserver.unobserve(entry.target);  // 다시 사라지지 않게
-            }
-          });
-        }, { threshold: 0.15 });
-
-        sections.forEach(function (s) { revealObserver.observe(s); });
+      var nav = document.getElementById("nav");
+      function onScroll() {
+        nav.classList.toggle("scrolled", window.scrollY > 8);
       }
-
-      // --- 1-b) 안전장치: 관찰자가 동작하지 않거나 3초 안에 .is-visible이
-      //         붙지 않으면 모든 섹션을 강제로 보이게 한다.
-      //         (내용이 opacity:0 상태로 영영 안 보이는 사고 방지) ---
-      window.setTimeout(function () {
-        sections.forEach(function (s) {
-          if (!s.classList.contains("is-visible")) {
-            s.classList.add("is-visible");
-          }
-        });
-      }, 3000);
-
-      // --- 2) 스크롤 위치에 해당하는 내비 링크에 .active ---
-      var navLinks = document.querySelectorAll(".nav a");
-      var linkById = {};
-      navLinks.forEach(function (a) {
-        linkById[a.getAttribute("href").slice(1)] = a;
-      });
-
-      function setActive(id) {
-        navLinks.forEach(function (a) { a.classList.remove("active"); });
-        if (linkById[id]) linkById[id].classList.add("active");
-      }
-
-      if ("IntersectionObserver" in window) {
-        // 화면 중앙을 지나는 챕터를 현재 챕터로 본다
-        var spyObserver = new IntersectionObserver(function (entries) {
-          entries.forEach(function (entry) {
-            if (entry.isIntersecting) { setActive(entry.target.id); }
-          });
-        }, { rootMargin: "-45% 0px -45% 0px", threshold: 0 });
-
-        sections.forEach(function (s) {
-          if (linkById[s.id]) { spyObserver.observe(s); }
-        });
-      }
+      onScroll();
+      window.addEventListener("scroll", onScroll, { passive: true });
     })();
-  </script>
 
-  <script>
-    // ===== 풀페이지 스크롤 =====
-    // 한 제스처 = 한 페이지 이동. 단, 그 페이지 내용이 화면보다 크면(큰 글씨·낮은
-    // 창 등) 잘리지 않도록 그 안에서는 일반 스크롤을 허용하고, 끝에 닿았을 때만
-    // 다음/이전 페이지로 넘어간다. 화면 크기가 바뀌어도 자동으로 맞춰 동작한다.
+    // ===== 등장 모션 =====
     (function () {
-      var pages = Array.prototype.slice.call(document.querySelectorAll("section"));
-      if (pages.length === 0) { return; }
+      var targets = document.querySelectorAll(".reveal");
 
-      var reduce = window.matchMedia("(prefers-reduced-motion: reduce)");
-
-      var current = 0;
-      var locked = false;
-      var unlockTimer = null;
-      var minUnlockAt = 0;
-      var settleTimer = null;
-
-      // 데스크톱·모바일 모두 페이지 단위 스크롤 사용
-      function pagingOn() { return true; }
-
-      function scheduleUnlock(gap) {
-        window.clearTimeout(unlockTimer);
-        var wait = Math.max(gap, minUnlockAt - Date.now());
-        unlockTimer = window.setTimeout(function () { locked = false; }, wait);
+      function showAll() {
+        targets.forEach(function (el) { el.classList.add("in"); });
       }
 
-      // 뷰포트 맨 위를 차지하고 있는 섹션 = 현재 페이지
-      function sectionAtTop() {
-        var y = window.pageYOffset + 4;
-        for (var i = pages.length - 1; i >= 0; i--) {
-          if (pages[i].offsetTop <= y) { return i; }
-        }
-        return 0;
-      }
+      if (!("IntersectionObserver" in window)) { showAll(); return; }
 
-      // 현재 섹션이 화면보다 커서, 주어진 방향으로 아직 더 볼 내용이 있는가
-      function canScrollWithin(dir) {
-        var r = pages[current].getBoundingClientRect();
-        var vh = window.innerHeight;
-        if (r.height <= vh + 2) { return false; }      // 한 화면에 다 들어옴
-        if (dir > 0) { return r.bottom > vh + 2; }     // 아래로 더 있음
-        return r.top < -2;                              // 위로 더 있음
-      }
-
-      function goTo(index, align) {
-        index = Math.max(0, Math.min(pages.length - 1, index));
-        current = index;
-        locked = true;
-        minUnlockAt = Date.now() + (reduce.matches ? 100 : 700);
-        scheduleUnlock(0);
-
-        var sec = pages[index];
-        var top = sec.offsetTop;
-        // 위로 이동할 때, 대상 섹션이 화면보다 크면 그 '끝'이 보이도록 맞춘다
-        if (align === "bottom") {
-          top = Math.max(top, sec.offsetTop + sec.offsetHeight - window.innerHeight);
-        }
-        window.scrollTo({
-          top: Math.max(0, top),
-          behavior: reduce.matches ? "auto" : "smooth"
-        });
-      }
-
-      function step(dir) { goTo(current + dir, dir < 0 ? "bottom" : "top"); }
-
-      // --- 마우스 휠 / 트랙패드 ---
-      window.addEventListener("wheel", function (e) {
-        if (!pagingOn()) { return; }
-        if (e.target && e.target.closest && e.target.closest("textarea")) { return; }
-
-        // 이동 중에는 아무 스크롤도 받지 않고, 관성 이벤트가 멈출 때까지 잠금 연장
-        if (locked) { e.preventDefault(); scheduleUnlock(160); return; }
-
-        var dir = e.deltaY > 0 ? 1 : -1;
-        if (canScrollWithin(dir)) { return; }   // 긴 섹션은 그 안에서 일반 스크롤
-
-        e.preventDefault();
-        if (Math.abs(e.deltaY) < 1) { return; }
-        step(dir);
-      }, { passive: false });
-
-      // --- 키보드 ---
-      window.addEventListener("keydown", function (e) {
-        if (!pagingOn()) { return; }
-        var t = e.target;
-        if (t && /^(INPUT|TEXTAREA|BUTTON|A|SELECT)$/.test(t.tagName || "")) { return; }
-        if (t && t.isContentEditable) { return; }
-
-        var dir = 0;
-        if (e.key === "ArrowDown" || e.key === "PageDown" || e.key === " " || e.key === "Spacebar") { dir = 1; }
-        else if (e.key === "ArrowUp" || e.key === "PageUp") { dir = -1; }
-        else if (e.key === "Home") { e.preventDefault(); goTo(0); return; }
-        else if (e.key === "End") { e.preventDefault(); goTo(pages.length - 1); return; }
-        if (dir === 0) { return; }
-
-        if (locked) { e.preventDefault(); return; }
-        if (canScrollWithin(dir)) { return; }   // 긴 섹션 안에서는 기본 스크롤 허용
-        e.preventDefault();
-        step(dir);
-      });
-
-      // --- 터치 스와이프 ---
-      var touchY = null;
-      window.addEventListener("touchstart", function (e) {
-        touchY = e.touches[0].clientY;
-      }, { passive: true });
-
-      window.addEventListener("touchmove", function (e) {
-        if (!pagingOn()) { return; }
-        if (touchY === null) { return; }
-        // 버튼·링크·입력창·내비 위에서 시작한 터치는 페이저가 가로채지 않는다.
-        // (여기서 preventDefault를 하면 모바일에서 그 요소의 tap(click)이 취소됨)
-        if (e.target && e.target.closest &&
-            e.target.closest("a, button, input, textarea, select, .nav, .pager-nav")) { return; }
-        var dy = touchY - e.touches[0].clientY;
-        var dir = dy > 0 ? 1 : -1;
-        if (locked) { e.preventDefault(); return; }
-        if (canScrollWithin(dir)) { return; }   // 긴 섹션은 그 안에서 스크롤
-        e.preventDefault();
-        if (Math.abs(dy) > 40) {
-          step(dir);
-          touchY = null;
-        }
-      }, { passive: false });
-
-      // --- 내비 링크 클릭도 페이저로 처리 ---
-      document.querySelectorAll(".nav a").forEach(function (a) {
-        a.addEventListener("click", function (e) {
-          if (!pagingOn()) { return; }
-          var id = a.getAttribute("href").slice(1);
-          for (var i = 0; i < pages.length; i++) {
-            if (pages[i].id === id) { e.preventDefault(); goTo(i); return; }
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+          if (e.isIntersecting) {
+            e.target.classList.add("in");
+            io.unobserve(e.target);
           }
         });
-      });
+      }, { threshold: 0.12, rootMargin: "0px 0px -8% 0px" });
 
-      // --- 우하단 위/아래 버튼: 한 번 누르면 한 페이지 이동 (PC·모바일 공통) ---
-      var prevBtn = document.querySelector("#pagePrev");
-      var nextBtn = document.querySelector("#pageNext");
+      targets.forEach(function (el) { io.observe(el); });
 
-      // 첫 페이지에서는 '위', 마지막 페이지에서는 '아래' 버튼을 비활성화
-      function updateArrows() {
-        if (!prevBtn || !nextBtn) { return; }
-        prevBtn.disabled = current <= 0;
-        nextBtn.disabled = current >= pages.length - 1;
-      }
+      // 안전장치: 3초 안에 아무것도 안 보이면 전부 표시
+      setTimeout(function () {
+        if (!document.querySelector(".reveal.in")) showAll();
+      }, 3000);
+    })();
 
-      if (prevBtn && nextBtn) {
-        prevBtn.addEventListener("click", function () {
-          if (locked) { return; }
-          step(-1);
-          updateArrows();
+    // ===== 현재 섹션 표시 =====
+    (function () {
+      var links = document.querySelectorAll(".nav-links a[href^='#']");
+      var map = {};
+      links.forEach(function (a) { map[a.getAttribute("href").slice(1)] = a; });
+
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+          var a = map[e.target.id];
+          if (a) a.classList.toggle("active", e.isIntersecting);
         });
-        nextBtn.addEventListener("click", function () {
-          if (locked) { return; }
-          step(1);
-          updateArrows();
-        });
-      }
+      }, { rootMargin: "-45% 0px -50% 0px" });
 
-      // --- 스크롤이 멈추면 현재 페이지 번호를 실제 위치에 맞춤 ---
-      window.addEventListener("scroll", function () {
-        if (locked) { return; }
-        window.clearTimeout(settleTimer);
-        settleTimer = window.setTimeout(function () {
-          current = sectionAtTop();
-          updateArrows();
-        }, 120);
-      }, { passive: true });
-
-      // --- 창 크기가 바뀌면 현재 페이지 맨 위로 다시 맞춤 ---
-      window.addEventListener("resize", function () {
-        window.clearTimeout(settleTimer);
-        if (!pagingOn()) { return; }
-        settleTimer = window.setTimeout(function () {
-          window.scrollTo({ top: pages[current].offsetTop, behavior: "auto" });
-        }, 150);
+      Object.keys(map).forEach(function (id) {
+        var el = document.getElementById(id);
+        if (el) io.observe(el);
       });
-
-      // 새로고침으로 중간에서 시작했을 때 현재 페이지 파악
-      current = sectionAtTop();
-      updateArrows();
     })();
   </script>
 
