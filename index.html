@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -28,7 +28,7 @@
 
   <style>
     /* ============================================================
-       1. 색상 토큰
+       1. 색상 토큰 — profile.html / community.html과 동일하게 유지할 것
        ============================================================ */
     :root {
       --bg: #faf9f7;
@@ -86,75 +86,13 @@
     ::selection { background: var(--text); color: var(--bg); }
 
     /* ============================================================
-       3. 상단 내비
+       3. 테마 토글 (우측 상단 고정)
        ============================================================ */
-    .nav {
-      position: sticky;
-      top: 0;
-      z-index: 50;
-      background: color-mix(in srgb, var(--bg) 88%, transparent);
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid transparent;
-      transition: border-color 0.3s;
-    }
-
-    .nav.scrolled { border-bottom-color: var(--line); }
-
-    .nav-inner {
-      max-width: var(--shell);
-      margin: 0 auto;
-      padding: 14px var(--gutter);
-      display: flex;
-      align-items: center;
-      gap: 28px;
-    }
-
-    .nav-brand {
-      font-size: 0.95rem;
-      font-weight: 600;
-      text-decoration: none;
-      letter-spacing: -0.01em;
-      flex-shrink: 0;
-    }
-
-    .nav-links {
-      display: flex;
-      align-items: center;
-      gap: 22px;
-      margin-left: auto;
-      overflow-x: auto;
-      scrollbar-width: none;
-      -webkit-overflow-scrolling: touch;
-    }
-
-    .nav-links::-webkit-scrollbar { display: none; }
-
-    .nav-links a {
-      font-size: 0.9rem;
-      color: var(--muted);
-      text-decoration: none;
-      white-space: nowrap;
-      transition: color 0.2s;
-    }
-
-    .nav-links a:hover,
-    .nav-links a.active { color: var(--text); }
-
-    .nav-links .to-community {
-      color: var(--text);
-      border: 1px solid var(--line);
-      border-radius: 2px;
-      padding: 4px 12px;
-    }
-
-    .nav-links .to-community:hover {
-      background: var(--text);
-      color: var(--bg);
-      border-color: var(--text);
-    }
-
     .theme-toggle {
-      flex-shrink: 0;
+      position: fixed;
+      top: 20px;
+      right: clamp(20px, 5vw, 80px);
+      z-index: 50;
       width: 34px;
       height: 34px;
       display: grid;
@@ -172,17 +110,17 @@
     .theme-toggle:hover { color: var(--text); border-color: var(--muted); }
 
     /* ============================================================
-       4. 히어로
+       4. 대문
        ============================================================ */
-    .hero {
-      min-height: calc(100svh - 63px);
+    .landing {
+      min-height: 100svh;
       display: flex;
       flex-direction: column;
       justify-content: center;
-      padding-block: 80px 40px;
+      padding-block: 80px 60px;
     }
 
-    .hero h1 {
+    .landing h1 {
       margin: 0;
       font-size: clamp(3.2rem, 13vw, 10rem);
       font-weight: 600;
@@ -190,241 +128,36 @@
       letter-spacing: -0.045em;
     }
 
-    .hero-line {
-      margin: 32px 0 0;
-      max-width: 40ch;
-      font-size: clamp(1.05rem, 2.2vw, 1.5rem);
-      line-height: 1.5;
-      color: var(--muted);
-    }
-
-    .hero-line b { color: var(--text); font-weight: 500; }
-
-    .hero-foot {
-      margin-top: auto;
-      padding-top: 56px;
+    .landing-actions {
+      margin-top: 56px;
       display: flex;
+      gap: 20px;
       flex-wrap: wrap;
-      align-items: baseline;
-      gap: 12px 28px;
-      font-size: 0.85rem;
-      color: var(--faint);
     }
 
-    .hero-foot a {
-      color: var(--muted);
+    .landing-btn {
+      display: inline-block;
+      text-align: center;
       text-decoration: none;
-      border-bottom: 1px solid var(--line);
-      padding-bottom: 2px;
-      transition: color 0.2s, border-color 0.2s;
-    }
-
-    .hero-foot a:hover { color: var(--text); border-color: var(--text); }
-
-    /* ============================================================
-       5. 섹션 공통 — 왼쪽 라벨 + 오른쪽 본문
-       ============================================================ */
-    .section {
-      display: grid;
-      grid-template-columns: 240px minmax(0, 1fr);
-      gap: 0 64px;
-      padding-block: clamp(90px, 12vh, 160px);
-      border-top: 1px solid var(--line);
-    }
-
-    .section-label {
-      position: sticky;
-      top: 100px;
-      align-self: start;
-      margin: 0;
-      font-size: 0.8rem;
-      font-weight: 400;
-      letter-spacing: 0.12em;
-      color: var(--muted);
-      display: flex;
-      gap: 12px;
-    }
-
-    .section-label .num {
-      color: var(--faint);
-      font-variant-numeric: tabular-nums;
-    }
-
-    .section-body { min-width: 0; }
-
-    .lead {
-      margin: 0 0 1.4em;
-      max-width: 58ch;
-      font-size: clamp(1.15rem, 1.8vw, 1.4rem);
-      line-height: 1.75;
-    }
-
-    .lead:last-child { margin-bottom: 0; }
-    .lead + .lead { color: var(--muted); }
-
-    /* ---- 01 소개 ---- */
-    .intro-grid {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) 300px;
-      gap: 56px;
-      align-items: start;
-    }
-
-    .photo {
-      aspect-ratio: 3 / 4;
-      display: grid;
-      place-items: center;
-      background: var(--surface);
+      color: var(--text);
       border: 1px solid var(--line);
-      color: var(--faint);
-      font-size: 0.85rem;
-      overflow: hidden;
+      border-radius: 2px;
+      padding: 22px 44px;
+      font-size: clamp(1.1rem, 2.5vw, 1.6rem);
+      transition: background 0.2s, color 0.2s, border-color 0.2s;
     }
 
-    .photo img { width: 100%; height: 100%; object-fit: cover; }
-
-    /* ---- 02 연구 관심사 ---- */
-    .keywords { list-style: none; margin: 0; padding: 0; }
-
-    .keywords li {
-      padding: 22px 0;
-      border-bottom: 1px solid var(--line);
-    }
-
-    .keywords li:first-child { padding-top: 0; }
-
-    .keywords .kw {
-      display: block;
-      font-size: clamp(1.9rem, 4.5vw, 3.4rem);
-      font-weight: 500;
-      line-height: 1.1;
-      letter-spacing: -0.03em;
-    }
-
-    .keywords .kw-desc {
-      display: block;
-      margin-top: 10px;
-      max-width: 52ch;
-      font-size: 0.98rem;
-      color: var(--muted);
-    }
-
-    /* ---- 03 이력 ---- */
-    .timeline { display: grid; }
-
-    .item {
-      display: grid;
-      grid-template-columns: 150px minmax(0, 1fr);
-      gap: 8px 32px;
-      padding: 26px 0;
-      border-bottom: 1px solid var(--line);
-    }
-
-    .item:first-child { padding-top: 0; }
-
-    .item .year {
-      font-size: 0.85rem;
-      color: var(--faint);
-      white-space: nowrap;
-      padding-top: 5px;
-      font-variant-numeric: tabular-nums;
-    }
-
-    .item .role {
-      font-size: clamp(1.05rem, 1.6vw, 1.3rem);
-      font-weight: 500;
-      line-height: 1.4;
-    }
-
-    .item .detail {
-      display: block;
-      margin-top: 4px;
-      font-size: 0.95rem;
-      color: var(--muted);
-    }
-
-    /* ---- 04 글 ---- */
-    .posts { display: grid; }
-
-    .post {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: baseline;
-      gap: 6px 20px;
-      padding: 22px 0;
-      border-bottom: 1px solid var(--line);
-      text-decoration: none;
-      transition: opacity 0.2s;
-    }
-
-    .post:first-child { padding-top: 0; }
-    .post:hover { opacity: 0.55; }
-
-    .post .title {
-      font-size: clamp(1.1rem, 2vw, 1.6rem);
-      font-weight: 500;
-      letter-spacing: -0.02em;
-    }
-
-    .post .date {
-      margin-left: auto;
-      font-size: 0.82rem;
-      color: var(--faint);
-    }
-
-    .empty {
-      margin: 0;
-      font-size: 1rem;
-      color: var(--faint);
-    }
-
-    /* ============================================================
-       6. 참여 공간으로 넘어가는 전환 블록 (배경 반전)
-       ============================================================ */
-    .crossover {
-      margin-top: clamp(60px, 10vh, 120px);
+    .landing-btn:hover {
       background: var(--text);
       color: var(--bg);
-    }
-
-    .crossover-inner {
-      max-width: var(--shell);
-      margin: 0 auto;
-      padding: clamp(80px, 14vh, 170px) var(--gutter);
-    }
-
-    .crossover .eyebrow {
-      margin: 0 0 20px;
-      font-size: 0.8rem;
-      letter-spacing: 0.12em;
-      opacity: 0.55;
-    }
-
-    .crossover a.big {
-      display: inline-block;
-      font-size: clamp(2rem, 6.5vw, 5rem);
-      font-weight: 600;
-      line-height: 1.05;
-      letter-spacing: -0.04em;
-      text-decoration: none;
-      border-bottom: 2px solid transparent;
-      transition: border-color 0.25s;
-    }
-
-    .crossover a.big:hover { border-bottom-color: currentColor; }
-
-    .crossover .sub {
-      margin: 28px 0 0;
-      max-width: 44ch;
-      font-size: 1rem;
-      opacity: 0.65;
+      border-color: var(--text);
     }
 
     /* ============================================================
-       7. 푸터
+       5. 푸터
        ============================================================ */
     .footer {
-      padding-block: 48px 64px;
+      padding-block: 24px 40px;
       display: flex;
       flex-wrap: wrap;
       gap: 10px 32px;
@@ -437,7 +170,7 @@
     .footer a:hover { border-color: var(--muted); }
 
     /* ============================================================
-       8. 등장 모션
+       6. 등장 모션
        ============================================================ */
     .js .reveal {
       opacity: 0;
@@ -450,27 +183,11 @@
     .js .reveal.d2 { transition-delay: 0.16s; }
 
     /* ============================================================
-       9. 좁은 화면
+       7. 좁은 화면
        ============================================================ */
     @media (max-width: 900px) {
-      .section {
-        grid-template-columns: 1fr;
-        gap: 24px;
-        padding-block: 72px;
-      }
-
-      .section-label { position: static; }
-
-      .intro-grid { grid-template-columns: 1fr; gap: 32px; }
-      .photo { max-width: 260px; }
-
-      .item { grid-template-columns: 1fr; gap: 2px; }
-      .item .year { padding-top: 0; }
-
-      .post .date { margin-left: 0; }
-
-      .nav-inner { gap: 16px; }
-      .nav-links { gap: 16px; }
+      .landing-actions { flex-direction: column; }
+      .landing-btn { padding: 18px 32px; }
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -486,145 +203,18 @@
 
 <body>
 
-  <!-- ===== 내비 ===== -->
-  <nav class="nav" id="nav">
-    <div class="nav-inner">
-      <a class="nav-brand" href="#top">OOO</a>
-      <div class="nav-links">
-        <a href="#intro"><span class="num">01</span> 소개</a>
-        <a href="#interests">02 연구 관심사</a>
-        <a href="#history">03 이력</a>
-        <a href="#posts">04 글</a>
-        <a class="to-community" href="community.html">함께 쓰는 공간 →</a>
-      </div>
-      <button class="theme-toggle" id="themeToggle" aria-label="테마 전환">☾</button>
+  <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">☾</button>
+
+  <main class="shell landing">
+    <h1 class="reveal">824</h1>
+    <div class="landing-actions reveal d1">
+      <a class="landing-btn" href="profile.html">Profile →</a>
+      <a class="landing-btn" href="community.html">Board →</a>
     </div>
-  </nav>
-
-  <main class="shell" id="top">
-
-    <!-- ===== 히어로 ===== -->
-    <header class="hero">
-      <h1 class="reveal">OOO</h1>
-      <p class="hero-line reveal d1">
-        <b>OO대학교 OOOO학과</b> 학부연구생.<br>
-        OOO을 공부하며 OOO에 관심을 두고 있습니다.
-      </p>
-      <div class="hero-foot reveal d2">
-        <span>Scroll ↓</span>
-        <a href="community.html">방명록 남기기 →</a>
-        <span class="spacer"></span>
-      </div>
-    </header>
-
-    <!-- ===== 01 소개 ===== -->
-    <section class="section" id="intro">
-      <h2 class="section-label reveal"><span class="num">01</span> 소개</h2>
-      <div class="section-body reveal d1">
-        <div class="intro-grid">
-          <div>
-            <p class="lead">OOO</p>
-            <p class="lead">OOO</p>
-          </div>
-          <div class="photo">사진</div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ===== 02 연구 관심사 ===== -->
-    <section class="section" id="interests">
-      <h2 class="section-label reveal"><span class="num">02</span> 연구 관심사</h2>
-      <div class="section-body reveal d1">
-        <ul class="keywords">
-          <li>
-            <span class="kw">OOO</span>
-            <span class="kw-desc">OOO</span>
-          </li>
-          <li>
-            <span class="kw">OOO</span>
-            <span class="kw-desc">OOO</span>
-          </li>
-          <li>
-            <span class="kw">OOO</span>
-            <span class="kw-desc">OOO</span>
-          </li>
-        </ul>
-      </div>
-    </section>
-
-    <!-- ===== 03 이력 ===== -->
-    <section class="section" id="history">
-      <h2 class="section-label reveal"><span class="num">03</span> 이력</h2>
-      <div class="section-body reveal d1">
-        <div class="timeline">
-
-          <div class="item">
-            <span class="year">2025.07 — 현재</span>
-            <div>
-              <span class="role">OO대학교 OOO연구실 학부연구생</span>
-              <span class="detail">지도교수 OOO · OOO 관련 연구 수행</span>
-            </div>
-          </div>
-
-          <div class="item">
-            <span class="year">2023 — 현재</span>
-            <div>
-              <span class="role">OO대학교 OOOOO학과</span>
-              <span class="detail">학사 과정 재학 중</span>
-            </div>
-          </div>
-
-          <div class="item">
-            <span class="year">2021 — 2022</span>
-            <div>
-              <span class="role">OOOOOOOO OOOOO</span>
-              <span class="detail">병장 만기전역</span>
-            </div>
-          </div>
-
-          <div class="item">
-            <span class="year">2020 — 2023</span>
-            <div>
-              <span class="role">OO대학교 OOOOOO학과</span>
-              <span class="detail">자퇴</span>
-            </div>
-          </div>
-
-          <div class="item">
-            <span class="year">2020</span>
-            <div>
-              <span class="role">OO고등학교 졸업</span>
-            </div>
-          </div>
-
-        </div>
-      </div>
-    </section>
-
-    <!-- ===== 04 글 ===== -->
-    <section class="section" id="posts">
-      <h2 class="section-label reveal"><span class="num">04</span> 글</h2>
-      <div class="section-body reveal d1">
-        <div class="posts">
-          <p class="empty">아직 작성한 글이 없습니다.</p>
-        </div>
-      </div>
-    </section>
-
   </main>
 
-  <!-- ===== 참여 공간 전환 ===== -->
-  <section class="crossover reveal">
-    <div class="crossover-inner">
-      <p class="eyebrow">FOR VISITORS</p>
-      <a class="big" href="community.html">함께 쓰는 공간 →</a>
-      <p class="sub">게시판, 평점, 방명록. 누구나 글을 남길 수 있는 공간입니다.</p>
-    </div>
-  </section>
-
-  <!-- ===== 푸터 ===== -->
   <footer class="footer shell">
-    <span>이메일 · OOOOO [at] OOOOOO</span>
+    <span>Email · OOOOO [at] OOOOOO</span>
     <span>GitHub · <a href="https://github.com/afoc824">github.com/afoc824</a></span>
     <span class="spacer">© 2026 OOO</span>
   </footer>
@@ -653,16 +243,6 @@
       };
     })();
 
-    // ===== 내비 경계선 =====
-    (function () {
-      var nav = document.getElementById("nav");
-      function onScroll() {
-        nav.classList.toggle("scrolled", window.scrollY > 8);
-      }
-      onScroll();
-      window.addEventListener("scroll", onScroll, { passive: true });
-    })();
-
     // ===== 등장 모션 =====
     (function () {
       var targets = document.querySelectorAll(".reveal");
@@ -688,25 +268,6 @@
       setTimeout(function () {
         if (!document.querySelector(".reveal.in")) showAll();
       }, 3000);
-    })();
-
-    // ===== 현재 섹션 표시 =====
-    (function () {
-      var links = document.querySelectorAll(".nav-links a[href^='#']");
-      var map = {};
-      links.forEach(function (a) { map[a.getAttribute("href").slice(1)] = a; });
-
-      var io = new IntersectionObserver(function (entries) {
-        entries.forEach(function (e) {
-          var a = map[e.target.id];
-          if (a) a.classList.toggle("active", e.isIntersecting);
-        });
-      }, { rootMargin: "-45% 0px -50% 0px" });
-
-      Object.keys(map).forEach(function (id) {
-        var el = document.getElementById(id);
-        if (el) io.observe(el);
-      });
     })();
   </script>
 

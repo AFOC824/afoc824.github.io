@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Profile · OOO</title>
+  <meta name="description" content="OOO · Undergraduate researcher, Department of OOOO, OO University">
+
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Profile · OOO">
+  <meta property="og:description" content="OOO · Undergraduate researcher, Department of OOOO, OO University">
+
+  <script>
+    // 테마를 화면이 그려지기 전에 적용 (깜빡임 방지)
+    (function () {
+      var saved = localStorage.getItem("theme");
+      if (saved === "dark" || saved === "light") {
+        document.documentElement.setAttribute("data-theme", saved);
+      } else if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+        document.documentElement.setAttribute("data-theme", "dark");
+      }
+      document.documentElement.classList.add("js");
+    })();
+  </script>
+
+  <link rel="stylesheet" as="style" crossorigin
+    href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+
+  <style>
+    /* ============================================================
+       1. 색상 토큰 — index.html / community.html과 동일하게 유지할 것
+       ============================================================ */
+    :root {
+      --bg: #faf9f7;
+      --surface: #ffffff;
+      --text: #1a1a18;
+      --muted: #78766f;
+      --faint: #a8a5a0;
+      --line: #e4e1da;
+      --field: #ffffff;
+      --shell: 1400px;
+      --gutter: clamp(20px, 5vw, 80px);
+    }
+
+    [data-theme="dark"] {
+      --bg: #101010;
+      --surface: #171716;
+      --text: #ececea;
+      --muted: #8f8d87;
+      --faint: #5e5c57;
+      --line: #2a2a28;
+      --field: #1a1a19;
+    }
+
+    /* ============================================================
+       2. 기본
+       ============================================================ */
+    *, *::before, *::after { box-sizing: border-box; }
+
+    html {
+      scroll-behavior: smooth;
+      -webkit-text-size-adjust: 100%;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden;
+      font-family: "Pretendard Variable", Pretendard, -apple-system, system-ui, sans-serif;
+      font-size: 16px;
+      line-height: 1.7;
+      background: var(--bg);
+      color: var(--text);
+      transition: background 0.3s, color 0.3s;
+      font-feature-settings: "tnum";
+    }
+
+    a { color: inherit; }
+
+    .shell {
+      max-width: var(--shell);
+      margin: 0 auto;
+      padding-inline: var(--gutter);
+    }
+
+    ::selection { background: var(--text); color: var(--bg); }
+
+    /* ============================================================
+       3. 상단 내비
+       ============================================================ */
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: color-mix(in srgb, var(--bg) 88%, transparent);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid transparent;
+      transition: border-color 0.3s;
+    }
+
+    .nav.scrolled { border-bottom-color: var(--line); }
+
+    .nav-inner {
+      max-width: var(--shell);
+      margin: 0 auto;
+      padding: 14px var(--gutter);
+      display: flex;
+      align-items: center;
+      gap: 28px;
+    }
+
+    .nav-brand {
+      font-size: 0.9rem;
+      color: var(--muted);
+      text-decoration: none;
+      white-space: nowrap;
+      flex-shrink: 0;
+      transition: color 0.2s;
+    }
+
+    .nav-brand:hover { color: var(--text); }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 22px;
+      margin-left: auto;
+      overflow-x: auto;
+      scrollbar-width: none;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .nav-links::-webkit-scrollbar { display: none; }
+
+    .nav-links a {
+      font-size: 0.9rem;
+      color: var(--muted);
+      text-decoration: none;
+      white-space: nowrap;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover,
+    .nav-links a.active { color: var(--text); }
+
+    .theme-toggle {
+      flex-shrink: 0;
+      width: 34px;
+      height: 34px;
+      display: grid;
+      place-items: center;
+      font-size: 0.9rem;
+      font-family: inherit;
+      background: transparent;
+      color: var(--muted);
+      border: 1px solid var(--line);
+      border-radius: 2px;
+      cursor: pointer;
+      transition: color 0.2s, border-color 0.2s;
+    }
+
+    .theme-toggle:hover { color: var(--text); border-color: var(--muted); }
+
+    /* ============================================================
+       4. 히어로 — 짧게, 일반 배경
+       ============================================================ */
+    .hero-inner {
+      max-width: var(--shell);
+      margin: 0 auto;
+      padding: clamp(60px, 11vh, 120px) var(--gutter) clamp(40px, 7vh, 70px);
+    }
+
+    .hero-inner h1 {
+      margin: 0;
+      font-size: clamp(2.2rem, 7vw, 5rem);
+      font-weight: 600;
+      line-height: 1;
+      letter-spacing: -0.04em;
+    }
+
+    .hero-inner p.sub {
+      margin: 24px 0 0;
+      max-width: 46ch;
+      font-size: clamp(1rem, 1.6vw, 1.2rem);
+      color: var(--muted);
+    }
+
+    /* ============================================================
+       5. 섹션 공통 — 왼쪽 라벨 + 오른쪽 본문
+       ============================================================ */
+    .section {
+      display: grid;
+      grid-template-columns: 240px minmax(0, 1fr);
+      gap: 0 64px;
+      padding-block: clamp(90px, 12vh, 160px);
+      border-top: 1px solid var(--line);
+    }
+
+    .section-label {
+      position: sticky;
+      top: 100px;
+      align-self: start;
+      margin: 0;
+      font-size: 0.8rem;
+      font-weight: 400;
+      letter-spacing: 0.12em;
+      color: var(--muted);
+      display: flex;
+      gap: 12px;
+    }
+
+    .section-label .num {
+      color: var(--faint);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .section-body { min-width: 0; }
+
+    .lead {
+      margin: 0 0 1.4em;
+      max-width: 58ch;
+      font-size: clamp(1.15rem, 1.8vw, 1.4rem);
+      line-height: 1.75;
+    }
+
+    .lead:last-child { margin-bottom: 0; }
+    .lead + .lead { color: var(--muted); }
+
+    /* ---- 01 소개 ---- */
+    .intro-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 300px;
+      gap: 56px;
+      align-items: start;
+    }
+
+    .photo {
+      aspect-ratio: 3 / 4;
+      display: grid;
+      place-items: center;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      color: var(--faint);
+      font-size: 0.85rem;
+      overflow: hidden;
+    }
+
+    .photo img { width: 100%; height: 100%; object-fit: cover; }
+
+    /* ---- 02 연구 관심사 ---- */
+    .keywords { list-style: none; margin: 0; padding: 0; }
+
+    .keywords li {
+      padding: 22px 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .keywords li:first-child { padding-top: 0; }
+
+    .keywords .kw {
+      display: block;
+      font-size: clamp(1.9rem, 4.5vw, 3.4rem);
+      font-weight: 500;
+      line-height: 1.1;
+      letter-spacing: -0.03em;
+    }
+
+    .keywords .kw-desc {
+      display: block;
+      margin-top: 10px;
+      max-width: 52ch;
+      font-size: 0.98rem;
+      color: var(--muted);
+    }
+
+    /* ---- 03 이력 ---- */
+    .timeline { display: grid; }
+
+    .item {
+      display: grid;
+      grid-template-columns: 150px minmax(0, 1fr);
+      gap: 8px 32px;
+      padding: 26px 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .item:first-child { padding-top: 0; }
+
+    .item .year {
+      font-size: 0.85rem;
+      color: var(--faint);
+      white-space: nowrap;
+      padding-top: 5px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .item .role {
+      font-size: clamp(1.05rem, 1.6vw, 1.3rem);
+      font-weight: 500;
+      line-height: 1.4;
+    }
+
+    .item .detail {
+      display: block;
+      margin-top: 4px;
+      font-size: 0.95rem;
+      color: var(--muted);
+    }
+
+    /* ---- 04 글 ---- */
+    .posts { display: grid; }
+
+    .post {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: 6px 20px;
+      padding: 22px 0;
+      border-bottom: 1px solid var(--line);
+      text-decoration: none;
+      transition: opacity 0.2s;
+    }
+
+    .post:first-child { padding-top: 0; }
+    .post:hover { opacity: 0.55; }
+
+    .post .title {
+      font-size: clamp(1.1rem, 2vw, 1.6rem);
+      font-weight: 500;
+      letter-spacing: -0.02em;
+    }
+
+    .post .date {
+      margin-left: auto;
+      font-size: 0.82rem;
+      color: var(--faint);
+    }
+
+    .empty {
+      margin: 0;
+      font-size: 1rem;
+      color: var(--faint);
+    }
+
+    /* ============================================================
+       6. 돌아가기 + 푸터
+       ============================================================ */
+    .backlink {
+      border-top: 1px solid var(--line);
+      padding-block: clamp(70px, 12vh, 130px);
+    }
+
+    .backlink a {
+      display: inline-block;
+      font-size: clamp(1.6rem, 5vw, 3.4rem);
+      font-weight: 600;
+      letter-spacing: -0.035em;
+      text-decoration: none;
+      border-bottom: 2px solid transparent;
+      transition: border-color 0.25s;
+    }
+
+    .backlink a:hover { border-bottom-color: var(--text); }
+
+    .footer {
+      padding-block: 48px 64px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px 32px;
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    .footer .spacer { margin-left: auto; }
+    .footer a { text-decoration: none; border-bottom: 1px solid var(--line); }
+    .footer a:hover { border-color: var(--muted); }
+
+    /* ============================================================
+       7. 등장 모션
+       ============================================================ */
+    .js .reveal {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+
+    .js .reveal.in { opacity: 1; transform: none; }
+    .js .reveal.d1 { transition-delay: 0.08s; }
+    .js .reveal.d2 { transition-delay: 0.16s; }
+
+    /* ============================================================
+       8. 좁은 화면
+       ============================================================ */
+    @media (max-width: 900px) {
+      .section {
+        grid-template-columns: 1fr;
+        gap: 24px;
+        padding-block: 72px;
+      }
+
+      .section-label { position: static; }
+
+      .intro-grid { grid-template-columns: 1fr; gap: 32px; }
+      .photo { max-width: 260px; }
+
+      .item { grid-template-columns: 1fr; gap: 2px; }
+      .item .year { padding-top: 0; }
+
+      .post .date { margin-left: 0; }
+
+      .nav-inner { gap: 16px; }
+      .nav-links { gap: 16px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+      }
+      .js .reveal { opacity: 1; transform: none; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ===== 내비 ===== -->
+  <nav class="nav" id="nav">
+    <div class="nav-inner">
+      <a class="nav-brand" href="index.html">← OOO</a>
+      <div class="nav-links">
+        <a href="#intro"><span class="num">01</span> Intro</a>
+        <a href="#interests">02 Interests</a>
+        <a href="#history">03 History</a>
+        <a href="#posts">04 Posts</a>
+      </div>
+      <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">☾</button>
+    </div>
+  </nav>
+
+  <!-- ===== 히어로 ===== -->
+  <header class="hero-inner">
+    <h1 class="reveal">Profile</h1>
+    <p class="sub reveal d1">Introducing OOO, an undergraduate researcher in the Department of OOOO at OO University.</p>
+  </header>
+
+  <main class="shell">
+
+    <!-- ===== 01 소개 ===== -->
+    <section class="section" id="intro">
+      <h2 class="section-label reveal"><span class="num">01</span> Intro</h2>
+      <div class="section-body reveal d1">
+        <div class="intro-grid">
+          <div>
+            <p class="lead">OOO</p>
+            <p class="lead">OOO</p>
+          </div>
+          <div class="photo">Photo</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== 02 연구 관심사 ===== -->
+    <section class="section" id="interests">
+      <h2 class="section-label reveal"><span class="num">02</span> Interests</h2>
+      <div class="section-body reveal d1">
+        <ul class="keywords">
+          <li>
+            <span class="kw">OOO</span>
+            <span class="kw-desc">OOO</span>
+          </li>
+          <li>
+            <span class="kw">OOO</span>
+            <span class="kw-desc">OOO</span>
+          </li>
+          <li>
+            <span class="kw">OOO</span>
+            <span class="kw-desc">OOO</span>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ===== 03 이력 ===== -->
+    <section class="section" id="history">
+      <h2 class="section-label reveal"><span class="num">03</span> History</h2>
+      <div class="section-body reveal d1">
+        <div class="timeline">
+
+          <div class="item">
+            <span class="year">Jul 2025 — Present</span>
+            <div>
+              <span class="role">Undergraduate Researcher, OOO Lab, OO University</span>
+              <span class="detail">Advisor: OOO · Research on OOO</span>
+            </div>
+          </div>
+
+          <div class="item">
+            <span class="year">2023 — Present</span>
+            <div>
+              <span class="role">Department of OOOOO, OO University</span>
+              <span class="detail">Currently enrolled in Bachelor's program</span>
+            </div>
+          </div>
+
+          <div class="item">
+            <span class="year">2021 — 2022</span>
+            <div>
+              <span class="role">OOOOOOOO OOOOO</span>
+              <span class="detail">Honorably discharged as Sergeant</span>
+            </div>
+          </div>
+
+          <div class="item">
+            <span class="year">2020 — 2023</span>
+            <div>
+              <span class="role">Department of OOOOOO, OO University</span>
+              <span class="detail">Withdrew</span>
+            </div>
+          </div>
+
+          <div class="item">
+            <span class="year">2020</span>
+            <div>
+              <span class="role">Graduated from OO High School</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== 04 글 ===== -->
+    <section class="section" id="posts">
+      <h2 class="section-label reveal"><span class="num">04</span> Posts</h2>
+      <div class="section-body reveal d1">
+        <div class="posts">
+          <p class="empty">No posts yet.</p>
+        </div>
+      </div>
+    </section>
+
+    <div class="backlink">
+      <a href="index.html">← Back</a>
+    </div>
+
+  </main>
+
+  <!-- ===== 푸터 ===== -->
+  <footer class="footer shell">
+    <span>Email · OOOOO [at] OOOOOO</span>
+    <span>GitHub · <a href="https://github.com/afoc824">github.com/afoc824</a></span>
+    <span class="spacer">© 2026 OOO</span>
+  </footer>
+
+  <script>
+    // ===== 테마 토글 =====
+    (function () {
+      var toggle = document.getElementById("themeToggle");
+      var root = document.documentElement;
+
+      function current() {
+        return root.getAttribute("data-theme") === "dark" ? "dark" : "light";
+      }
+
+      function label() {
+        toggle.textContent = current() === "dark" ? "☀" : "☾";
+      }
+
+      label();
+
+      toggle.onclick = function () {
+        var next = current() === "dark" ? "light" : "dark";
+        root.setAttribute("data-theme", next);
+        localStorage.setItem("theme", next);
+        label();
+      };
+    })();
+
+    // ===== 내비 경계선 =====
+    (function () {
+      var nav = document.getElementById("nav");
+      function onScroll() {
+        nav.classList.toggle("scrolled", window.scrollY > 8);
+      }
+      onScroll();
+      window.addEventListener("scroll", onScroll, { passive: true });
+    })();
+
+    // ===== 등장 모션 =====
+    (function () {
+      var targets = document.querySelectorAll(".reveal");
+
+      function showAll() {
+        targets.forEach(function (el) { el.classList.add("in"); });
+      }
+
+      if (!("IntersectionObserver" in window)) { showAll(); return; }
+
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+          if (e.isIntersecting) {
+            e.target.classList.add("in");
+            io.unobserve(e.target);
+          }
+        });
+      }, { threshold: 0.12, rootMargin: "0px 0px -8% 0px" });
+
+      targets.forEach(function (el) { io.observe(el); });
+
+      // 안전장치: 3초 안에 아무것도 안 보이면 전부 표시
+      setTimeout(function () {
+        if (!document.querySelector(".reveal.in")) showAll();
+      }, 3000);
+    })();
+
+    // ===== 현재 섹션 표시 =====
+    (function () {
+      var links = document.querySelectorAll(".nav-links a[href^='#']");
+      var map = {};
+      links.forEach(function (a) { map[a.getAttribute("href").slice(1)] = a; });
+
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+          var a = map[e.target.id];
+          if (a) a.classList.toggle("active", e.isIntersecting);
+        });
+      }, { rootMargin: "-45% 0px -50% 0px" });
+
+      Object.keys(map).forEach(function (id) {
+        var el = document.getElementById(id);
+        if (el) io.observe(el);
+      });
+    })();
+  </script>
+
+</body>
+</html>

@@ -1,14 +1,14 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>함께 쓰는 공간 · OOO</title>
-  <meta name="description" content="게시판, 평점, 방명록 — 누구나 글을 남길 수 있는 공간입니다.">
+  <title>Community · OOO</title>
+  <meta name="description" content="Board, ratings, guestbook — a space where anyone can leave a note.">
 
   <meta property="og:type" content="website">
-  <meta property="og:title" content="함께 쓰는 공간 · OOO">
-  <meta property="og:description" content="게시판, 평점, 방명록 — 누구나 글을 남길 수 있는 공간입니다.">
+  <meta property="og:title" content="Community · OOO">
+  <meta property="og:description" content="Board, ratings, guestbook — a space where anyone can leave a note.">
 
   <script>
     (function () {
@@ -27,7 +27,7 @@
 
   <style>
     /* ============================================================
-       1. 색상 토큰 — index.html과 동일하게 유지할 것
+       1. 색상 토큰 — index.html / profile.html과 동일하게 유지할 것
        ============================================================ */
     :root {
       --bg: #faf9f7;
@@ -80,7 +80,7 @@
     ::selection { background: var(--text); color: var(--bg); }
 
     /* ============================================================
-       3. 내비
+       3. 내비 — 링크 호버 시 밑줄이 그려지는 모션 추가
        ============================================================ */
     .nav {
       position: sticky;
@@ -126,14 +126,28 @@
     .nav-links::-webkit-scrollbar { display: none; }
 
     .nav-links a {
+      position: relative;
       font-size: 0.9rem;
       color: var(--muted);
       text-decoration: none;
       white-space: nowrap;
       transition: color 0.2s;
+      padding-bottom: 2px;
+    }
+
+    .nav-links a::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 100%;
+      bottom: -3px;
+      height: 1px;
+      background: var(--text);
+      transition: right 0.25s ease;
     }
 
     .nav-links a:hover, .nav-links a.active { color: var(--text); }
+    .nav-links a:hover::after, .nav-links a.active::after { right: 0; }
 
     .theme-toggle {
       flex-shrink: 0;
@@ -154,7 +168,7 @@
     .theme-toggle:hover { color: var(--text); border-color: var(--muted); }
 
     /* ============================================================
-       4. 히어로 — 반전 배경으로 "다른 공간"임을 표시
+       4. 히어로 — 반전 배경 + 단어 단위 등장 모션
        ============================================================ */
     .hero {
       background: var(--text);
@@ -181,6 +195,17 @@
       line-height: 1;
       letter-spacing: -0.04em;
     }
+
+    .word-mask { display: inline-block; overflow: hidden; vertical-align: top; }
+
+    .word { display: inline-block; }
+
+    .js .word {
+      transform: translateY(110%);
+      transition: transform 0.6s cubic-bezier(.2, .7, .2, 1);
+    }
+
+    .js .word-mask.in .word { transform: translateY(0); }
 
     .hero p.sub {
       margin: 28px 0 0;
@@ -307,7 +332,36 @@
     .empty { margin: 0; font-size: 0.95rem; color: var(--faint); }
 
     /* ============================================================
-       7. A 게시판 — 카드 격자
+       7. 등장 모션 공통 (섹션 라벨 등) + 카드류 순차 등장
+       ============================================================ */
+    .js .reveal {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+
+    .js .reveal.in { opacity: 1; transform: none; }
+    .js .reveal.d1 { transition-delay: 0.08s; }
+
+    .js .reveal.slide-right { transform: translateX(-28px); }
+    .js .reveal.slide-left { transform: translateX(28px); }
+    .js .reveal.slide-right.in,
+    .js .reveal.slide-left.in { transform: none; }
+
+    .pop {
+      opacity: 0;
+      --ty: 16px;
+      --rx: 0deg;
+      --ry: 0deg;
+      --rot: 0deg;
+      transform: perspective(700px) rotateX(var(--rx)) rotateY(var(--ry)) rotate(var(--rot)) translateY(var(--ty));
+      transition: opacity 0.5s ease, transform 0.5s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    }
+
+    .pop.in { opacity: 1; --ty: 0px; }
+
+    /* ============================================================
+       8. A 게시판 — 피처드 카드 + 그리드, 호버 틸트
        ============================================================ */
     .board-list {
       display: grid;
@@ -321,6 +375,18 @@
       padding: 22px 24px;
       background: var(--surface);
       border: 1px solid var(--line);
+      will-change: transform;
+    }
+
+    .card:hover { border-color: var(--muted); }
+
+    .board-list .card:first-child {
+      grid-column: 1 / -1;
+      padding: 34px 38px;
+    }
+
+    .board-list .card:first-child .msg {
+      font-size: clamp(1.05rem, 1.8vw, 1.3rem);
     }
 
     .card .head {
@@ -342,63 +408,112 @@
     }
 
     /* ============================================================
-       8. B 평점 — 세로선 계층
+       9. B 평점 — 가로 스크롤 레일 + 클릭 확장
        ============================================================ */
-    .rating-list { display: grid; gap: 44px; }
+    .rail-wrap { position: relative; }
 
-    .rating-item {
-      padding-left: 22px;
-      border-left: 2px solid var(--line);
+    .rating-rail {
+      display: flex;
+      align-items: flex-start;
+      gap: 22px;
+      overflow-x: auto;
+      scroll-snap-type: x proximity;
+      padding-bottom: 14px;
+      scrollbar-width: thin;
     }
 
-    .rating-item .head {
+    .rail-wrap::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 14px;
+      width: 56px;
+      background: linear-gradient(to right, transparent, var(--bg));
+      pointer-events: none;
+    }
+
+    .chip {
+      flex: 0 0 clamp(230px, 30vw, 280px);
+      scroll-snap-align: start;
+      padding: 26px 22px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      transition: border-color 0.2s;
+    }
+
+    .chip:hover { border-color: var(--muted); }
+
+    .chip .head {
       display: flex;
       flex-wrap: wrap;
       align-items: baseline;
-      gap: 6px 14px;
+      gap: 6px 12px;
     }
 
-    .rating-item .name {
-      font-size: clamp(1.3rem, 2.6vw, 1.9rem);
+    .chip .name {
+      font-size: clamp(1.2rem, 2.2vw, 1.6rem);
       font-weight: 500;
       letter-spacing: -0.02em;
     }
 
-    .rating-item .stars { font-size: 1.1rem; letter-spacing: 0.05em; }
-    .rating-item .author { font-size: 0.82rem; color: var(--faint); }
+    .chip .stars { font-size: 1.15rem; letter-spacing: 0.05em; }
+    .chip .author { font-size: 0.8rem; color: var(--faint); }
+
+    .chip-toggle {
+      margin-top: 16px;
+      font-family: inherit;
+      font-size: 0.8rem;
+      color: var(--muted);
+      background: transparent;
+      border: none;
+      padding: 0;
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+
+    .chip-toggle:hover { color: var(--text); }
+
+    .chip-more {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.35s ease;
+    }
+
+    .chip.open .chip-more { max-height: 600px; }
 
     .sub-form {
       display: flex;
       flex-wrap: wrap;
       align-items: center;
-      gap: 12px 16px;
-      margin: 18px 0 6px;
+      gap: 10px 12px;
+      margin: 16px 0 6px;
     }
 
     .sub-form select,
     .sub-form input[type="text"] {
       font-family: inherit;
-      font-size: 16px;
+      font-size: 15px;
       color: var(--text);
       background: transparent;
       border: none;
       border-bottom: 1px solid var(--line);
       border-radius: 0;
-      padding: 8px 2px;
+      padding: 7px 2px;
       outline: none;
       -webkit-appearance: none;
       appearance: none;
     }
 
-    .sub-form input[type="text"] { flex: 1 1 220px; min-width: 0; }
+    .sub-form input[type="text"] { flex: 1 1 140px; min-width: 0; }
 
     .sub-form select:focus,
     .sub-form input[type="text"]:focus { border-bottom-color: var(--text); }
 
     .sub-form button {
       font-family: inherit;
-      font-size: 0.82rem;
-      padding: 7px 18px;
+      font-size: 0.78rem;
+      padding: 6px 14px;
       background: transparent;
       color: var(--muted);
       border: 1px solid var(--line);
@@ -410,44 +525,89 @@
     .sub-form button:hover:not(:disabled) { color: var(--text); border-color: var(--text); }
     .sub-form button:disabled { color: var(--faint); cursor: default; }
 
-    .sub-list { margin-top: 10px; }
+    .sub-list { margin-top: 8px; }
 
     .sub-list .comment {
       display: flex;
-      gap: 12px;
-      padding: 8px 0 8px 16px;
+      gap: 10px;
+      padding: 7px 0 7px 14px;
       border-left: 1px solid var(--line);
-      font-size: 0.92rem;
+      font-size: 0.9rem;
     }
 
     .sub-list .comment .stars { color: var(--muted); white-space: nowrap; }
     .sub-list .comment .text { word-break: break-word; }
 
     /* ============================================================
-       9. C 방명록 — 메모 블록
+       10. C 방명록 — 회전된 메모 월 + 마퀴 티커
        ============================================================ */
-    .guest-list { display: grid; gap: 10px; max-width: 720px; }
-
-    .entry {
-      padding: 16px 20px;
-      background: var(--surface);
-      border-radius: 3px;
+    .marquee {
+      overflow: hidden;
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      padding: 10px 0;
+      margin-bottom: 36px;
     }
 
-    .entry .head { display: flex; align-items: baseline; gap: 12px; }
-    .entry .who { font-weight: 600; font-size: 0.92rem; }
-    .entry .when { margin-left: auto; font-size: 0.78rem; color: var(--faint); }
+    .marquee-track {
+      display: inline-flex;
+      white-space: nowrap;
+      animation: marquee-scroll 26s linear infinite;
+    }
 
-    .entry .msg {
+    .marquee:hover .marquee-track { animation-play-state: paused; }
+
+    .marquee-item {
+      display: inline-block;
+      padding: 0 28px;
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    .marquee-item b { color: var(--text); font-weight: 600; }
+
+    @keyframes marquee-scroll {
+      from { transform: translateX(0); }
+      to { transform: translateX(-50%); }
+    }
+
+    .guest-wall {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 18px;
+      max-width: 920px;
+    }
+
+    .note {
+      width: clamp(190px, 24vw, 250px);
+      background: var(--surface);
+      border-radius: 3px;
+      padding: 16px 20px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    .note:hover {
+      transform: rotate(0deg) scale(1.04) !important;
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+      z-index: 2;
+      position: relative;
+    }
+
+    .note .head { display: flex; align-items: baseline; gap: 12px; }
+    .note .who { font-weight: 600; font-size: 0.92rem; }
+    .note .when { margin-left: auto; font-size: 0.76rem; color: var(--faint); }
+
+    .note .msg {
       margin: 6px 0 0;
-      font-size: 0.98rem;
-      line-height: 1.7;
+      font-size: 0.95rem;
+      line-height: 1.65;
       white-space: pre-wrap;
       word-break: break-word;
     }
 
     /* ============================================================
-       10. 돌아가기 + 푸터
+       11. 돌아가기 + 푸터
        ============================================================ */
     .backlink {
       border-top: 1px solid var(--line);
@@ -480,18 +640,6 @@
     .footer a { text-decoration: none; border-bottom: 1px solid var(--line); }
 
     /* ============================================================
-       11. 등장 모션
-       ============================================================ */
-    .js .reveal {
-      opacity: 0;
-      transform: translateY(20px);
-      transition: opacity 0.7s ease, transform 0.7s ease;
-    }
-
-    .js .reveal.in { opacity: 1; transform: none; }
-    .js .reveal.d1 { transition-delay: 0.08s; }
-
-    /* ============================================================
        12. 좁은 화면
        ============================================================ */
     @media (max-width: 900px) {
@@ -503,6 +651,7 @@
 
       .section-label { position: static; }
       .board-list { grid-template-columns: 1fr; }
+      .board-list .card:first-child { padding: 26px 24px; }
       .nav-inner { gap: 16px; }
       .nav-links { gap: 16px; }
     }
@@ -514,6 +663,9 @@
         transition-duration: 0.01ms !important;
       }
       .js .reveal { opacity: 1; transform: none; }
+      .pop { opacity: 1; transform: none; }
+      .word-mask .word { transform: none; }
+      .note { transform: none !important; }
     }
   </style>
 </head>
@@ -524,11 +676,11 @@
     <div class="nav-inner">
       <a class="nav-brand" href="index.html">← OOO</a>
       <div class="nav-links">
-        <a href="#board">A 게시판</a>
-        <a href="#ratings">B 평점</a>
-        <a href="#guestbook">C 방명록</a>
+        <a href="#board">A Board</a>
+        <a href="#ratings">B Ratings</a>
+        <a href="#guestbook">C Guestbook</a>
       </div>
-      <button class="theme-toggle" id="themeToggle" aria-label="테마 전환">☾</button>
+      <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">☾</button>
     </div>
   </nav>
 
@@ -536,8 +688,8 @@
   <header class="hero">
     <div class="hero-inner">
       <p class="eyebrow">FOR VISITORS</p>
-      <h1>함께 쓰는 공간</h1>
-      <p class="sub">누구나 글을 남길 수 있습니다. 남겨주신 글은 모두에게 공개됩니다.</p>
+      <h1 id="heroTitle">A Space We Share</h1>
+      <p class="sub">Anyone can leave something here. Everything you post is public.</p>
     </div>
   </header>
 
@@ -545,37 +697,37 @@
 
     <!-- ===== A 게시판 ===== -->
     <section class="section" id="board">
-      <h2 class="section-label reveal"><span class="num">A</span> 게시판</h2>
-      <div class="section-body reveal d1">
-        <p class="section-note">자유롭게 이야기를 남겨주세요.</p>
+      <h2 class="section-label reveal slide-right"><span class="num">A</span> Board</h2>
+      <div class="section-body">
+        <p class="section-note reveal">Say anything, freely.</p>
 
-        <div class="form">
+        <div class="form reveal d1">
           <div class="form-row">
-            <input class="grow" type="text" id="boardName" maxlength="20" placeholder="이름">
+            <input class="grow" type="text" id="boardName" maxlength="20" placeholder="Name">
           </div>
-          <textarea id="boardText" maxlength="2000" placeholder="글 작성"></textarea>
+          <textarea id="boardText" maxlength="2000" placeholder="Write something"></textarea>
           <div class="form-row" style="margin-top:14px">
-            <button id="boardButton">남기기</button>
+            <button id="boardButton">Post</button>
           </div>
-          <p class="notice">※ 남겨주신 글은 모두에게 공개됩니다</p>
+          <p class="notice">※ Everything you post here is visible to everyone</p>
         </div>
 
         <div class="board-list" id="boardList">
-          <p class="empty">불러오는 중…</p>
+          <p class="empty">Loading…</p>
         </div>
       </div>
     </section>
 
     <!-- ===== B 평점 ===== -->
     <section class="section" id="ratings">
-      <h2 class="section-label reveal"><span class="num">B</span> 평점</h2>
-      <div class="section-body reveal d1">
-        <p class="section-note">항목을 등록하면 다른 사람들이 그 아래에 별점과 한줄평을 남길 수 있습니다.</p>
+      <h2 class="section-label reveal slide-left"><span class="num">B</span> Ratings</h2>
+      <div class="section-body">
+        <p class="section-note reveal">Add something you'd like rated — then anyone can leave a star rating and a comment on it.</p>
 
-        <div class="form">
+        <div class="form reveal d1">
           <div class="form-row">
-            <input class="grow" type="text" id="ratingAuthor" maxlength="20" placeholder="작성자 이름">
-            <input class="grow" type="text" id="ratingName" maxlength="60" placeholder="항목 이름">
+            <input class="grow" type="text" id="ratingAuthor" maxlength="20" placeholder="Your name">
+            <input class="grow" type="text" id="ratingName" maxlength="60" placeholder="Item name">
             <select id="ratingStars">
               <option value="5">★★★★★</option>
               <option value="4">★★★★☆</option>
@@ -583,47 +735,53 @@
               <option value="2">★★☆☆☆</option>
               <option value="1">★☆☆☆☆</option>
             </select>
-            <button id="ratingButton">등록</button>
+            <button id="ratingButton">Add</button>
           </div>
         </div>
 
-        <div class="rating-list" id="ratingList">
-          <p class="empty">불러오는 중…</p>
+        <div class="rail-wrap">
+          <div class="rating-rail" id="ratingList">
+            <p class="empty">Loading…</p>
+          </div>
         </div>
       </div>
     </section>
 
     <!-- ===== C 방명록 ===== -->
     <section class="section" id="guestbook">
-      <h2 class="section-label reveal"><span class="num">C</span> 방명록</h2>
-      <div class="section-body reveal d1">
-        <p class="section-note">짧은 인사를 남겨주세요.</p>
+      <h2 class="section-label reveal slide-right"><span class="num">C</span> Guestbook</h2>
+      <div class="section-body">
+        <p class="section-note reveal">Leave a short hello.</p>
 
-        <div class="form">
-          <div class="form-row">
-            <input class="grow" type="text" id="guestName" maxlength="20" placeholder="이름">
-          </div>
-          <textarea id="guestText" maxlength="500" placeholder="방명록 작성"></textarea>
-          <div class="form-row" style="margin-top:14px">
-            <button id="guestButton">남기기</button>
-          </div>
-          <p class="notice">※ 남겨주신 글은 모두에게 공개됩니다</p>
+        <div class="marquee" id="guestMarquee" aria-hidden="true">
+          <div class="marquee-track" id="guestMarqueeTrack"></div>
         </div>
 
-        <div class="guest-list" id="guestList">
-          <p class="empty">불러오는 중…</p>
+        <div class="form reveal d1">
+          <div class="form-row">
+            <input class="grow" type="text" id="guestName" maxlength="20" placeholder="Name">
+          </div>
+          <textarea id="guestText" maxlength="500" placeholder="Write a note"></textarea>
+          <div class="form-row" style="margin-top:14px">
+            <button id="guestButton">Post</button>
+          </div>
+          <p class="notice">※ Everything you post here is visible to everyone</p>
+        </div>
+
+        <div class="guest-wall" id="guestList">
+          <p class="empty">Loading…</p>
         </div>
       </div>
     </section>
 
     <div class="backlink">
-      <a href="index.html">← 돌아가기</a>
+      <a href="index.html">← Back</a>
     </div>
 
   </main>
 
   <footer class="footer shell">
-    <span>이메일 · OOOOO [at] OOOOOO</span>
+    <span>Email · OOOOO [at] OOOOOO</span>
     <span>GitHub · <a href="https://github.com/afoc824">github.com/afoc824</a></span>
     <span class="spacer">© 2026 OOO</span>
   </footer>
@@ -644,6 +802,9 @@
     };
 
     const db = getFirestore(initializeApp(firebaseConfig));
+
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const canHover = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
 
     // ===== 공통 도구 =====
     function formatDate(ts) {
@@ -666,6 +827,39 @@
       box.appendChild(p);
     }
 
+    // 문서 id를 -3~3도 사이 값으로 매핑 (재렌더링에도 회전값이 흔들리지 않도록)
+    function hashRotation(id) {
+      let h = 0;
+      for (let i = 0; i < id.length; i++) h = (h * 31 + id.charCodeAt(i)) | 0;
+      return ((Math.abs(h) % 601) / 100) - 3;
+    }
+
+    // 순차 등장 모션: 카드가 DOM에 붙은 다음 프레임에 in 클래스를 붙여 트랜지션 발동
+    function popIn(el, index) {
+      if (reduceMotion) { el.classList.add("pop", "in"); return; }
+      el.classList.add("pop");
+      el.style.transitionDelay = Math.min(index * 45, 360) + "ms";
+      requestAnimationFrame(function () {
+        requestAnimationFrame(function () { el.classList.add("in"); });
+      });
+    }
+
+    // 호버 틸트 (포인터 정밀 기기에서만)
+    function attachTilt(card) {
+      if (reduceMotion || !canHover) return;
+      card.addEventListener("mousemove", function (e) {
+        const r = card.getBoundingClientRect();
+        const px = (e.clientX - r.left) / r.width - 0.5;
+        const py = (e.clientY - r.top) / r.height - 0.5;
+        card.style.setProperty("--ry", (px * 6) + "deg");
+        card.style.setProperty("--rx", (-py * 6) + "deg");
+      });
+      card.addEventListener("mouseleave", function () {
+        card.style.setProperty("--rx", "0deg");
+        card.style.setProperty("--ry", "0deg");
+      });
+    }
+
     // ===== A 게시판 =====
     (function () {
       const nameInput = document.querySelector("#boardName");
@@ -677,13 +871,13 @@
         const name = nameInput.value.trim();
         const text = textInput.value.trim();
 
-        if (!name || !text) { alert("이름과 내용을 모두 입력해주세요."); return; }
+        if (!name || !text) { alert("Please fill in both name and message."); return; }
         if (name.length > 20 || text.length > 2000) {
-          alert("이름은 20자, 내용은 2000자까지 입력할 수 있습니다."); return;
+          alert("Name can be up to 20 characters, message up to 2000."); return;
         }
 
         button.disabled = true;
-        button.textContent = "저장 중…";
+        button.textContent = "Posting…";
         try {
           await addDoc(collection(db, "board"), {
             name: name, text: text, createdAt: serverTimestamp()
@@ -692,18 +886,19 @@
           textInput.value = "";
           nameInput.focus();
         } catch (err) {
-          alert("저장에 실패했습니다. 잠시 후 다시 시도해주세요.");
+          alert("Failed to save. Please try again in a moment.");
           console.error(err);
         }
         button.disabled = false;
-        button.textContent = "남기기";
+        button.textContent = "Post";
       };
 
       onSnapshot(
         query(collection(db, "board"), orderBy("createdAt", "desc"), limit(50)),
         function (snap) {
-          if (snap.empty) { showEmpty(list, "아직 남겨진 글이 없습니다."); return; }
+          if (snap.empty) { showEmpty(list, "No posts yet."); return; }
           list.innerHTML = "";
+          let i = 0;
           snap.forEach(function (docSnap) {
             const d = docSnap.data();
             const card = document.createElement("article");
@@ -728,9 +923,11 @@
 
             card.append(head, msg);
             list.appendChild(card);
+            popIn(card, i++);
+            attachTilt(card);
           });
         },
-        function (err) { showEmpty(list, "게시판을 불러오지 못했습니다."); console.error(err); }
+        function (err) { showEmpty(list, "Couldn't load the board."); console.error(err); }
       );
     })();
 
@@ -752,9 +949,9 @@
         const author = authorInput.value.trim();
         const name = nameInput.value.trim();
 
-        if (!author || !name) { alert("작성자와 항목 이름을 모두 입력해주세요."); return; }
+        if (!author || !name) { alert("Please fill in both your name and the item name."); return; }
         if (author.length > 20 || name.length > 60) {
-          alert("작성자는 20자, 항목 이름은 60자까지 입력할 수 있습니다."); return;
+          alert("Your name can be up to 20 characters, item name up to 60."); return;
         }
 
         button.disabled = true;
@@ -769,7 +966,7 @@
           nameInput.value = "";
           authorInput.focus();
         } catch (err) {
-          alert("저장에 실패했습니다. 잠시 후 다시 시도해주세요.");
+          alert("Failed to save. Please try again in a moment.");
           console.error(err);
         }
         button.disabled = false;
@@ -779,15 +976,16 @@
         query(collection(db, "ratings"), orderBy("createdAt", "desc"), limit(30)),
         function (snap) {
           clearSubs();
-          if (snap.empty) { showEmpty(list, "아직 등록된 항목이 없습니다."); return; }
+          if (snap.empty) { showEmpty(list, "No items yet."); return; }
           list.innerHTML = "";
+          let i = 0;
 
           snap.forEach(function (docSnap) {
             const d = docSnap.data();
             const itemId = docSnap.id;
 
-            const item = document.createElement("div");
-            item.className = "rating-item";
+            const chip = document.createElement("div");
+            chip.className = "chip";
 
             const head = document.createElement("div");
             head.className = "head";
@@ -805,7 +1003,17 @@
             author.textContent = d.author ? "by " + d.author : "";
 
             head.append(name, stars, author);
-            item.appendChild(head);
+            chip.appendChild(head);
+
+            const toggle = document.createElement("button");
+            toggle.type = "button";
+            toggle.className = "chip-toggle";
+            toggle.textContent = "Rate & comment ↓";
+            chip.appendChild(toggle);
+
+            const more = document.createElement("div");
+            more.className = "chip-more";
+            chip.appendChild(more);
 
             // 방문자용 별점 · 한줄평 폼
             const subForm = document.createElement("div");
@@ -822,23 +1030,28 @@
             const subInput = document.createElement("input");
             subInput.type = "text";
             subInput.maxLength = 200;
-            subInput.placeholder = "한줄평";
+            subInput.placeholder = "One-line comment";
 
             const subButton = document.createElement("button");
             subButton.type = "button";
-            subButton.textContent = "남기기";
+            subButton.textContent = "Post";
 
             subForm.append(subSelect, subInput, subButton);
-            item.appendChild(subForm);
+            more.appendChild(subForm);
 
             const subList = document.createElement("div");
             subList.className = "sub-list";
-            item.appendChild(subList);
+            more.appendChild(subList);
+
+            toggle.onclick = function () {
+              const open = chip.classList.toggle("open");
+              toggle.textContent = open ? "Hide ↑" : "Rate & comment ↓";
+            };
 
             subButton.onclick = async function () {
               const text = subInput.value.trim();
-              if (!text) { alert("한줄평을 입력해주세요."); return; }
-              if (text.length > 200) { alert("한줄평은 200자까지 입력할 수 있습니다."); return; }
+              if (!text) { alert("Please enter a comment."); return; }
+              if (text.length > 200) { alert("Comments can be up to 200 characters."); return; }
 
               subButton.disabled = true;
               try {
@@ -849,7 +1062,7 @@
                 });
                 subInput.value = "";
               } catch (err) {
-                alert("저장에 실패했습니다. 잠시 후 다시 시도해주세요.");
+                alert("Failed to save. Please try again in a moment.");
                 console.error(err);
               }
               subButton.disabled = false;
@@ -880,10 +1093,11 @@
             );
 
             unsubs.push(unsub);
-            list.appendChild(item);
+            list.appendChild(chip);
+            popIn(chip, i++);
           });
         },
-        function (err) { showEmpty(list, "평점을 불러오지 못했습니다."); console.error(err); }
+        function (err) { showEmpty(list, "Couldn't load ratings."); console.error(err); }
       );
     })();
 
@@ -893,18 +1107,20 @@
       const textInput = document.querySelector("#guestText");
       const button = document.querySelector("#guestButton");
       const list = document.querySelector("#guestList");
+      const marqueeTrack = document.querySelector("#guestMarqueeTrack");
+      const marqueeBox = document.querySelector("#guestMarquee");
 
       button.onclick = async function () {
         const name = nameInput.value.trim();
         const text = textInput.value.trim();
 
-        if (!name || !text) { alert("이름과 내용을 모두 입력해주세요."); return; }
+        if (!name || !text) { alert("Please fill in both name and message."); return; }
         if (name.length > 20 || text.length > 500) {
-          alert("이름은 20자, 내용은 500자까지 입력할 수 있습니다."); return;
+          alert("Name can be up to 20 characters, message up to 500."); return;
         }
 
         button.disabled = true;
-        button.textContent = "저장 중…";
+        button.textContent = "Posting…";
         try {
           await addDoc(collection(db, "guestbook"), {
             name: name, text: text, createdAt: serverTimestamp()
@@ -913,22 +1129,52 @@
           textInput.value = "";
           nameInput.focus();
         } catch (err) {
-          alert("저장에 실패했습니다. 잠시 후 다시 시도해주세요.");
+          alert("Failed to save. Please try again in a moment.");
           console.error(err);
         }
         button.disabled = false;
-        button.textContent = "남기기";
+        button.textContent = "Post";
       };
+
+      function buildMarquee(docs) {
+        if (!docs.length) { marqueeBox.style.display = "none"; return; }
+        marqueeBox.style.display = "";
+        marqueeTrack.innerHTML = "";
+        const items = docs.slice(0, 8);
+        // 이음매 없이 흐르도록 동일한 목록을 두 번 이어붙임
+        [0, 1].forEach(function () {
+          items.forEach(function (d) {
+            const span = document.createElement("span");
+            span.className = "marquee-item";
+            const b = document.createElement("b");
+            b.textContent = d.name;
+            span.appendChild(b);
+            span.appendChild(document.createTextNode(
+              " — " + (d.text.length > 40 ? d.text.slice(0, 40) + "…" : d.text)
+            ));
+            marqueeTrack.appendChild(span);
+          });
+        });
+      }
 
       onSnapshot(
         query(collection(db, "guestbook"), orderBy("createdAt", "desc"), limit(100)),
         function (snap) {
-          if (snap.empty) { showEmpty(list, "아직 남겨진 글이 없습니다."); return; }
+          if (snap.empty) {
+            showEmpty(list, "No notes yet.");
+            marqueeBox.style.display = "none";
+            return;
+          }
           list.innerHTML = "";
+          const docs = [];
+          let i = 0;
           snap.forEach(function (docSnap) {
             const d = docSnap.data();
-            const entry = document.createElement("div");
-            entry.className = "entry";
+            docs.push(d);
+
+            const note = document.createElement("div");
+            note.className = "note";
+            note.style.setProperty("--rot", hashRotation(docSnap.id) + "deg");
 
             const head = document.createElement("div");
             head.className = "head";
@@ -947,11 +1193,13 @@
             msg.className = "msg";
             msg.textContent = d.text;
 
-            entry.append(head, msg);
-            list.appendChild(entry);
+            note.append(head, msg);
+            list.appendChild(note);
+            popIn(note, i++);
           });
+          buildMarquee(docs);
         },
-        function (err) { showEmpty(list, "방명록을 불러오지 못했습니다."); console.error(err); }
+        function (err) { showEmpty(list, "Couldn't load the guestbook."); console.error(err); }
       );
     })();
   </script>
@@ -980,10 +1228,32 @@
       window.addEventListener("scroll", onScroll, { passive: true });
     })();
 
-    // ===== 등장 모션 =====
+    // ===== 히어로 제목 — 단어 단위 등장 모션 =====
+    (function () {
+      var h1 = document.getElementById("heroTitle");
+      var words = h1.textContent.trim().split(/\s+/);
+      h1.innerHTML = "";
+      words.forEach(function (w, i) {
+        var mask = document.createElement("span");
+        mask.className = "word-mask";
+        var word = document.createElement("span");
+        word.className = "word";
+        word.textContent = w;
+        mask.appendChild(word);
+        h1.appendChild(mask);
+        h1.appendChild(document.createTextNode(" "));
+        setTimeout(function () { mask.classList.add("in"); }, 60 * i);
+      });
+    })();
+
+    // ===== 등장 모션 (섹션 라벨 · 노트 등) =====
     (function () {
       var targets = document.querySelectorAll(".reveal");
-      function showAll() { targets.forEach(function (el) { el.classList.add("in"); }); }
+
+      function showAll() {
+        targets.forEach(function (el) { el.classList.add("in"); });
+      }
+
       if (!("IntersectionObserver" in window)) { showAll(); return; }
 
       var io = new IntersectionObserver(function (entries) {
