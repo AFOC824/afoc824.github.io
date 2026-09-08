@@ -3,489 +3,276 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Profile · OOO</title>
-  <meta name="description" content="OOO · Undergraduate researcher, Department of OOOO, OO University">
-
-  <meta property="og:type" content="website">
-  <meta property="og:title" content="Profile · OOO">
-  <meta property="og:description" content="OOO · Undergraduate researcher, Department of OOOO, OO University">
-
+  <meta name="color-scheme" content="light dark">
   <script>
-    // 테마를 화면이 그려지기 전에 적용 (깜빡임 방지)
+    // 저장소가 차단되어도 기본 테마로 화면을 표시한다.
     (function () {
-      var saved = localStorage.getItem("theme");
-      if (saved === "dark" || saved === "light") {
-        document.documentElement.setAttribute("data-theme", saved);
-      } else if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
-        document.documentElement.setAttribute("data-theme", "dark");
+      var theme;
+      try { theme = localStorage.getItem("theme"); } catch (e) {}
+      if (theme !== "light" && theme !== "dark") {
+        theme = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
       }
-      document.documentElement.classList.add("js");
+      document.documentElement.setAttribute("data-theme", theme);
     })();
   </script>
-
-  <link rel="stylesheet" as="style" crossorigin
-    href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
-
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap">
+  <title>Profile — 824</title>
+  <meta name="description" content="OOO · Undergraduate researcher, Department of OOOO, OO University.">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Profile — 824">
+  <meta property="og:description" content="A little about OOO. Interests, history, and notes.">
   <style>
-    /* ============================================================
-       1. 색상 토큰 — index.html / community.html과 동일하게 유지할 것
-       ============================================================ */
+    /* 세 페이지에서 같은 색상, 서체와 조작 방식을 사용한다. */
     :root {
-      --bg: #faf9f7;
-      --surface: #ffffff;
-      --text: #1a1a18;
-      --muted: #78766f;
-      --faint: #a8a5a0;
-      --line: #e4e1da;
-      --field: #ffffff;
-      --shell: 1400px;
-      --gutter: clamp(20px, 5vw, 80px);
+      --bg: #f8f8f8; --surface: #eeeeee; --text: #181818;
+      --muted: #626262; --faint: #707070; --line: #d5d5d5; --field: #ffffff;
+      --cursor: #ffffff; --shell: 1440px; --gutter: clamp(22px, 5vw, 80px);
+      --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
     }
-
     [data-theme="dark"] {
-      --bg: #101010;
-      --surface: #171716;
-      --text: #ececea;
-      --muted: #8f8d87;
-      --faint: #5e5c57;
-      --line: #2a2a28;
-      --field: #1a1a19;
+      --bg: #141414; --surface: #202020; --text: #f2f2f2;
+      --muted: #aaaaaa; --faint: #9b9b9b; --line: #3c3c3c; --field: #1b1b1b;
+      --cursor: #ffffff;
     }
-
-    /* ============================================================
-       2. 기본
-       ============================================================ */
     *, *::before, *::after { box-sizing: border-box; }
-
-    html {
-      scroll-behavior: smooth;
-      -webkit-text-size-adjust: 100%;
-    }
-
-    body {
-      margin: 0;
-      padding: 0;
-      overflow-x: hidden;
-      font-family: "Pretendard Variable", Pretendard, -apple-system, system-ui, sans-serif;
-      font-size: 16px;
-      line-height: 1.7;
-      background: var(--bg);
-      color: var(--text);
-      transition: background 0.3s, color 0.3s;
-      font-feature-settings: "tnum";
-    }
-
-    a { color: inherit; }
-
-    .shell {
-      max-width: var(--shell);
-      margin: 0 auto;
-      padding-inline: var(--gutter);
-    }
-
+    html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; scroll-padding-top: 28px; }
+    body { margin: 0; background: var(--bg); color: var(--text); font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, sans-serif; font-size: 17px; line-height: 1.65; font-feature-settings: "ss01"; }
+    a { color: inherit; text-underline-offset: 5px; }
+    button, input, textarea, select { font: inherit; }
+    button, a, input, textarea, select { -webkit-tap-highlight-color: transparent; }
+    button, select { cursor: pointer; }
+    button { color: inherit; }
+    button:disabled { cursor: wait; opacity: .55; }
+    a, button { touch-action: manipulation; }
+    button, input, textarea, select { border-radius: 0; }
+    input, textarea, select { max-width: 100%; min-width: 0; color: var(--text); background: var(--field); }
+    textarea { resize: vertical; }
+    img, svg { display: block; max-width: 100%; }
     ::selection { background: var(--text); color: var(--bg); }
-
-    /* ============================================================
-       3. 상단 내비
-       ============================================================ */
-    .nav {
-      position: sticky;
-      top: 0;
-      z-index: 50;
-      background: color-mix(in srgb, var(--bg) 88%, transparent);
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid transparent;
-      transition: border-color 0.3s;
+    :focus-visible { outline: 2px solid var(--text); outline-offset: 6px; }
+    [hidden] { display: none !important; }
+    .shell { width: 100%; max-width: var(--shell); margin-inline: auto; padding-inline: var(--gutter); }
+    .mono, .eyebrow { font-family: var(--font-mono); font-size: .88rem; font-weight: 400; letter-spacing: -.02em; }
+    .eyebrow { text-transform: uppercase; color: var(--muted); }
+    .skip-link { position: fixed; top: 12px; left: 12px; z-index: 100; padding: 12px 20px; background: var(--text); color: var(--bg); transform: translateY(-160%); }
+    .skip-link:focus { transform: none; }
+    .site-header { min-height: 104px; display: flex; align-items: center; justify-content: space-between; gap: 24px; border-bottom: 1px solid var(--line); }
+    .wordmark { font-size: 1.7rem; font-weight: 750; letter-spacing: -.07em; text-decoration: none; }
+    .header-note { margin-right: auto; color: var(--muted); }
+    .site-nav { display: flex; align-items: center; gap: 30px; }
+    .site-nav a { padding-block: 12px; text-decoration: none; font-size: .94rem; }
+    .site-nav a:hover, .site-nav a[aria-current="page"] { text-decoration: underline; }
+    .theme-toggle { flex: 0 0 auto; display: grid; place-items: center; width: 46px; height: 46px; padding: 0; border: 1px solid var(--line); border-radius: 50%; background: var(--bg); color: var(--text); transition: background .2s, color .2s, transform .2s; }
+    .theme-toggle:hover { background: var(--text); color: var(--bg); transform: rotate(-12deg); }
+    .theme-toggle svg { width: 20px; height: 20px; }
+    .site-footer { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px 24px; border-top: 1px solid var(--line); padding-block: 26px; color: var(--muted); font-family: var(--font-mono); font-size: .88rem; }
+    .site-footer a { padding-block: 10px; text-decoration: none; }
+    .site-footer a:hover { color: var(--text); }
+    .arrow { font-weight: 400; line-height: 1; }
+    /* 본문은 기본으로 보이고, 스크립트가 정상 실행된 경우에만 모션을 더한다. */
+    .reveal.in { animation: appear .65s cubic-bezier(.2,.8,.2,1) both; }
+    .reveal.d1.in { animation-delay: .08s; }
+    .reveal.d2.in { animation-delay: .16s; }
+    @keyframes appear { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
+    .cursor-dot { position: fixed; top: 0; left: 0; width: 24px; height: 24px; margin: -12px 0 0 -12px; border: 1px solid var(--cursor); border-radius: 50%; mix-blend-mode: difference; opacity: 0; pointer-events: none; z-index: 99; transition: width .2s, height .2s, margin .2s, opacity .2s; }
+    .cursor-dot.active { opacity: .7; }
+    .cursor-dot.big { width: 42px; height: 42px; margin: -21px 0 0 -21px; }
+    @media (max-width: 600px) {
+      .site-header { min-height: 84px; gap: 16px; }
+      .header-note { display: none; }
+      .site-nav { gap: 18px; margin-left: auto; }
+      .site-nav a { font-size: .9rem; }
+      .site-footer { align-items: flex-start; }
     }
-
-    .nav.scrolled { border-bottom-color: var(--line); }
-
-    .nav-inner {
-      max-width: var(--shell);
-      margin: 0 auto;
-      padding: 14px var(--gutter);
-      display: flex;
-      align-items: center;
-      gap: 28px;
-    }
-
-    .nav-brand {
-      font-size: 0.9rem;
-      color: var(--muted);
-      text-decoration: none;
-      white-space: nowrap;
-      flex-shrink: 0;
-      transition: color 0.2s;
-    }
-
-    .nav-brand:hover { color: var(--text); }
-
-    .nav-links {
-      display: flex;
-      align-items: center;
-      gap: 22px;
-      margin-left: auto;
-      overflow-x: auto;
-      scrollbar-width: none;
-      -webkit-overflow-scrolling: touch;
-    }
-
-    .nav-links::-webkit-scrollbar { display: none; }
-
-    .nav-links a {
-      font-size: 0.9rem;
-      color: var(--muted);
-      text-decoration: none;
-      white-space: nowrap;
-      transition: color 0.2s;
-    }
-
-    .nav-links a:hover,
-    .nav-links a.active { color: var(--text); }
-
-    .theme-toggle {
-      flex-shrink: 0;
-      width: 34px;
-      height: 34px;
-      display: grid;
-      place-items: center;
-      font-size: 0.9rem;
-      font-family: inherit;
-      background: transparent;
-      color: var(--muted);
-      border: 1px solid var(--line);
-      border-radius: 2px;
-      cursor: pointer;
-      transition: color 0.2s, border-color 0.2s;
-    }
-
-    .theme-toggle:hover { color: var(--text); border-color: var(--muted); }
-
-    /* ============================================================
-       4. 히어로 — 짧게, 일반 배경
-       ============================================================ */
-    .hero-inner {
-      max-width: var(--shell);
-      margin: 0 auto;
-      padding: clamp(60px, 11vh, 120px) var(--gutter) clamp(40px, 7vh, 70px);
-    }
-
-    .hero-inner h1 {
-      margin: 0;
-      font-size: clamp(2.2rem, 7vw, 5rem);
-      font-weight: 600;
-      line-height: 1;
-      letter-spacing: -0.04em;
-    }
-
-    .hero-inner p.sub {
-      margin: 24px 0 0;
-      max-width: 46ch;
-      font-size: clamp(1rem, 1.6vw, 1.2rem);
-      color: var(--muted);
-    }
-
-    /* ============================================================
-       5. 섹션 공통 — 왼쪽 라벨 + 오른쪽 본문
-       ============================================================ */
-    .section {
-      display: grid;
-      grid-template-columns: 240px minmax(0, 1fr);
-      gap: 0 64px;
-      padding-block: clamp(90px, 12vh, 160px);
-      border-top: 1px solid var(--line);
-    }
-
-    .section-label {
-      position: sticky;
-      top: 100px;
-      align-self: start;
-      margin: 0;
-      font-size: 0.8rem;
-      font-weight: 400;
-      letter-spacing: 0.12em;
-      color: var(--muted);
-      display: flex;
-      gap: 12px;
-    }
-
-    .section-label .num {
-      color: var(--faint);
-      font-variant-numeric: tabular-nums;
-    }
-
-    .section-body { min-width: 0; }
-
-    .lead {
-      margin: 0 0 1.4em;
-      max-width: 58ch;
-      font-size: clamp(1.15rem, 1.8vw, 1.4rem);
-      line-height: 1.75;
-    }
-
-    .lead:last-child { margin-bottom: 0; }
-    .lead + .lead { color: var(--muted); }
-
-    /* ---- 01 소개 ---- */
-    .intro-grid {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) 300px;
-      gap: 56px;
-      align-items: start;
-    }
-
-    .photo {
-      aspect-ratio: 3 / 4;
-      display: grid;
-      place-items: center;
-      background: var(--surface);
-      border: 1px solid var(--line);
-      color: var(--faint);
-      font-size: 0.85rem;
-      overflow: hidden;
-    }
-
-    .photo img { width: 100%; height: 100%; object-fit: cover; }
-
-    /* ---- 02 연구 관심사 ---- */
-    .keywords { list-style: none; margin: 0; padding: 0; }
-
-    .keywords li {
-      padding: 22px 0;
-      border-bottom: 1px solid var(--line);
-    }
-
-    .keywords li:first-child { padding-top: 0; }
-
-    .keywords .kw {
-      display: block;
-      font-size: clamp(1.9rem, 4.5vw, 3.4rem);
-      font-weight: 500;
-      line-height: 1.1;
-      letter-spacing: -0.03em;
-    }
-
-    .keywords .kw-desc {
-      display: block;
-      margin-top: 10px;
-      max-width: 52ch;
-      font-size: 0.98rem;
-      color: var(--muted);
-    }
-
-    /* ---- 03 이력 ---- */
-    .timeline { display: grid; }
-
-    .item {
-      display: grid;
-      grid-template-columns: 150px minmax(0, 1fr);
-      gap: 8px 32px;
-      padding: 26px 0;
-      border-bottom: 1px solid var(--line);
-    }
-
-    .item:first-child { padding-top: 0; }
-
-    .item .year {
-      font-size: 0.85rem;
-      color: var(--faint);
-      white-space: nowrap;
-      padding-top: 5px;
-      font-variant-numeric: tabular-nums;
-    }
-
-    .item .role {
-      font-size: clamp(1.05rem, 1.6vw, 1.3rem);
-      font-weight: 500;
-      line-height: 1.4;
-    }
-
-    .item .detail {
-      display: block;
-      margin-top: 4px;
-      font-size: 0.95rem;
-      color: var(--muted);
-    }
-
-    /* ---- 04 글 ---- */
-    .posts { display: grid; }
-
-    .post {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: baseline;
-      gap: 6px 20px;
-      padding: 22px 0;
-      border-bottom: 1px solid var(--line);
-      text-decoration: none;
-      transition: opacity 0.2s;
-    }
-
-    .post:first-child { padding-top: 0; }
-    .post:hover { opacity: 0.55; }
-
-    .post .title {
-      font-size: clamp(1.1rem, 2vw, 1.6rem);
-      font-weight: 500;
-      letter-spacing: -0.02em;
-    }
-
-    .post .date {
-      margin-left: auto;
-      font-size: 0.82rem;
-      color: var(--faint);
-    }
-
-    .empty {
-      margin: 0;
-      font-size: 1rem;
-      color: var(--faint);
-    }
-
-    /* ============================================================
-       6. 돌아가기 + 푸터
-       ============================================================ */
-    .backlink {
-      border-top: 1px solid var(--line);
-      padding-block: clamp(70px, 12vh, 130px);
-    }
-
-    .backlink a {
-      display: inline-block;
-      font-size: clamp(1.6rem, 5vw, 3.4rem);
-      font-weight: 600;
-      letter-spacing: -0.035em;
-      text-decoration: none;
-      border-bottom: 2px solid transparent;
-      transition: border-color 0.25s;
-    }
-
-    .backlink a:hover { border-bottom-color: var(--text); }
-
-    .footer {
-      padding-block: 48px 64px;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px 32px;
-      font-size: 0.85rem;
-      color: var(--muted);
-    }
-
-    .footer .spacer { margin-left: auto; }
-    .footer a { text-decoration: none; border-bottom: 1px solid var(--line); }
-    .footer a:hover { border-color: var(--muted); }
-
-    /* ============================================================
-       7. 등장 모션
-       ============================================================ */
-    .js .reveal {
-      opacity: 0;
-      transform: translateY(20px);
-      transition: opacity 0.7s ease, transform 0.7s ease;
-    }
-
-    .js .reveal.in { opacity: 1; transform: none; }
-    .js .reveal.d1 { transition-delay: 0.08s; }
-    .js .reveal.d2 { transition-delay: 0.16s; }
-
-    /* ============================================================
-       8. 좁은 화면
-       ============================================================ */
-    @media (max-width: 900px) {
-      .section {
-        grid-template-columns: 1fr;
-        gap: 24px;
-        padding-block: 72px;
-      }
-
-      .section-label { position: static; }
-
-      .intro-grid { grid-template-columns: 1fr; gap: 32px; }
-      .photo { max-width: 260px; }
-
-      .item { grid-template-columns: 1fr; gap: 2px; }
-      .item .year { padding-top: 0; }
-
-      .post .date { margin-left: 0; }
-
-      .nav-inner { gap: 16px; }
-      .nav-links { gap: 16px; }
-    }
-
+    @media (hover: none), (pointer: coarse) { .cursor-dot { display: none; } }
     @media (prefers-reduced-motion: reduce) {
       html { scroll-behavior: auto; }
-      *, *::before, *::after {
-        animation-duration: 0.01ms !important;
-        transition-duration: 0.01ms !important;
-      }
-      .js .reveal { opacity: 1; transform: none; }
+      *, *::before, *::after { animation: none !important; transition: none !important; }
+      .reveal, .item { opacity: 1 !important; transform: none !important; }
+      .cursor-dot { display: none; }
+    }
+    /* 소개와 커뮤니티에서 동일한 탐색 패널을 사용한다. */
+    .layout { display: grid; grid-template-columns: minmax(285px, 31%) minmax(0, 1fr); max-width: var(--shell); margin-inline: auto; align-items: start; }
+    .pane { position: sticky; top: 0; height: 100vh; height: 100svh; min-height: 650px; display: flex; flex-direction: column; justify-content: space-between; gap: 32px; padding: 40px clamp(26px, 3.4vw, 52px); border-right: 1px solid var(--line); }
+    .back-link { display: inline-flex; align-items: center; gap: 10px; min-height: 46px; font-size: 1.3rem; font-weight: 650; text-decoration: none; letter-spacing: -.04em; }
+    .back-link:hover { text-decoration: underline; }
+    .pane .theme-toggle { position: absolute; top: 40px; right: clamp(26px, 3.4vw, 52px); }
+    .pane-head .eyebrow { display: block; margin-top: 44px; }
+    .pane-title { font-size: clamp(2.9rem, 5vw, 4.6rem); font-weight: 550; line-height: 1.05; letter-spacing: -.055em; margin: 12px 0 0; }
+    .pane-sub { color: var(--muted); font-size: 1rem; max-width: 31ch; margin: 20px 0 0; }
+    .pane-nav { display: flex; flex-direction: column; gap: 4px; }
+    .pane-nav a, .pane-nav button { display: flex; width: 100%; align-items: center; gap: 14px; padding: 12px 0; min-height: 48px; background: none; color: var(--muted); border: 0; text-align: left; text-decoration: none; font-size: 1rem; transition: color .2s; }
+    .pane-nav .n { font-family: var(--font-mono); font-size: .88rem; }
+    .pane-nav .bar { width: 20px; height: 1px; flex: 0 0 auto; background: var(--line); transition: width .25s, background .25s; }
+    .pane-nav a:hover, .pane-nav button:hover, .pane-nav .active { color: var(--text); }
+    .pane-nav .active { font-weight: 600; }
+    .pane-nav .active .bar { width: 44px; background: var(--text); }
+    .pane-foot { display: flex; flex-direction: column; gap: 28px; }
+    .giant { margin: 0; font-family: var(--font-mono); font-size: clamp(5rem, 12vw, 11rem); font-weight: 500; line-height: .9; letter-spacing: -.07em; color: transparent; -webkit-text-stroke: 1px var(--line); user-select: none; }
+    .pane-meta { display: flex; flex-direction: column; gap: 5px; color: var(--muted); font-family: var(--font-mono); font-size: .88rem; overflow-wrap: anywhere; }
+    .pane-meta a { text-decoration: none; }
+    .pane-meta a:hover { text-decoration: underline; }
+    .pane-meta .page-crosslink { color: var(--text); padding-top: 10px; }
+    .content { padding: 64px clamp(28px, 5vw, 80px) 0; min-width: 0; }
+    .block { padding: 0 0 90px; min-width: 0; scroll-margin-top: 28px; }
+    .block + .block { border-top: 1px solid var(--line); padding-top: 56px; }
+    .block-head { display: flex; align-items: baseline; gap: 16px; margin-bottom: 38px; }
+    .block-num { font: .88rem var(--font-mono); color: var(--muted); }
+    .block-head h2 { margin: 0; font-size: clamp(1.7rem, 3vw, 2.5rem); font-weight: 500; line-height: 1.15; letter-spacing: -.04em; }
+    .content-end { border-top: 1px solid var(--line); padding-block: 42px 48px; }
+    .content-end a { display: flex; align-items: center; justify-content: space-between; gap: 20px; text-decoration: none; font-size: clamp(1.6rem, 3.4vw, 3rem); letter-spacing: -.04em; line-height: 1.3; }
+    .content-end a:hover { text-decoration: underline; }
+    @media (max-height: 780px) and (min-width: 981px) {
+      .pane { min-height: 0; height: auto; min-height: 100svh; gap: 28px; padding-block: 28px; }
+      .pane .theme-toggle { top: 28px; }
+      .pane-head .eyebrow { margin-top: 20px; }
+      .giant { display: none; }
+    }
+    @media (max-width: 980px) {
+      .layout { grid-template-columns: 1fr; }
+      .pane { position: relative; height: auto; min-height: 0; padding: 24px var(--gutter) 28px; border-right: 0; border-bottom: 1px solid var(--line); gap: 24px; }
+      .pane .theme-toggle { top: 24px; right: var(--gutter); }
+      .pane-head .eyebrow { margin-top: 28px; }
+      .pane-title { font-size: clamp(2.8rem, 8vw, 4.4rem); }
+      .pane-sub { max-width: 52ch; margin-top: 16px; }
+      .pane-nav { flex-direction: row; flex-wrap: wrap; gap: 4px 24px; }
+      .pane-nav a, .pane-nav button { width: auto; gap: 8px; border-bottom: 1px solid transparent; padding: 10px 0; }
+      .pane-nav .active { border-bottom-color: var(--text); }
+      .pane-nav .bar, .giant { display: none; }
+      .pane-foot { gap: 0; }
+      .pane-meta { flex-direction: row; flex-wrap: wrap; gap: 8px 24px; }
+      .pane-meta .page-crosslink { padding-top: 0; }
+      .pane-meta .copyright { display: none; }
+      .content { padding: 40px var(--gutter) 0; }
+      .block { padding-bottom: 60px; }
+      .block + .block { padding-top: 40px; }
+    }
+    @media (max-width: 380px) {
+      .pane-nav { gap: 4px 17px; }
+      .pane-nav a, .pane-nav button { font-size: .94rem; }
+    }
+    .intro-title { font-size: clamp(2.7rem, 5.5vw, 5.2rem); font-weight: 500; letter-spacing: -.055em; line-height: 1.08; margin: 0 0 36px; }
+    .intro-title span { color: var(--muted); }
+    .intro-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(160px, 36%); gap: 32px; align-items: center; }
+    .lead { margin: 0 0 18px; font-size: 1.2rem; line-height: 1.7; overflow-wrap: anywhere; }
+    .lead + .lead { color: var(--muted); font-size: 1.05rem; }
+    .photo { position: relative; display: flex; flex-direction: column; justify-content: space-between; aspect-ratio: 4 / 5; padding: 18px; overflow: hidden; color: var(--bg); background: var(--text); }
+    .photo::before { content: ""; position: absolute; width: 130%; aspect-ratio: 1; border: 1px solid currentColor; border-radius: 50%; left: -15%; top: 25%; opacity: .35; }
+    .photo::after { content: ""; position: absolute; width: 70%; aspect-ratio: 1; border: 1px solid currentColor; border-radius: 50%; left: 15%; top: 40%; opacity: .35; }
+    .photo .monogram { font-size: clamp(2.5rem, 4.8vw, 4.7rem); font-weight: 500; letter-spacing: -.09em; line-height: 1; position: relative; z-index: 1; }
+    .photo .mono { font-size: .88rem; position: relative; z-index: 1; }
+    .keywords { list-style: none; margin: 0; padding: 0; counter-reset: interests; }
+    .keywords li { position: relative; border-bottom: 1px solid var(--line); padding: 24px 44px 24px 0; }
+    .keywords li:first-child { padding-top: 0; }
+    .keywords li::after { content: "+"; position: absolute; right: 0; top: 24px; font-size: 1.6rem; color: var(--muted); }
+    .keywords li:first-child::after { top: 0; }
+    .kw { display: block; font-size: clamp(1.9rem, 3.6vw, 3rem); letter-spacing: -.04em; line-height: 1.15; }
+    .kw-desc { display: block; font-size: 1.05rem; margin-top: 8px; color: var(--muted); }
+    .timeline { display: grid; }
+    .item { display: grid; grid-template-columns: 155px minmax(0, 1fr); gap: 12px 24px; padding: 28px 0; border-bottom: 1px solid var(--line); }
+    .item:first-child { padding-top: 0; }
+    .year { font-family: var(--font-mono); font-size: .88rem; color: var(--muted); }
+    .role { font-size: 1.14rem; font-weight: 550; line-height: 1.5; }
+    .detail { display: block; margin-top: 6px; font-size: 1rem; color: var(--muted); }
+    .empty { margin: 0; padding: 32px 0; font-size: 1rem; color: var(--muted); }
+    .posts { border-block: 1px solid var(--line); }
+    @media (max-width: 1150px) { .item { grid-template-columns: 1fr; gap: 8px; } }
+    @media (max-width: 600px) {
+      .intro-grid { grid-template-columns: 1fr; gap: 22px; }
+      .photo { width: 100%; aspect-ratio: 3 / 2; padding: 24px; }
+      .photo .monogram { font-size: 4.7rem; }
+      .intro-title { font-size: 2.8rem; }
     }
   </style>
 </head>
-
 <body>
+  <a class="skip-link" href="#main">Skip to content</a>
 
-  <!-- ===== 내비 ===== -->
-  <nav class="nav" id="nav">
-    <div class="nav-inner">
-      <a class="nav-brand" href="index.html">← OOO</a>
-      <div class="nav-links">
-        <a href="#intro"><span class="num">01</span> Intro</a>
-        <a href="#interests">02 Interests</a>
-        <a href="#history">03 History</a>
-        <a href="#posts">04 Posts</a>
+  <div class="layout">
+
+    <!-- ===== 왼쪽 고정 패널 ===== -->
+    <aside class="pane">
+      <div class="pane-head">
+        <a class="back-link magnetic" href="index.html">← 824</a>
+        <span class="eyebrow">01 / THE PERSON</span>
+        <h1 class="pane-title">Profile.</h1>
+        <p class="pane-sub">OOO — undergraduate researcher in the Department of OOOO at OO University.</p>
       </div>
-      <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">☾</button>
-    </div>
-  </nav>
 
-  <!-- ===== 히어로 ===== -->
-  <header class="hero-inner">
-    <h1 class="reveal">Profile</h1>
-    <p class="sub reveal d1">Introducing OOO, an undergraduate researcher in the Department of OOOO at OO University.</p>
-  </header>
+      <nav class="pane-nav" id="paneNav" aria-label="Profile sections">
+        <a href="#intro"><span class="n">01</span><span class="bar"></span><span class="t">Intro</span></a>
+        <a href="#interests"><span class="n">02</span><span class="bar"></span><span class="t">Interests</span></a>
+        <a href="#history"><span class="n">03</span><span class="bar"></span><span class="t">History</span></a>
+        <a href="#posts"><span class="n">04</span><span class="bar"></span><span class="t">Posts</span></a>
+      </nav>
 
-  <main class="shell">
-
-    <!-- ===== 01 소개 ===== -->
-    <section class="section" id="intro">
-      <h2 class="section-label reveal"><span class="num">01</span> Intro</h2>
-      <div class="section-body reveal d1">
-        <div class="intro-grid">
-          <div>
-            <p class="lead">OOO</p>
-            <p class="lead">OOO</p>
-          </div>
-          <div class="photo">Photo</div>
+      <div class="pane-foot">
+        <p class="giant" id="giantNum" aria-hidden="true">01</p>
+        <div class="pane-meta">
+          <span>Email · OOOOO [at] OOOOOO</span>
+          <span>GitHub · <a href="https://github.com/afoc824">github.com/afoc824</a></span>
+          <a class="page-crosslink" href="community.html">Community ↗</a>
+          <span class="copyright">© 2026 OOO</span>
         </div>
       </div>
-    </section>
 
-    <!-- ===== 02 연구 관심사 ===== -->
-    <section class="section" id="interests">
-      <h2 class="section-label reveal"><span class="num">02</span> Interests</h2>
-      <div class="section-body reveal d1">
-        <ul class="keywords">
-          <li>
-            <span class="kw">OOO</span>
-            <span class="kw-desc">OOO</span>
-          </li>
-          <li>
-            <span class="kw">OOO</span>
-            <span class="kw-desc">OOO</span>
-          </li>
-          <li>
-            <span class="kw">OOO</span>
-            <span class="kw-desc">OOO</span>
-          </li>
-        </ul>
-      </div>
-    </section>
+      <button class="theme-toggle" id="themeToggle" type="button" aria-label="Switch theme"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M20.5 13.5A8.5 8.5 0 0 1 10.5 3.5a8.5 8.5 0 1 0 10 10Z"/></svg></button>
+    </aside>
 
-    <!-- ===== 03 이력 ===== -->
-    <section class="section" id="history">
-      <h2 class="section-label reveal"><span class="num">03</span> History</h2>
-      <div class="section-body reveal d1">
+    <!-- ===== 오른쪽 본문 ===== -->
+    <main class="content" id="main">
+
+      <!-- ===== 01 Intro ===== -->
+      <section class="block" id="intro">
+        <header class="block-head reveal">
+          <span class="block-num">01</span>
+          <h2>Intro</h2>
+        </header>
+        <div class="reveal d1">
+          <h3 class="intro-title">A little<br><span>about me.</span></h3>
+          <div class="intro-grid">
+            <div>
+              <p class="lead">Hello, I’m OOO.</p>
+              <p class="lead">Undergraduate researcher in the Department of OOOO at OO University.</p>
+            </div>
+            <div class="photo" aria-label="OOO profile monogram"><span class="mono">THE PERSON BEHIND 824</span><span class="monogram" aria-hidden="true">OOO</span><span class="mono">PROFILE / 01</span></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== 02 Interests ===== -->
+      <section class="block" id="interests">
+        <header class="block-head reveal">
+          <span class="block-num">02</span>
+          <h2>Interests</h2>
+        </header>
+        <div class="reveal d1">
+          <ul class="keywords">
+            <li>
+              <span class="kw">OOO</span>
+              <span class="kw-desc">OOO</span>
+            </li>
+            <li>
+              <span class="kw">OOO</span>
+              <span class="kw-desc">OOO</span>
+            </li>
+            <li>
+              <span class="kw">OOO</span>
+              <span class="kw-desc">OOO</span>
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- ===== 03 History ===== -->
+      <section class="block" id="history">
+        <header class="block-head reveal">
+          <span class="block-num">03</span>
+          <h2>History</h2>
+        </header>
         <div class="timeline">
 
           <div class="item">
@@ -528,112 +315,111 @@
           </div>
 
         </div>
-      </div>
-    </section>
+      </section>
 
-    <!-- ===== 04 글 ===== -->
-    <section class="section" id="posts">
-      <h2 class="section-label reveal"><span class="num">04</span> Posts</h2>
-      <div class="section-body reveal d1">
-        <div class="posts">
-          <p class="empty">No posts yet.</p>
+      <!-- ===== 04 Posts ===== -->
+      <section class="block" id="posts">
+        <header class="block-head reveal">
+          <span class="block-num">04</span>
+          <h2>Posts</h2>
+        </header>
+        <div class="reveal d1">
+          <div class="posts">
+            <p class="empty">No posts yet.</p>
+          </div>
         </div>
+      </section>
+
+      <div class="content-end">
+        <a href="community.html"><span>Join the conversation.</span><span aria-hidden="true">↗</span></a>
       </div>
-    </section>
 
-    <div class="backlink">
-      <a href="index.html">← Back</a>
-    </div>
+    </main>
+  </div>
 
-  </main>
-
-  <!-- ===== 푸터 ===== -->
-  <footer class="footer shell">
-    <span>Email · OOOOO [at] OOOOOO</span>
-    <span>GitHub · <a href="https://github.com/afoc824">github.com/afoc824</a></span>
-    <span class="spacer">© 2026 OOO</span>
-  </footer>
 
   <script>
-    // ===== 테마 토글 =====
+    // 테마 저장에 실패하더라도 전환 기능은 유지한다.
     (function () {
-      var toggle = document.getElementById("themeToggle");
       var root = document.documentElement;
-
-      function current() {
-        return root.getAttribute("data-theme") === "dark" ? "dark" : "light";
-      }
-
+      var toggle = document.getElementById("themeToggle");
+      var sun = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5"/></svg>';
+      var moon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M20.5 13.5A8.5 8.5 0 0 1 10.5 3.5a8.5 8.5 0 1 0 10 10Z"/></svg>';
       function label() {
-        toggle.textContent = current() === "dark" ? "☀" : "☾";
+        var dark = root.getAttribute("data-theme") === "dark";
+        toggle.innerHTML = dark ? sun : moon;
+        toggle.setAttribute("aria-label", dark ? "Switch to light theme" : "Switch to dark theme");
+        toggle.title = dark ? "Light theme" : "Dark theme";
       }
-
       label();
-
-      toggle.onclick = function () {
-        var next = current() === "dark" ? "light" : "dark";
+      toggle.addEventListener("click", function () {
+        var next = root.getAttribute("data-theme") === "dark" ? "light" : "dark";
         root.setAttribute("data-theme", next);
-        localStorage.setItem("theme", next);
+        try { localStorage.setItem("theme", next); } catch (e) {}
         label();
-      };
-    })();
-
-    // ===== 내비 경계선 =====
-    (function () {
-      var nav = document.getElementById("nav");
-      function onScroll() {
-        nav.classList.toggle("scrolled", window.scrollY > 8);
-      }
-      onScroll();
-      window.addEventListener("scroll", onScroll, { passive: true });
-    })();
-
-    // ===== 등장 모션 =====
-    (function () {
-      var targets = document.querySelectorAll(".reveal");
-
-      function showAll() {
-        targets.forEach(function (el) { el.classList.add("in"); });
-      }
-
-      if (!("IntersectionObserver" in window)) { showAll(); return; }
-
-      var io = new IntersectionObserver(function (entries) {
-        entries.forEach(function (e) {
-          if (e.isIntersecting) {
-            e.target.classList.add("in");
-            io.unobserve(e.target);
-          }
-        });
-      }, { threshold: 0.12, rootMargin: "0px 0px -8% 0px" });
-
-      targets.forEach(function (el) { io.observe(el); });
-
-      // 안전장치: 3초 안에 아무것도 안 보이면 전부 표시
-      setTimeout(function () {
-        if (!document.querySelector(".reveal.in")) showAll();
-      }, 3000);
-    })();
-
-    // ===== 현재 섹션 표시 =====
-    (function () {
-      var links = document.querySelectorAll(".nav-links a[href^='#']");
-      var map = {};
-      links.forEach(function (a) { map[a.getAttribute("href").slice(1)] = a; });
-
-      var io = new IntersectionObserver(function (entries) {
-        entries.forEach(function (e) {
-          var a = map[e.target.id];
-          if (a) a.classList.toggle("active", e.isIntersecting);
-        });
-      }, { rootMargin: "-45% 0px -50% 0px" });
-
-      Object.keys(map).forEach(function (id) {
-        var el = document.getElementById(id);
-        if (el) io.observe(el);
+      });
+      window.addEventListener("storage", function (event) {
+        if (event.key === "theme" && (event.newValue === "dark" || event.newValue === "light")) {
+          root.setAttribute("data-theme", event.newValue); label();
+        }
       });
     })();
+    // 실패해도 본문이 숨겨지지 않는 점진적 등장 효과.
+    (function () {
+      if (!("IntersectionObserver" in window) || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+      var observer = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) { entry.target.classList.add("in"); observer.unobserve(entry.target); }
+        });
+      }, { threshold: .08 });
+      document.querySelectorAll(".reveal").forEach(function (element) { observer.observe(element); });
+    })();
+    // 마우스에만 작은 보조 커서를 표시하고 기본 포인터도 유지한다.
+    (function () {
+      var motion = window.matchMedia("(prefers-reduced-motion: reduce)");
+      var pointer = window.matchMedia("(hover: hover) and (pointer: fine)");
+      var dot = document.createElement("div");
+      dot.className = "cursor-dot";
+      dot.setAttribute("aria-hidden", "true");
+      document.body.appendChild(dot);
+      document.addEventListener("pointermove", function (event) {
+        if (motion.matches || !pointer.matches || event.pointerType !== "mouse") { dot.classList.remove("active"); return; }
+        dot.style.transform = "translate(" + event.clientX + "px," + event.clientY + "px)";
+        dot.classList.toggle("active", !event.target.closest("input, textarea, select"));
+        dot.classList.toggle("big", !!event.target.closest("a, button"));
+      }, { passive: true });
+      document.documentElement.addEventListener("pointerleave", function () { dot.classList.remove("active"); });
+      window.addEventListener("blur", function () { dot.classList.remove("active"); });
+    })();
+    // 화면 상단에 가까운 섹션을 메뉴와 큰 숫자에 함께 반영한다.
+    (function () {
+      var links = Array.from(document.querySelectorAll(".pane-nav a"));
+      var sections = links.map(function (link) { return document.querySelector(link.getAttribute("href")); });
+      var giant = document.getElementById("giantNum");
+      var ticking = false;
+      function update() {
+        var active = 0;
+        sections.forEach(function (section, index) {
+          if (section && section.getBoundingClientRect().top <= window.innerHeight * .35) active = index;
+        });
+        // 마지막 섹션이 짧아 화면 위쪽까지 올라오지 못하는 경우도 반영한다.
+        if (window.scrollY > 0 && window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 2) {
+          active = sections.length - 1;
+        }
+        links.forEach(function (link, index) {
+          link.classList.toggle("active", index === active);
+          if (index === active) link.setAttribute("aria-current", "location");
+          else link.removeAttribute("aria-current");
+        });
+        if (giant) giant.textContent = links[active].querySelector(".n").textContent;
+        ticking = false;
+      }
+      window.addEventListener("scroll", function () {
+        if (!ticking) { ticking = true; requestAnimationFrame(update); }
+      }, { passive: true });
+      window.addEventListener("resize", update);
+      update();
+    })();
   </script>
-
 </body>
 </html>
