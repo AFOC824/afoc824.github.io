@@ -25,232 +25,147 @@
   <meta property="og:title" content="Profile — 824">
   <meta property="og:description" content="A little about OOO. Interests, history, and notes.">
   <style>
-    /* 세 페이지에서 같은 색상, 서체와 조작 방식을 사용한다. */
+    /* 모든 페이지에서 같은 색상과 서체를 사용한다. */
     :root {
       --bg: #f8f8f8; --surface: #eeeeee; --text: #181818;
       --muted: #626262; --faint: #707070; --line: #d5d5d5; --field: #ffffff;
-      --cursor: #ffffff; --shell: 1440px; --gutter: clamp(22px, 5vw, 80px);
+      --shell: 1440px; --gutter: clamp(22px, 5vw, 80px);
       --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
     }
     [data-theme="dark"] {
       --bg: #141414; --surface: #202020; --text: #f2f2f2;
       --muted: #aaaaaa; --faint: #9b9b9b; --line: #3c3c3c; --field: #1b1b1b;
-      --cursor: #ffffff;
     }
     *, *::before, *::after { box-sizing: border-box; }
     html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; scroll-padding-top: 28px; }
     body { margin: 0; background: var(--bg); color: var(--text); font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, sans-serif; font-size: 17px; line-height: 1.65; font-feature-settings: "ss01"; }
     a { color: inherit; text-underline-offset: 5px; }
     button, input, textarea, select { font: inherit; }
-    button, a, input, textarea, select { -webkit-tap-highlight-color: transparent; }
-    button, select { cursor: pointer; }
-    button { color: inherit; }
-    button:disabled { cursor: wait; opacity: .55; }
-    a, button { touch-action: manipulation; }
-    button, input, textarea, select { border-radius: 0; }
-    input, textarea, select { max-width: 100%; min-width: 0; color: var(--text); background: var(--field); }
-    textarea { resize: vertical; }
+    button, a { touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+    button { color: inherit; cursor: pointer; }
     img, svg { display: block; max-width: 100%; }
     ::selection { background: var(--text); color: var(--bg); }
     :focus-visible { outline: 2px solid var(--text); outline-offset: 6px; }
     [hidden] { display: none !important; }
-    .shell { width: 100%; max-width: var(--shell); margin-inline: auto; padding-inline: var(--gutter); }
-    .mono, .eyebrow { font-family: var(--font-mono); font-size: .88rem; font-weight: 400; letter-spacing: -.02em; }
+    .page-shell { width: 100%; max-width: var(--shell); margin-inline: auto; padding-inline: var(--gutter); }
+    .mono, .eyebrow { font-family: var(--font-mono); font-size: .88rem; font-weight: 400; }
     .eyebrow { text-transform: uppercase; color: var(--muted); }
     .skip-link { position: fixed; top: 12px; left: 12px; z-index: 100; padding: 12px 20px; background: var(--text); color: var(--bg); transform: translateY(-160%); }
     .skip-link:focus { transform: none; }
-    .site-header { min-height: 104px; display: flex; align-items: center; justify-content: space-between; gap: 24px; border-bottom: 1px solid var(--line); }
-    .wordmark { font-size: 1.7rem; font-weight: 750; letter-spacing: -.07em; text-decoration: none; }
-    .header-note { margin-right: auto; color: var(--muted); }
-    .site-nav { display: flex; align-items: center; gap: 30px; }
-    .site-nav a { padding-block: 12px; text-decoration: none; font-size: .94rem; }
-    .site-nav a:hover, .site-nav a[aria-current="page"] { text-decoration: underline; }
-    .theme-toggle { flex: 0 0 auto; display: grid; place-items: center; width: 46px; height: 46px; padding: 0; border: 1px solid var(--line); border-radius: 50%; background: var(--bg); color: var(--text); transition: background .2s, color .2s, transform .2s; }
-    .theme-toggle:hover { background: var(--text); color: var(--bg); transform: rotate(-12deg); }
+    .page-header { min-height: 96px; display: flex; align-items: center; gap: 24px; border-bottom: 1px solid var(--line); }
+    .brand { display: inline-flex; align-items: center; min-height: 44px; font: .94rem var(--font-mono); text-decoration: none; }
+    .page-nav { display: flex; align-items: center; gap: 26px; margin-left: auto; }
+    .page-nav a { display: inline-flex; align-items: center; min-height: 44px; font-size: 1rem; text-decoration: none; }
+    .page-nav a:hover, .page-nav a[aria-current="page"] { text-decoration: underline; }
+    .theme-toggle { flex: 0 0 auto; display: grid; place-items: center; width: 46px; height: 46px; padding: 0; border: 1px solid var(--line); border-radius: 50%; background: var(--bg); color: var(--text); transition: background .2s, color .2s; }
+    .theme-toggle:hover { background: var(--text); color: var(--bg); }
     .theme-toggle svg { width: 20px; height: 20px; }
-    .site-footer { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px 24px; border-top: 1px solid var(--line); padding-block: 26px; color: var(--muted); font-family: var(--font-mono); font-size: .88rem; }
-    .site-footer a { padding-block: 10px; text-decoration: none; }
-    .site-footer a:hover { color: var(--text); }
-    .arrow { font-weight: 400; line-height: 1; }
-    /* 본문은 기본으로 보이고, 스크립트가 정상 실행된 경우에만 모션을 더한다. */
+    .page-footer { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px 24px; border-top: 1px solid var(--line); padding-block: 22px; color: var(--muted); font: .88rem/1.65 var(--font-mono); overflow-wrap: anywhere; }
+    .page-footer a { padding-block: 10px; text-decoration: none; }
+    .page-footer a:hover { color: var(--text); text-decoration: underline; }
+    /* 스크립트 없이도 모든 내용을 읽을 수 있는 등장 효과. */
     .reveal.in { animation: appear .65s cubic-bezier(.2,.8,.2,1) both; }
     .reveal.d1.in { animation-delay: .08s; }
     .reveal.d2.in { animation-delay: .16s; }
     @keyframes appear { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
-    .cursor-dot { position: fixed; top: 0; left: 0; width: 24px; height: 24px; margin: -12px 0 0 -12px; border: 1px solid var(--cursor); border-radius: 50%; mix-blend-mode: difference; opacity: 0; pointer-events: none; z-index: 99; transition: width .2s, height .2s, margin .2s, opacity .2s; }
-    .cursor-dot.active { opacity: .7; }
-    .cursor-dot.big { width: 42px; height: 42px; margin: -21px 0 0 -21px; }
     @media (max-width: 600px) {
-      .site-header { min-height: 84px; gap: 16px; }
-      .header-note { display: none; }
-      .site-nav { gap: 18px; margin-left: auto; }
-      .site-nav a { font-size: .9rem; }
-      .site-footer { align-items: flex-start; }
+      .page-header { min-height: 80px; gap: 16px; }
+      .page-nav { gap: 18px; }
+      .page-nav a { font-size: .94rem; }
+      .page-footer { align-items: flex-start; }
     }
-    @media (hover: none), (pointer: coarse) { .cursor-dot { display: none; } }
     @media (prefers-reduced-motion: reduce) {
       html { scroll-behavior: auto; }
       *, *::before, *::after { animation: none !important; transition: none !important; }
-      .reveal, .item { opacity: 1 !important; transform: none !important; }
-      .cursor-dot { display: none; }
+      .reveal { opacity: 1 !important; transform: none !important; }
     }
-    /* 소개와 커뮤니티에서 동일한 탐색 패널을 사용한다. */
-    .layout { display: grid; grid-template-columns: minmax(285px, 31%) minmax(0, 1fr); max-width: var(--shell); margin-inline: auto; align-items: start; }
-    .pane { position: sticky; top: 0; height: 100vh; height: 100svh; min-height: 650px; display: flex; flex-direction: column; justify-content: space-between; gap: 32px; padding: 40px clamp(26px, 3.4vw, 52px); border-right: 1px solid var(--line); }
-    .back-link { display: inline-flex; align-items: center; gap: 10px; min-height: 46px; font-size: 1.3rem; font-weight: 650; text-decoration: none; letter-spacing: -.04em; }
-    .back-link:hover { text-decoration: underline; }
-    .pane .theme-toggle { position: absolute; top: 40px; right: clamp(26px, 3.4vw, 52px); }
-    .pane-head .eyebrow { display: block; margin-top: 44px; }
-    .pane-title { font-size: clamp(2.9rem, 5vw, 4.6rem); font-weight: 550; line-height: 1.05; letter-spacing: -.055em; margin: 12px 0 0; }
-    .pane-sub { color: var(--muted); font-size: 1rem; max-width: 31ch; margin: 20px 0 0; }
-    .pane-nav { display: flex; flex-direction: column; gap: 4px; }
-    .pane-nav a, .pane-nav button { display: flex; width: 100%; align-items: center; gap: 14px; padding: 12px 0; min-height: 48px; background: none; color: var(--muted); border: 0; text-align: left; text-decoration: none; font-size: 1rem; transition: color .2s; }
-    .pane-nav .n { font-family: var(--font-mono); font-size: .88rem; }
-    .pane-nav .bar { width: 20px; height: 1px; flex: 0 0 auto; background: var(--line); transition: width .25s, background .25s; }
-    .pane-nav a:hover, .pane-nav button:hover, .pane-nav .active { color: var(--text); }
-    .pane-nav .active { font-weight: 600; }
-    .pane-nav .active .bar { width: 44px; background: var(--text); }
-    .pane-foot { display: flex; flex-direction: column; gap: 28px; }
-    .giant { margin: 0; font-family: var(--font-mono); font-size: clamp(5rem, 12vw, 11rem); font-weight: 500; line-height: .9; letter-spacing: -.07em; color: transparent; -webkit-text-stroke: 1px var(--line); user-select: none; }
-    .pane-meta { display: flex; flex-direction: column; gap: 5px; color: var(--muted); font-family: var(--font-mono); font-size: .88rem; overflow-wrap: anywhere; }
-    .pane-meta a { text-decoration: none; }
-    .pane-meta a:hover { text-decoration: underline; }
-    .pane-meta .page-crosslink { color: var(--text); padding-top: 10px; }
-    .content { padding: 64px clamp(28px, 5vw, 80px) 0; min-width: 0; }
-    .block { padding: 0 0 90px; min-width: 0; scroll-margin-top: 28px; }
-    .block + .block { border-top: 1px solid var(--line); padding-top: 56px; }
-    .block-head { display: flex; align-items: baseline; gap: 16px; margin-bottom: 38px; }
-    .block-num { font: .88rem var(--font-mono); color: var(--muted); }
-    .block-head h2 { margin: 0; font-size: clamp(1.7rem, 3vw, 2.5rem); font-weight: 500; line-height: 1.15; letter-spacing: -.04em; }
-    .content-end { border-top: 1px solid var(--line); padding-block: 42px 48px; }
-    .content-end a { display: flex; align-items: center; justify-content: space-between; gap: 20px; text-decoration: none; font-size: clamp(1.6rem, 3.4vw, 3rem); letter-spacing: -.04em; line-height: 1.3; }
-    .content-end a:hover { text-decoration: underline; }
-    @media (max-height: 780px) and (min-width: 981px) {
-      .pane { min-height: 0; height: auto; min-height: 100svh; gap: 28px; padding-block: 28px; }
-      .pane .theme-toggle { top: 28px; }
-      .pane-head .eyebrow { margin-top: 20px; }
-      .giant { display: none; }
-    }
-    @media (max-width: 980px) {
-      .layout { grid-template-columns: 1fr; }
-      .pane { position: relative; height: auto; min-height: 0; padding: 24px var(--gutter) 28px; border-right: 0; border-bottom: 1px solid var(--line); gap: 24px; }
-      .pane .theme-toggle { top: 24px; right: var(--gutter); }
-      .pane-head .eyebrow { margin-top: 28px; }
-      .pane-title { font-size: clamp(2.8rem, 8vw, 4.4rem); }
-      .pane-sub { max-width: 52ch; margin-top: 16px; }
-      .pane-nav { flex-direction: row; flex-wrap: wrap; gap: 4px 24px; }
-      .pane-nav a, .pane-nav button { width: auto; gap: 8px; border-bottom: 1px solid transparent; padding: 10px 0; }
-      .pane-nav .active { border-bottom-color: var(--text); }
-      .pane-nav .bar, .giant { display: none; }
-      .pane-foot { gap: 0; }
-      .pane-meta { flex-direction: row; flex-wrap: wrap; gap: 8px 24px; }
-      .pane-meta .page-crosslink { padding-top: 0; }
-      .pane-meta .copyright { display: none; }
-      .content { padding: 40px var(--gutter) 0; }
-      .block { padding-bottom: 60px; }
-      .block + .block { padding-top: 40px; }
-    }
-    @media (max-width: 380px) {
-      .pane-nav { gap: 4px 17px; }
-      .pane-nav a, .pane-nav button { font-size: .94rem; }
-    }
-    .intro-title { font-size: clamp(2.7rem, 5.5vw, 5.2rem); font-weight: 500; letter-spacing: -.055em; line-height: 1.08; margin: 0 0 36px; }
-    .intro-title span { color: var(--muted); }
-    .intro-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(160px, 36%); gap: 32px; align-items: center; }
-    .lead { margin: 0 0 18px; font-size: 1.2rem; line-height: 1.7; overflow-wrap: anywhere; }
-    .lead + .lead { color: var(--muted); font-size: 1.05rem; }
-    .photo { position: relative; display: flex; flex-direction: column; justify-content: space-between; aspect-ratio: 4 / 5; padding: 18px; overflow: hidden; color: var(--bg); background: var(--text); }
-    .photo::before { content: ""; position: absolute; width: 130%; aspect-ratio: 1; border: 1px solid currentColor; border-radius: 50%; left: -15%; top: 25%; opacity: .35; }
-    .photo::after { content: ""; position: absolute; width: 70%; aspect-ratio: 1; border: 1px solid currentColor; border-radius: 50%; left: 15%; top: 40%; opacity: .35; }
-    .photo .monogram { font-size: clamp(2.5rem, 4.8vw, 4.7rem); font-weight: 500; letter-spacing: -.09em; line-height: 1; position: relative; z-index: 1; }
-    .photo .mono { font-size: .88rem; position: relative; z-index: 1; }
-    .keywords { list-style: none; margin: 0; padding: 0; counter-reset: interests; }
-    .keywords li { position: relative; border-bottom: 1px solid var(--line); padding: 24px 44px 24px 0; }
-    .keywords li:first-child { padding-top: 0; }
-    .keywords li::after { content: "+"; position: absolute; right: 0; top: 24px; font-size: 1.6rem; color: var(--muted); }
-    .keywords li:first-child::after { top: 0; }
-    .kw { display: block; font-size: clamp(1.9rem, 3.6vw, 3rem); letter-spacing: -.04em; line-height: 1.15; }
-    .kw-desc { display: block; font-size: 1.05rem; margin-top: 8px; color: var(--muted); }
+    .profile-hero { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(220px, .65fr); align-items: center; gap: 7%; padding-block: 80px 88px; }
+    .profile-hero .eyebrow { margin: 0 0 26px; }
+    .profile-title { margin: 0; font-size: clamp(3.6rem, 7.8vw, 7.5rem); font-weight: 500; letter-spacing: -.06em; line-height: 1.04; }
+    .profile-title span { color: var(--muted); }
+    .profile-intro { margin-top: 34px; max-width: 44ch; }
+    .profile-intro p { margin: 0 0 12px; font-size: clamp(1.1rem, 1.8vw, 1.4rem); }
+    .profile-intro p + p { color: var(--muted); font-size: 1.05rem; }
+    .portrait { position: relative; display: flex; flex-direction: column; justify-content: space-between; aspect-ratio: 4 / 5; background: var(--text); color: var(--bg); padding: 28px; overflow: hidden; }
+    .portrait::before, .portrait::after { content: ""; position: absolute; width: 120%; aspect-ratio: 1; left: -10%; top: 15%; border: 1px solid currentColor; border-radius: 50%; opacity: .3; }
+    .portrait::after { width: 70%; left: 15%; top: 35%; }
+    .portrait .monogram { position: relative; font-size: clamp(3rem, 6.4vw, 6rem); font-weight: 500; line-height: 1; letter-spacing: -.08em; }
+    .portrait .mono { position: relative; }
+    .reading-section { padding-block: 64px 72px; border-top: 1px solid var(--line); scroll-margin-top: 28px; }
+    .section-heading { display: flex; align-items: baseline; justify-content: space-between; gap: 24px; margin-bottom: 34px; }
+    .section-heading h2 { margin: 0; font-size: clamp(2rem, 3.8vw, 3.5rem); line-height: 1.1; font-weight: 500; letter-spacing: -.045em; }
+    .section-heading p { margin: 0; }
+    .interest-list { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 40px; list-style: none; margin: 0; padding: 0; }
+    .interest-list li { padding-top: 22px; border-top: 1px solid var(--line); min-width: 0; }
+    .kw { display: block; font-size: 1.65rem; line-height: 1.2; letter-spacing: -.03em; }
+    .kw-desc { display: block; margin-top: 12px; color: var(--muted); font-size: 1.05rem; }
     .timeline { display: grid; }
-    .item { display: grid; grid-template-columns: 155px minmax(0, 1fr); gap: 12px 24px; padding: 28px 0; border-bottom: 1px solid var(--line); }
-    .item:first-child { padding-top: 0; }
-    .year { font-family: var(--font-mono); font-size: .88rem; color: var(--muted); }
-    .role { font-size: 1.14rem; font-weight: 550; line-height: 1.5; }
-    .detail { display: block; margin-top: 6px; font-size: 1rem; color: var(--muted); }
-    .empty { margin: 0; padding: 32px 0; font-size: 1rem; color: var(--muted); }
-    .posts { border-block: 1px solid var(--line); }
-    @media (max-width: 1150px) { .item { grid-template-columns: 1fr; gap: 8px; } }
+    .item { display: grid; grid-template-columns: minmax(170px, 24%) minmax(0, 1fr); gap: 16px 40px; padding-block: 28px; border-top: 1px solid var(--line); }
+    .year { color: var(--muted); font: .88rem/1.8 var(--font-mono); padding-top: 3px; }
+    .role { font-size: 1.2rem; font-weight: 550; line-height: 1.5; }
+    .detail { display: block; margin-top: 6px; font-size: 1.05rem; color: var(--muted); }
+    .empty { margin: 0; color: var(--muted); font-size: 1.1rem; }
+    .profile-end { padding-block: 54px 64px; border-top: 1px solid var(--line); }
+    .profile-end p { margin: 0 0 18px; }
+    .profile-end a { display: flex; align-items: center; justify-content: space-between; gap: 24px; text-decoration: none; font-size: clamp(2rem, 4.8vw, 4.5rem); font-weight: 500; letter-spacing: -.05em; line-height: 1.1; }
+    .profile-end a:hover { text-decoration: underline; }
+    @media (max-width: 900px) {
+      .profile-hero { gap: 36px; padding-block: 56px 64px; }
+      .profile-title { font-size: clamp(3.6rem, 7.8vw, 6rem); }
+      .portrait { padding: 22px; }
+      .portrait .mono { font-size: .88rem; }
+      .interest-list { gap: 24px; }
+    }
     @media (max-width: 600px) {
-      .intro-grid { grid-template-columns: 1fr; gap: 22px; }
-      .photo { width: 100%; aspect-ratio: 3 / 2; padding: 24px; }
-      .photo .monogram { font-size: 4.7rem; }
-      .intro-title { font-size: 2.8rem; }
+      .profile-hero { grid-template-columns: 1fr; gap: 32px; padding-block: 40px 48px; }
+      .profile-title { font-size: clamp(3.3rem, 13vw, 4.8rem); }
+      .profile-hero .eyebrow { margin-bottom: 20px; }
+      .profile-intro { margin-top: 26px; }
+      .portrait { aspect-ratio: 3 / 2; padding: 24px; }
+      .portrait .monogram { font-size: 4.4rem; }
+      .reading-section { padding-block: 40px 48px; }
+      .section-heading { display: block; margin-bottom: 26px; }
+      .section-heading p { margin-top: 14px; }
+      .interest-list { grid-template-columns: 1fr; gap: 24px; }
+      .item { grid-template-columns: 1fr; gap: 8px; padding-block: 24px; }
+      .profile-end { padding-block: 40px 48px; }
     }
   </style>
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
-
-  <div class="layout">
-
-    <!-- ===== 왼쪽 고정 패널 ===== -->
-    <aside class="pane">
-      <div class="pane-head">
-        <a class="back-link magnetic" href="index.html">← 824</a>
-        <span class="eyebrow">01 / THE PERSON</span>
-        <h1 class="pane-title">Profile.</h1>
-        <p class="pane-sub">OOO — undergraduate researcher in the Department of OOOO at OO University.</p>
-      </div>
-
-      <nav class="pane-nav" id="paneNav" aria-label="Profile sections">
-        <a href="#intro"><span class="n">01</span><span class="bar"></span><span class="t">Intro</span></a>
-        <a href="#interests"><span class="n">02</span><span class="bar"></span><span class="t">Interests</span></a>
-        <a href="#history"><span class="n">03</span><span class="bar"></span><span class="t">History</span></a>
-        <a href="#posts"><span class="n">04</span><span class="bar"></span><span class="t">Posts</span></a>
+  <div class="page-shell">
+    <header class="page-header">
+      <a class="brand" href="index.html" aria-label="824 home">824.</a>
+      <nav class="page-nav" aria-label="Main navigation">
+        <a href="profile.html" aria-current="page">Profile</a>
+        <a href="community.html">Community</a>
       </nav>
-
-      <div class="pane-foot">
-        <p class="giant" id="giantNum" aria-hidden="true">01</p>
-        <div class="pane-meta">
-          <span>Email · OOOOO [at] OOOOOO</span>
-          <span>GitHub · <a href="https://github.com/afoc824">github.com/afoc824</a></span>
-          <a class="page-crosslink" href="community.html">Community ↗</a>
-          <span class="copyright">© 2026 OOO</span>
-        </div>
-      </div>
-
       <button class="theme-toggle" id="themeToggle" type="button" aria-label="Switch theme"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M20.5 13.5A8.5 8.5 0 0 1 10.5 3.5a8.5 8.5 0 1 0 10 10Z"/></svg></button>
-    </aside>
-
-    <!-- ===== 오른쪽 본문 ===== -->
-    <main class="content" id="main">
-
-      <!-- ===== 01 Intro ===== -->
-      <section class="block" id="intro">
-        <header class="block-head reveal">
-          <span class="block-num">01</span>
-          <h2>Intro</h2>
-        </header>
-        <div class="reveal d1">
-          <h3 class="intro-title">A little<br><span>about me.</span></h3>
-          <div class="intro-grid">
-            <div>
-              <p class="lead">Hello, I’m OOO.</p>
-              <p class="lead">Undergraduate researcher in the Department of OOOO at OO University.</p>
-            </div>
-            <div class="photo" aria-label="OOO profile monogram"><span class="mono">THE PERSON BEHIND 824</span><span class="monogram" aria-hidden="true">OOO</span><span class="mono">PROFILE / 01</span></div>
+    </header>
+    <main id="main" tabindex="-1">
+      <!-- 목차 없이 한 흐름으로 읽는 소개 -->
+      <section class="profile-hero" id="intro" aria-labelledby="profile-title">
+        <div class="reveal">
+          <p class="eyebrow">Profile / OOO</p>
+          <h1 class="profile-title" id="profile-title">A little<br><span>about me.</span></h1>
+          <div class="profile-intro">
+            <p>Hello, I’m OOO.</p>
+            <p>Undergraduate researcher in the Department of OOOO at OO University.</p>
           </div>
         </div>
+        <div class="portrait reveal d1" aria-label="OOO profile monogram">
+          <span class="mono">THE PERSON BEHIND 824</span>
+          <span class="monogram" aria-hidden="true">OOO</span>
+          <span class="mono">ALWAYS CURIOUS.</span>
+        </div>
       </section>
-
-      <!-- ===== 02 Interests ===== -->
-      <section class="block" id="interests">
-        <header class="block-head reveal">
-          <span class="block-num">02</span>
-          <h2>Interests</h2>
+      <section class="reading-section" id="interests" aria-labelledby="interests-title">
+        <header class="section-heading reveal">
+          <h2 id="interests-title">Interests</h2>
+          <p class="eyebrow">Things I’m drawn to</p>
         </header>
-        <div class="reveal d1">
-          <ul class="keywords">
+          <ul class="interest-list">
             <li>
               <span class="kw">OOO</span>
               <span class="kw-desc">OOO</span>
@@ -264,14 +179,11 @@
               <span class="kw-desc">OOO</span>
             </li>
           </ul>
-        </div>
       </section>
-
-      <!-- ===== 03 History ===== -->
-      <section class="block" id="history">
-        <header class="block-head reveal">
-          <span class="block-num">03</span>
-          <h2>History</h2>
+      <section class="reading-section" id="history" aria-labelledby="history-title">
+        <header class="section-heading reveal">
+          <h2 id="history-title">History</h2>
+          <p class="eyebrow">The path so far</p>
         </header>
         <div class="timeline">
 
@@ -315,29 +227,23 @@
           </div>
 
         </div>
-      </section>
 
-      <!-- ===== 04 Posts ===== -->
-      <section class="block" id="posts">
-        <header class="block-head reveal">
-          <span class="block-num">04</span>
-          <h2>Posts</h2>
-        </header>
-        <div class="reveal d1">
-          <div class="posts">
-            <p class="empty">No posts yet.</p>
-          </div>
-        </div>
       </section>
-
-      <div class="content-end">
+      <section class="reading-section" id="posts" aria-labelledby="posts-title">
+        <header class="section-heading reveal"><h2 id="posts-title">Posts</h2></header>
+        <p class="empty">No posts yet.</p>
+      </section>
+      <div class="profile-end">
+        <p class="eyebrow">There’s room for your thoughts, too.</p>
         <a href="community.html"><span>Join the conversation.</span><span aria-hidden="true">↗</span></a>
       </div>
-
     </main>
+    <footer class="page-footer">
+      <span>© 2026 OOO</span>
+      <span>Email · OOOOO [at] OOOOOO</span>
+      <a href="https://github.com/afoc824" target="_blank" rel="noopener noreferrer">GitHub ↗</a>
+    </footer>
   </div>
-
-
   <script>
     // 테마 저장에 실패하더라도 전환 기능은 유지한다.
     (function () {
@@ -374,52 +280,7 @@
       }, { threshold: .08 });
       document.querySelectorAll(".reveal").forEach(function (element) { observer.observe(element); });
     })();
-    // 마우스에만 작은 보조 커서를 표시하고 기본 포인터도 유지한다.
-    (function () {
-      var motion = window.matchMedia("(prefers-reduced-motion: reduce)");
-      var pointer = window.matchMedia("(hover: hover) and (pointer: fine)");
-      var dot = document.createElement("div");
-      dot.className = "cursor-dot";
-      dot.setAttribute("aria-hidden", "true");
-      document.body.appendChild(dot);
-      document.addEventListener("pointermove", function (event) {
-        if (motion.matches || !pointer.matches || event.pointerType !== "mouse") { dot.classList.remove("active"); return; }
-        dot.style.transform = "translate(" + event.clientX + "px," + event.clientY + "px)";
-        dot.classList.toggle("active", !event.target.closest("input, textarea, select"));
-        dot.classList.toggle("big", !!event.target.closest("a, button"));
-      }, { passive: true });
-      document.documentElement.addEventListener("pointerleave", function () { dot.classList.remove("active"); });
-      window.addEventListener("blur", function () { dot.classList.remove("active"); });
-    })();
-    // 화면 상단에 가까운 섹션을 메뉴와 큰 숫자에 함께 반영한다.
-    (function () {
-      var links = Array.from(document.querySelectorAll(".pane-nav a"));
-      var sections = links.map(function (link) { return document.querySelector(link.getAttribute("href")); });
-      var giant = document.getElementById("giantNum");
-      var ticking = false;
-      function update() {
-        var active = 0;
-        sections.forEach(function (section, index) {
-          if (section && section.getBoundingClientRect().top <= window.innerHeight * .35) active = index;
-        });
-        // 마지막 섹션이 짧아 화면 위쪽까지 올라오지 못하는 경우도 반영한다.
-        if (window.scrollY > 0 && window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 2) {
-          active = sections.length - 1;
-        }
-        links.forEach(function (link, index) {
-          link.classList.toggle("active", index === active);
-          if (index === active) link.setAttribute("aria-current", "location");
-          else link.removeAttribute("aria-current");
-        });
-        if (giant) giant.textContent = links[active].querySelector(".n").textContent;
-        ticking = false;
-      }
-      window.addEventListener("scroll", function () {
-        if (!ticking) { ticking = true; requestAnimationFrame(update); }
-      }, { passive: true });
-      window.addEventListener("resize", update);
-      update();
-    })();
+
   </script>
 </body>
 </html>
