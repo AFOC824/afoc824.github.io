@@ -171,13 +171,139 @@
       .when { margin-left: 0; }
       .section-head h1 { font-size: 2.9rem; }
     }
+
+    /* 분류와 작성 버튼은 한 줄 도구 모음으로, 항목은 작은 수집 카드로 표현한다. */
+    .rating-symbols { position: absolute; width: 0; height: 0; overflow: hidden; }
+    .rating-toolbar.browse-actions { display: flex; flex-direction: row; align-items: center; gap: 18px; margin: 0 0 24px; min-width: 0; }
+    .rating-toolbar .section-note { flex: 0 0 auto; margin: 0; font-size: 1rem; white-space: nowrap; }
+    .rating-toolbar .category-filters { flex: 1 1 auto; min-width: 0; display: flex; flex-wrap: nowrap; gap: 3px; margin: 0; padding: 5px; overflow-x: auto; overscroll-behavior-x: contain; border: 1px solid var(--line); border-radius: 999px; background: var(--surface); scrollbar-width: thin; }
+    .rating-toolbar .category-filter { display: inline-flex; flex: 1 0 auto; justify-content: center; align-items: center; gap: 7px; min-height: 42px; padding: 8px 11px; border: 0; border-radius: 999px; background: transparent; font: .88rem var(--font-mono); white-space: nowrap; transition: background .28s, color .28s; }
+    .rating-toolbar .category-filter:hover { background: var(--field); }
+    .rating-toolbar .category-filter[aria-pressed="true"] { background: var(--text); color: var(--bg); }
+    .rating-toolbar .category-filter:focus-visible { outline-offset: -3px; }
+    .category-icon { flex: 0 0 auto; width: 19px; height: 19px; stroke-width: 4.5; transition: transform .5s cubic-bezier(.2,.8,.2,1); }
+    .category-filter:hover .category-icon { transform: translateY(-2px) rotate(-6deg); }
+    .category-filter[data-category="Music"]:hover .category-icon { transform: rotate(45deg); }
+    .rating-toolbar .flow-button { flex: 0 0 auto; min-height: 48px; gap: 9px; padding: 11px 16px; white-space: nowrap; }
+    .rating-toolbar .flow-button svg { width: 17px; height: 17px; }
+    .write-short { display: none; }
+    .rating-browser .browse-controls { grid-template-columns: minmax(0, 1fr) minmax(180px, 240px); gap: 18px; }
+    .search-box { position: relative; display: block; }
+    .field > .search-box { font: inherit; color: inherit; }
+    .rating-toolbar .flow-button:hover span { transform: none; }
+    .search-box > svg { position: absolute; width: 18px; height: 18px; top: 50%; left: 15px; transform: translateY(-50%); pointer-events: none; color: var(--muted); }
+    .rating-browser .search-box input { padding-left: 43px; }
+    .rating-rail { gap: 26px; }
+    .rating-rail .chip { padding: 10px; border-radius: 20px; transition: border-color .35s; }
+    .rating-rail .chip:focus-within { border-color: var(--text); }
+    .rating-cover { position: relative; display: grid; place-items: center; min-height: 172px; overflow: hidden; border-radius: 12px; background: var(--surface); }
+    .rating-cover::before, .rating-cover::after { content: ""; position: absolute; pointer-events: none; border: 1px solid var(--line); transition: transform .65s cubic-bezier(.2,.8,.2,1); }
+    .rating-cover::before { inset: 12px; border-radius: 8px; }
+    .rating-cover::after { width: 118px; height: 118px; border-radius: 50%; right: -28px; bottom: -64px; }
+    .rating-cover[data-category="Movies"]::before { inset: 10px 0; border-inline: 0; border-block-style: dashed; border-radius: 0; }
+    .rating-cover[data-category="TV"]::before { inset: 18px 30px; border-radius: 38px; }
+    .rating-cover[data-category="Restaurants"]::before { inset: auto; width: 134px; height: 134px; border-radius: 50%; }
+    .rating-cover[data-category="Books"]::before { inset: 20px 36px; border-radius: 2px; transform: rotate(-4deg); }
+    .rating-cover[data-category="Music"]::before { inset: auto; width: 140px; height: 140px; border-radius: 50%; border-style: dashed; }
+    .rating-rail .chip .category { position: absolute; top: 14px; left: 16px; z-index: 1; padding: 2px 7px; background: var(--surface); font: .88rem var(--font-mono); color: var(--muted); }
+    .rating-art { width: 106px; height: 106px; margin-top: 12px; fill: none; stroke: currentColor; stroke-width: 1.65; stroke-linecap: round; stroke-linejoin: round; transition: transform .75s cubic-bezier(.2,.8,.2,1); }
+    .rating-rail .chip:nth-child(even) .rating-art { transform: rotate(4deg); }
+    .rating-rail .chip .head { display: flex; align-items: flex-start; gap: 15px; padding: 22px 16px 18px; }
+    .rating-rail .chip .name { margin: 0; font-size: clamp(1.6rem, 3vw, 2rem); line-height: 1.15; letter-spacing: -.045em; font-weight: 550; }
+    .rating-rail .chip .stars { gap: 14px; }
+    .rating-rail .chip .star-icons { gap: 2px; }
+    .rating-rail .chip .head > .stars .star-mark { width: 24px; height: 24px; }
+    .rating-rail .chip .head > .stars .star-value { padding: 3px 9px; border: 1px solid var(--line); border-radius: 999px; }
+    .rating-rail .chip .author { margin-top: 1px; }
+    .rating-rail .chip-toggle { display: flex; align-items: center; justify-content: space-between; gap: 16px; width: 100%; min-height: 48px; margin: 0; padding: 14px 16px 10px; border-top: 1px dashed var(--line); border-radius: 0; text-decoration: none; font-family: inherit; font-size: .94rem; line-height: 1.4; }
+    .rating-rail .chip-toggle:hover { text-decoration: underline; text-underline-offset: 5px; }
+    .toggle-icon { width: 22px; height: 22px; flex: 0 0 auto; transition: transform .4s cubic-bezier(.2,.8,.2,1); }
+    .chip.open .toggle-icon { transform: rotate(45deg); }
+    .rating-rail .chip-more { padding: 14px 16px 8px; }
+    .rating-rail .chip.open .chip-more { animation: notes-open .5s cubic-bezier(.2,.8,.2,1) both; }
+    .rating-rail .sub-form { margin-top: 0; padding-top: 8px; border-top: 0; }
+    .rating-rail .chip.card-enter { animation: card-arrive .65s cubic-bezier(.2,.8,.2,1) backwards; animation-delay: var(--card-delay, 0ms); }
+    @keyframes card-arrive { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+    @keyframes notes-open { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
+    @media (hover: hover) {
+      .rating-rail .chip:hover { border-color: var(--text); }
+      .rating-rail .chip:hover .rating-art { transform: translateY(-5px) rotate(-5deg); }
+      .chip:hover .rating-cover[data-category="TV"] .rating-art { transform: translateY(-5px) rotate(3deg); }
+      .chip:hover .rating-cover[data-category="Restaurants"] .rating-art { transform: rotate(12deg); }
+      .chip:hover .rating-cover[data-category="Books"] .rating-art { transform: rotate(-8deg); }
+      .chip:hover .rating-cover[data-category="Music"] .rating-art { transform: rotate(100deg); transition-duration: 1.2s; }
+      .chip:hover .rating-cover::after { transform: translate(-8px, -8px); }
+    }
+    @media (max-width: 900px) {
+      .rating-toolbar .section-note { display: none; }
+      .rating-toolbar.browse-actions { gap: 12px; }
+    }
+    @media (max-width: 600px) {
+      .rating-toolbar.browse-actions { gap: 8px; margin-bottom: 20px; }
+      .rating-toolbar .category-filters { border-radius: 15px; }
+      .rating-toolbar .category-filter { flex-grow: 0; min-height: 44px; padding-inline: 10px; }
+      .rating-toolbar .flow-button { padding: 12px; gap: 6px; }
+      .write-label { display: none; }
+      .write-short { display: inline; }
+      .rating-browser .browse-controls { grid-template-columns: minmax(0, 1fr); gap: 14px; }
+      .rating-cover { min-height: 154px; }
+      .rating-art { width: 96px; height: 96px; }
+      .rating-rail .chip .head { padding: 20px 12px 16px; }
+      .rating-rail .chip-toggle { padding-inline: 12px; }
+      .rating-rail .chip-more { padding-inline: 0; }
+    }
+
     .no-script { margin: 0 0 28px; padding: 22px; border: 1px solid var(--line); color: var(--muted); }
 
-    /* 커뮤니티 입구와 돌아가기 링크에 같은 장막 전환을 적용한다. */
-    .nav-transition { display: none; position: fixed; inset: 0; z-index: 60; place-items: center; background: var(--text); color: var(--bg); pointer-events: none; }
-    .nav-transition span { font-size: clamp(2.8rem, 8vw, 7rem); font-weight: 500; letter-spacing: -.055em; }
-    .is-leaving .nav-transition { display: grid; animation: community-cover .45s cubic-bezier(.76,0,.24,1) both; }
-    @keyframes community-cover { from { transform: translateY(101%); border-radius: 32% 32% 0 0; } to { transform: translateY(0); border-radius: 0; } }
+    /* 말풍선, 별, 종이의 서로 다른 움직임으로 각 공간에 들어간다. */
+    .nav-transition { display: none; position: fixed; inset: 0; z-index: 60; overflow: hidden; isolation: isolate; color: var(--bg); pointer-events: none; }
+    .is-leaving .nav-transition { display: grid; place-items: center; pointer-events: auto; }
+    .transition-surface { position: absolute; inset: 0; z-index: -1; background: var(--text); }
+    .transition-content { display: grid; justify-items: center; gap: 24px; padding: 24px; }
+    .transition-label { font-size: clamp(2.6rem, 7vw, 6rem); font-weight: 500; letter-spacing: -.055em; line-height: 1.1; }
+    .transition-icon { display: none; width: clamp(76px, 12vw, 132px); height: auto; overflow: visible; }
+    .is-leaving .transition-label { animation: route-label .54s .33s ease both; }
+    .nav-transition[data-motion="board"] .transition-icon[data-room="board"],
+    .nav-transition[data-motion="ratings"] .transition-icon[data-room="ratings"],
+    .nav-transition[data-motion="guestbook"] .transition-icon[data-room="guestbook"] { display: block; }
+    .is-leaving [data-motion="board"] .transition-surface { animation: bubble-cover .78s cubic-bezier(.22,.75,.2,1) both; }
+    .is-leaving [data-motion="board"] .transition-icon { animation: quote-pop .81s .09s cubic-bezier(.16,.85,.3,1) both; }
+    .is-leaving [data-motion="board"] .quote-right { transform-origin: 72% 50%; animation: quote-answer .72s .195s ease both; }
+    @keyframes bubble-cover {
+      from { clip-path: inset(var(--cover-top) var(--cover-right) var(--cover-bottom) var(--cover-left) round 24px); }
+      to { clip-path: inset(0 0 0 0 round 0); }
+    }
+    @keyframes quote-pop { 0% { opacity: 0; transform: translateY(28px) scale(.4); } 65% { opacity: 1; transform: translateY(-5px) scale(1.08); } 100% { transform: none; } }
+    @keyframes quote-answer { from { opacity: 0; transform: translateY(18px) rotate(12deg); } to { opacity: 1; transform: none; } }
+    .is-leaving [data-motion="ratings"] .transition-surface { animation: star-cover .825s cubic-bezier(.2,.65,.25,1) both; }
+    .is-leaving [data-motion="ratings"] .transition-icon { animation: star-turn .90s cubic-bezier(.16,.8,.24,1) both; }
+    .is-leaving [data-motion="ratings"] .star-spark { transform-box: fill-box; transform-origin: center; animation: star-spark .6s .255s ease-out both; }
+    .is-leaving [data-motion="ratings"] .star-spark:last-child { animation-delay: .36s; }
+    @keyframes star-cover { from { clip-path: circle(0 at var(--origin-x) var(--origin-y)); } to { clip-path: circle(150% at var(--origin-x) var(--origin-y)); } }
+    @keyframes star-turn { from { opacity: 0; transform: rotate(-108deg) scale(.2); } 70% { opacity: 1; transform: rotate(8deg) scale(1.08); } to { transform: none; } }
+    @keyframes star-spark { 0% { opacity: 0; transform: scale(0); } 60% { opacity: 1; transform: scale(1.2); } 100% { opacity: 1; transform: scale(1); } }
+    .nav-transition[data-motion="guestbook"] { perspective: 1200px; }
+    .is-leaving [data-motion="guestbook"] .transition-surface { transform-origin: right center; backface-visibility: hidden; animation: paper-cover .87s cubic-bezier(.2,.7,.2,1) both; }
+    .is-leaving [data-motion="guestbook"] .transition-icon { animation: paper-settle .84s .045s cubic-bezier(.2,.8,.2,1) both; }
+    .is-leaving [data-motion="guestbook"] .paper-signature { stroke-dasharray: 1; stroke-dashoffset: 1; animation: signature-draw .51s .36s ease forwards; }
+    @keyframes paper-cover { from { transform: rotateY(-88deg); } to { transform: rotateY(0); } }
+    @keyframes paper-settle { from { opacity: 0; transform: translateX(32px) rotate(16deg); } 75% { opacity: 1; transform: translateX(-3px) rotate(-3deg); } to { transform: none; } }
+    @keyframes signature-draw { to { stroke-dashoffset: 0; } }
+    .return-panels { display: none; position: absolute; inset: 0; z-index: -1; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .return-panel { display: grid; place-items: center; padding-bottom: 110px; background: var(--text); border-right: 1px solid var(--bg); }
+    .return-panel:last-child { border-right: 0; }
+    .return-panel svg { width: clamp(40px, 7vw, 76px); height: auto; }
+    .nav-transition[data-motion="return"] .transition-surface { display: none; }
+    .nav-transition[data-motion="return"] .return-panels { display: grid; }
+    .nav-transition[data-motion="return"] .transition-content { padding-top: 130px; }
+    .nav-transition[data-motion="return"] .transition-label { font-size: clamp(2.3rem, 7vw, 6rem); }
+    .is-leaving [data-motion="return"] .return-panel { animation: panel-rejoin .69s cubic-bezier(.22,.75,.2,1) both; }
+    .is-leaving [data-motion="return"] .return-panel:nth-child(2) { --panel-start: 101%; animation-delay: .105s; }
+    .is-leaving [data-motion="return"] .return-panel:nth-child(3) { animation-delay: .21s; }
+    .is-leaving [data-motion="return"] .return-panel svg { animation: panel-icon .48s .375s ease both; }
+    @keyframes panel-rejoin { from { transform: translateY(var(--panel-start, -101%)); } to { transform: none; } }
+    @keyframes panel-icon { from { opacity: 0; transform: scale(.65); } to { opacity: 1; transform: none; } }
+    @keyframes route-label { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
     @media (prefers-reduced-motion: reduce) { .is-leaving .nav-transition { display: none; } }
 
     /* 목록, 작성, 완료는 한 번에 한 화면만 보여준다. */
@@ -201,12 +327,33 @@
     .success-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 14px; margin-top: 32px; }
     .success-actions [data-compose-again] { background: transparent; border-color: var(--line); color: var(--text); }
     .success-actions [data-compose-again]:hover { border-color: var(--text); }
-    .flow-view.is-exiting { animation: flow-out .15s ease-in both; }
-    .flow-view.is-entering { animation: flow-in .38s cubic-bezier(.2,.8,.2,1) both; }
-    #successView.is-entering .success-mark { animation: mark-in .55s cubic-bezier(.2,.8,.2,1) both; }
-    @keyframes flow-out { to { opacity: 0; transform: translateY(-8px); } }
-    @keyframes flow-in { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
-    @keyframes mark-in { from { opacity: 0; transform: translateY(8px) rotate(-12deg) scale(.9); } to { opacity: 1; transform: none; } }
+    /* 카드를 넘기고 별을 하나씩 꺼낸 뒤 완료 표시를 그린다. */
+    .flow-view.is-exiting { transform-origin: 50% 72px; animation: flow-out .22s ease-in both; }
+    .flow-view.is-entering { transform-origin: 50% 72px; animation: flow-in .66s cubic-bezier(.16,1,.3,1) both; }
+    #composeView.is-entering #ratingStars .star-mark { transform-box: fill-box; transform-origin: center; animation: rating-star-in .45s cubic-bezier(.2,.85,.3,1.15) both; }
+    #composeView.is-entering #ratingStars .star-mark:nth-child(1) { animation-delay: .09s; }
+    #composeView.is-entering #ratingStars .star-mark:nth-child(2) { animation-delay: .15s; }
+    #composeView.is-entering #ratingStars .star-mark:nth-child(3) { animation-delay: .21s; }
+    #composeView.is-entering #ratingStars .star-mark:nth-child(4) { animation-delay: .27s; }
+    #composeView.is-entering #ratingStars .star-mark:nth-child(5) { animation-delay: .33s; }
+    #successView.is-entering .success-mark { animation: mark-in .69s cubic-bezier(.16,1,.3,1) both; }
+    #successView.is-entering .success-mark circle { stroke-dasharray: 158; animation: rating-ring-in .6s ease-out both; }
+    #successView.is-entering .success-mark path { stroke-dasharray: 32; animation: rating-check-in .39s .33s ease-out both; }
+    @keyframes flow-out { to { opacity: 0; transform: translateX(-18px) rotate(-.35deg); } }
+    @keyframes flow-in {
+      from { opacity: 0; transform: translateX(18px) rotate(.7deg); }
+      to { opacity: 1; transform: none; }
+    }
+    @keyframes rating-star-in {
+      from { opacity: 0; transform: translateY(8px) rotate(-22deg) scale(.65); }
+      to { opacity: 1; transform: none; }
+    }
+    @keyframes mark-in {
+      from { opacity: 0; transform: rotate(-10deg); }
+      to { opacity: 1; transform: none; }
+    }
+    @keyframes rating-ring-in { from { stroke-dashoffset: 158; } to { stroke-dashoffset: 0; } }
+    @keyframes rating-check-in { from { stroke-dashoffset: 32; } to { stroke-dashoffset: 0; } }
     @media (max-width: 600px) {
       .browse-actions { flex-direction: column; gap: 20px; margin-bottom: 28px; }
       .flow-view h2 { margin-bottom: 24px; }
@@ -218,7 +365,43 @@
   <noscript><style>.form, .data-list, .rating-browser { display: none; }</style></noscript>
 </head>
 <body>
-  <div class="nav-transition" aria-hidden="true"><span id="transitionName"></span></div>
+  <svg class="rating-symbols" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+    <defs>
+      <symbol id="rating-icon-movies" viewBox="0 0 80 80">
+        <path d="M15 31h50v33H15zM15 31l-3-13 49-9 3 13zM23 16l9 11M39 13l9 11M55 10l8 11M15 42h50"/>
+        <path d="m35 48 13 7-13 7z"/>
+      </symbol>
+      <symbol id="rating-icon-tv" viewBox="0 0 80 80">
+        <rect x="12" y="24" width="56" height="40" rx="8"/><rect x="19" y="31" width="33" height="25" rx="4"/>
+        <path d="m29 12 11 12 12-15M58 35h3M58 44h3M22 64l-3 6M58 64l3 6"/>
+      </symbol>
+      <symbol id="rating-icon-restaurants" viewBox="0 0 80 80">
+        <circle cx="42" cy="40" r="21"/><circle cx="42" cy="40" r="14"/>
+        <path d="M10 16v20c0 7 10 7 10 0V16M15 16v50M71 66V15c-8 8-8 22 0 24"/>
+      </symbol>
+      <symbol id="rating-icon-books" viewBox="0 0 80 80">
+        <path d="M40 23c-9-7-20-8-29-5v43c10-3 20-1 29 6 9-7 19-9 29-6V18c-9-3-20-2-29 5v44M19 29c5-1 10 0 14 3M19 39c5-1 10 0 14 3M47 32c4-3 9-4 14-3M47 42c4-3 9-4 14-3"/>
+      </symbol>
+      <symbol id="rating-icon-music" viewBox="0 0 80 80">
+        <circle cx="40" cy="40" r="29"/><circle cx="40" cy="40" r="11"/><circle cx="40" cy="40" r="3"/>
+        <path d="M20 33a21 21 0 0 1 13-13M23 39a17 17 0 0 1 16-16M60 47a21 21 0 0 1-13 13M57 41a17 17 0 0 1-16 16"/>
+      </symbol>
+    </defs>
+  </svg>
+  <div class="nav-transition" aria-hidden="true">
+    <div class="transition-surface"></div>
+    <div class="return-panels">
+      <div class="return-panel"><svg viewBox="0 0 100 100" fill="currentColor" aria-hidden="true"><path d="M12 54V42c0-16 8-27 23-32l5 10c-9 4-14 11-14 20h16v40H12Z"/><path class="quote-right" d="M58 54V42c0-16 8-27 23-32l5 10c-9 4-14 11-14 20h16v40H58Z"/></svg></div>
+      <div class="return-panel"><svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" aria-hidden="true"><path d="m50 12 11 23 25 4-18 18 4 25-22-12-22 12 4-25-18-18 25-4Z"/><path class="star-spark" d="M88 5v12m-6-6h12"/><path class="star-spark" d="M10 80v12m-6-6h12"/></svg></div>
+      <div class="return-panel"><svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 12h43l13 13v63H22ZM65 12v14h13M34 39h28M34 48h21"/><path class="paper-signature" pathLength="1" d="M33 72c13-5 25-29 18-27-7 3-14 33-5 28 8-4 12-15 13-12 1 4-6 13-1 12l10-5"/></svg></div>
+    </div>
+    <div class="transition-content">
+      <svg class="transition-icon" data-room="board" viewBox="0 0 100 100" fill="currentColor" aria-hidden="true"><path d="M12 54V42c0-16 8-27 23-32l5 10c-9 4-14 11-14 20h16v40H12Z"/><path class="quote-right" d="M58 54V42c0-16 8-27 23-32l5 10c-9 4-14 11-14 20h16v40H58Z"/></svg>
+      <svg class="transition-icon" data-room="ratings" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" aria-hidden="true"><path d="m50 12 11 23 25 4-18 18 4 25-22-12-22 12 4-25-18-18 25-4Z"/><path class="star-spark" d="M88 5v12m-6-6h12"/><path class="star-spark" d="M10 80v12m-6-6h12"/></svg>
+      <svg class="transition-icon" data-room="guestbook" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 12h43l13 13v63H22ZM65 12v14h13M34 39h28M34 48h21"/><path class="paper-signature" pathLength="1" d="M33 72c13-5 25-29 18-27-7 3-14 33-5 28 8-4 12-15 13-12 1 4-6 13-1 12l10-5"/></svg>
+      <span class="transition-label" id="transitionName"></span>
+    </div>
+  </div>
   <a class="skip-link" href="#main">Skip to content</a>
   <div class="page-shell">
     <header class="page-header">
@@ -241,21 +424,20 @@
           <svg class="section-symbol" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linejoin="round" aria-hidden="true"><path d="m12 2.5 2.9 5.9 6.5.9-4.7 4.6 1.1 6.5-5.8-3.1-5.8 3.1 1.1-6.5-4.7-4.6 6.5-.9Z"/></svg>
         </header>
         <div class="flow-view" id="browseView">
-          <div class="browse-actions">
-            <p class="section-note">Movies, meals, music, and more. Share a favorite and give it a score — half stars welcome.</p>
-            <button class="flow-button" type="button" data-open-compose hidden>Add a rating <span aria-hidden="true">↗</span></button>
-          </div>
-
           <div class="rating-browser" role="search" aria-label="Find ratings">
-            <div class="category-filters" id="categoryFilters" role="group" aria-label="Filter by category">
-              <button class="category-filter" type="button" data-category="Movies" aria-pressed="true">Movies</button>
-              <button class="category-filter" type="button" data-category="TV" aria-pressed="false">TV</button>
-              <button class="category-filter" type="button" data-category="Restaurants" aria-pressed="false">Restaurants</button>
-              <button class="category-filter" type="button" data-category="Books" aria-pressed="false">Books</button>
-              <button class="category-filter" type="button" data-category="Music" aria-pressed="false">Music</button>
+            <div class="browse-actions rating-toolbar">
+              <p class="section-note">Worth a star.</p>
+              <div class="category-filters" id="categoryFilters" role="group" aria-label="Filter by category">
+                <button class="category-filter" type="button" data-category="Movies" aria-label="Movies" aria-pressed="true"><svg class="category-icon" viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#rating-icon-movies"/></svg><span>Movies</span></button>
+                <button class="category-filter" type="button" data-category="TV" aria-label="TV" aria-pressed="false"><svg class="category-icon" viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#rating-icon-tv"/></svg><span>TV</span></button>
+                <button class="category-filter" type="button" data-category="Restaurants" aria-label="Food (Restaurants)" aria-pressed="false"><svg class="category-icon" viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#rating-icon-restaurants"/></svg><span>Food</span></button>
+                <button class="category-filter" type="button" data-category="Books" aria-label="Books" aria-pressed="false"><svg class="category-icon" viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#rating-icon-books"/></svg><span>Books</span></button>
+                <button class="category-filter" type="button" data-category="Music" aria-label="Music" aria-pressed="false"><svg class="category-icon" viewBox="0 0 80 80" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><use href="#rating-icon-music"/></svg><span>Music</span></button>
+              </div>
+              <button class="flow-button" type="button" data-open-compose aria-label="Add a rating" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg><span class="write-label">Add a rating</span><span class="write-short" aria-hidden="true">Add</span></button>
             </div>
             <div class="browse-controls">
-              <label class="field" for="ratingSearch"><span>Search titles</span><input type="search" id="ratingSearch" placeholder="Find an item" maxlength="100" autocomplete="off"></label>
+              <label class="field" for="ratingSearch"><span>Search titles</span><span class="search-box"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 4 4"/></svg><input type="search" id="ratingSearch" placeholder="Find a favorite" maxlength="100" autocomplete="off"></span></label>
               <label class="field" for="ratingSort"><span>Sort by</span><select id="ratingSort">
                 <option value="newest">Newest first</option>
                 <option value="highest">Highest score</option>
@@ -263,7 +445,7 @@
             </div>
             <div class="browse-summary">
               <p id="ratingResults" role="status" aria-live="polite">Loading items…</p>
-              <p>Scores are each item's original rating.</p>
+              <p>Each author’s score</p>
             </div>
           </div>
 
@@ -521,14 +703,11 @@
       } catch (error) { return 0; }
     }
 
-    // 카드를 붙인 다음 프레임에서 순차 등장 모션을 시작한다.
+    // 카드 DOM을 재사용하면서 분류를 바꿀 때만 부드럽게 순차 등장한다.
     function popIn(el, index) {
-      if (reduceMotion) { el.classList.add("pop", "in"); return; }
-      el.classList.add("pop");
-      el.style.animationDelay = Math.min(index * 70, 480) + "ms";
-      requestAnimationFrame(function () {
-        requestAnimationFrame(function () { el.classList.add("in"); });
-      });
+      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+      el.style.setProperty("--card-delay", Math.min(index * 80, 240) + "ms");
+      el.classList.add("card-enter");
     }
 
     const authorInput = document.querySelector("#ratingAuthor");
@@ -547,6 +726,7 @@
     const views = new Map();
     let loaded = false;
     let activeCategory = "Movies";
+    let filterFrame = 0;
 
     function setCategory(value) {
       activeCategory = categories.has(value) ? value : "Movies";
@@ -555,7 +735,7 @@
       });
     }
 
-    function renderItems() {
+    function renderItems(animate) {
       if (!loaded) return;
       const focused = list.contains(document.activeElement) ? document.activeElement : null;
       const selection = focused && typeof focused.selectionStart === "number"
@@ -583,9 +763,17 @@
         if (view.node === nextNode) nextNode = nextNode.nextElementSibling;
         else list.insertBefore(view.node, nextNode);
       });
-      results.textContent = visibleCount === items.length
-        ? visibleCount + (visibleCount === 1 ? " item" : " items")
-        : visibleCount + " of " + items.length + " items";
+      results.textContent = visibleCount + (visibleCount === 1 ? " item" : " items");
+      if (animate === true) {
+        cancelAnimationFrame(filterFrame);
+        items.forEach(function (view) { view.node.classList.remove("card-enter"); });
+        filterFrame = requestAnimationFrame(function () {
+          filterFrame = requestAnimationFrame(function () {
+            Array.from(list.children).filter(function (node) { return node.classList.contains("chip") && !node.hidden; })
+              .forEach(function (node, index) { popIn(node, index); });
+          });
+        });
+      }
 
       if (!visibleCount) {
         const empty = document.createElement("p");
@@ -600,10 +788,14 @@
     }
 
     categoryButtons.forEach(function (button) {
-      button.addEventListener("click", function () { setCategory(button.dataset.category); renderItems(); });
+      button.addEventListener("click", function () {
+        setCategory(button.dataset.category);
+        renderItems(true);
+        button.scrollIntoView({ block: "nearest", inline: "nearest", behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth" });
+      });
     });
     searchInput.addEventListener("input", renderItems);
-    sortInput.addEventListener("change", renderItems);
+    sortInput.addEventListener("change", function () { renderItems(true); });
 
     document.querySelector("#ratingForm").onsubmit = async function (event) {
       event.preventDefault();
@@ -664,23 +856,49 @@
     function createItemView(itemId) {
       const chip = document.createElement("article");
       chip.className = "chip";
+      chip.addEventListener("animationend", function (event) {
+        if (event.target === chip && event.animationName === "card-arrive") chip.classList.remove("card-enter");
+      });
+      const cover = document.createElement("div");
+      cover.className = "rating-cover";
+      const art = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+      art.setAttribute("class", "rating-art");
+      art.setAttribute("viewBox", "0 0 80 80");
+      art.setAttribute("aria-hidden", "true");
+      const artwork = document.createElementNS("http://www.w3.org/2000/svg", "use");
+      art.appendChild(artwork);
       const head = document.createElement("div");
       head.className = "head";
       const category = document.createElement("span");
       category.className = "category";
       const name = document.createElement("h2");
       name.className = "name";
+      name.id = "rating-title-" + itemId;
+      chip.setAttribute("aria-labelledby", name.id);
       const stars = document.createElement("span");
       stars.className = "stars";
       const author = document.createElement("span");
       author.className = "author";
-      head.append(category, name, stars, author);
-      chip.appendChild(head);
+      cover.append(category, art);
+      head.append(name, stars, author);
+      chip.append(cover, head);
 
       const toggle = document.createElement("button");
       toggle.type = "button";
       toggle.className = "chip-toggle";
-      toggle.textContent = "Rate & comment ↓";
+      const toggleLabel = document.createElement("span");
+      toggleLabel.textContent = "Rate & comment";
+      const toggleIcon = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+      toggleIcon.setAttribute("class", "toggle-icon");
+      toggleIcon.setAttribute("viewBox", "0 0 24 24");
+      toggleIcon.setAttribute("aria-hidden", "true");
+      toggleIcon.setAttribute("fill", "none");
+      toggleIcon.setAttribute("stroke", "currentColor");
+      toggleIcon.setAttribute("stroke-width", "1.5");
+      const plus = document.createElementNS("http://www.w3.org/2000/svg", "path");
+      plus.setAttribute("d", "M12 5v14M5 12h14");
+      toggleIcon.appendChild(plus);
+      toggle.append(toggleLabel, toggleIcon);
       toggle.setAttribute("aria-expanded", "false");
       toggle.setAttribute("aria-controls", "comments-" + itemId);
       chip.appendChild(toggle);
@@ -745,7 +963,7 @@
 
       toggle.onclick = function () {
         const open = chip.classList.toggle("open");
-        toggle.textContent = open ? "Hide ↑" : "Rate & comment ↓";
+        toggleLabel.textContent = open ? "Close notes" : "Rate & comment";
         toggle.setAttribute("aria-expanded", String(open));
         more.hidden = !open;
         if (open) loadComments();
@@ -786,7 +1004,10 @@
         update: function (data) {
           this.data = data;
           name.textContent = typeof data.name === "string" && data.name.trim() ? data.name : "Untitled";
-          category.textContent = itemCategory(data.category);
+          const kind = itemCategory(data.category);
+          category.textContent = kind;
+          cover.dataset.category = kind;
+          artwork.setAttribute("href", "#rating-icon-" + kind.toLowerCase());
           labelStars(stars, data.stars);
           author.textContent = typeof data.author === "string" && data.author ? "by " + data.author : "";
           subPicker.label("Your rating for " + name.textContent);
@@ -930,13 +1151,13 @@
           }
           if (animate && !motion.matches) {
             views[next].classList.add("is-entering");
-            finishTimer = window.setTimeout(function () { views[next].classList.remove("is-entering"); }, 560);
+            finishTimer = window.setTimeout(function () { views[next].classList.remove("is-entering"); }, 840);
           }
         }
         if (animate && !motion.matches) {
           views[current].classList.add("is-exiting");
           views[current].inert = true;
-          timer = window.setTimeout(function () { views[current].inert = false; render(); }, 150);
+          timer = window.setTimeout(function () { views[current].inert = false; render(); }, 220);
         } else render();
       }
       function updateURL(next, replace) {
@@ -1016,31 +1237,49 @@
   </script>
 
   <script>
-    // 보조 클릭은 기본 탐색을 유지하고, 뒤로 돌아오면 장막을 초기화한다.
+    // 보조 클릭은 기본 탐색을 유지하고, 누른 입구의 아이콘과 위치를 모션에 반영한다.
     (function () {
       var root = document.documentElement;
+      var overlay = document.querySelector(".nav-transition");
       var label = document.getElementById("transitionName");
       var timer, recovery, leaving = false;
+      var motion = window.matchMedia("(prefers-reduced-motion: reduce)");
       function reset() {
         clearTimeout(timer); clearTimeout(recovery);
         leaving = false; root.classList.remove("is-leaving");
+        overlay.removeAttribute("data-motion");
+        overlay.removeAttribute("style");
       }
       document.querySelectorAll(".community-gate, .page-nav a[href='community.html']:not([aria-current]), .content-end a[href='community.html']").forEach(function (link) {
         link.addEventListener("click", function (event) {
           if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || link.hasAttribute("download") || (link.target && link.target !== "_self")) return;
-          if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+          if (motion.matches) return;
           event.preventDefault();
           if (leaving) return;
           leaving = true;
           var heading = link.querySelector("h2");
+          var room = heading ? link.getAttribute("href").replace(".html", "") : "return";
+          var rect = link.getBoundingClientRect();
+          var art = link.querySelector(".gate-art");
+          var origin = art ? art.getBoundingClientRect() : rect;
+          var width = window.innerWidth, height = window.innerHeight;
+          function percent(value, total) { return Math.min(100, Math.max(0, value / total * 100)) + "%"; }
+          overlay.dataset.motion = room;
+          overlay.style.setProperty("--cover-top", percent(rect.top, height));
+          overlay.style.setProperty("--cover-right", percent(width - rect.right, width));
+          overlay.style.setProperty("--cover-bottom", percent(height - rect.bottom, height));
+          overlay.style.setProperty("--cover-left", percent(rect.left, width));
+          overlay.style.setProperty("--origin-x", percent(origin.left + origin.width / 2, width));
+          overlay.style.setProperty("--origin-y", percent(origin.top + origin.height / 2, height));
           label.textContent = heading ? heading.textContent : "Community";
           root.classList.add("is-leaving");
-          timer = window.setTimeout(function () { window.location.assign(link.href); }, 470);
-          recovery = window.setTimeout(reset, 2200);
+          timer = window.setTimeout(function () { window.location.assign(link.href); }, 1040);
+          recovery = window.setTimeout(reset, 3000);
         });
       });
       window.addEventListener("pageshow", reset);
       window.addEventListener("keydown", function (event) { if (event.key === "Escape" && leaving) reset(); });
+      motion.addEventListener("change", function (event) { if (event.matches && leaving) reset(); });
     })();
   </script>
 </body>
