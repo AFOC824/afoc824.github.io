@@ -41,17 +41,18 @@
     /* 모든 페이지에서 같은 색상과 서체를 사용한다. */
     :root {
       --bg: #f8f8f8; --surface: #eeeeee; --text: #181818;
-      --muted: #626262; --faint: #707070; --line: #d5d5d5; --field: #ffffff;
+      --muted: #444444; --faint: #595959; --line: #d5d5d5; --field: #ffffff;
       --shell: 1440px; --gutter: clamp(22px, 5vw, 80px);
       --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
     }
     [data-theme="dark"] {
       --bg: #141414; --surface: #202020; --text: #f2f2f2;
-      --muted: #aaaaaa; --faint: #9b9b9b; --line: #3c3c3c; --field: #1b1b1b;
+      --muted: #cccccc; --faint: #b5b5b5; --line: #3c3c3c; --field: #1b1b1b;
     }
     *, *::before, *::after { box-sizing: border-box; }
     html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; scroll-padding-top: 28px; }
     body { margin: 0; background: var(--bg); color: var(--text); font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, sans-serif; font-size: 17px; line-height: 1.65; font-feature-settings: "ss01"; }
+    body { font-weight: 450; }
     a { color: inherit; text-underline-offset: 5px; }
     button, input, textarea, select { font: inherit; }
     button, a { touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
@@ -73,9 +74,6 @@
     .theme-toggle { flex: 0 0 auto; display: grid; place-items: center; width: 46px; height: 46px; padding: 0; border: 1px solid var(--line); border-radius: 50%; background: var(--bg); color: var(--text); transition: background .2s, color .2s; }
     .theme-toggle:hover { background: var(--text); color: var(--bg); }
     .theme-toggle svg { width: 20px; height: 20px; }
-    .page-footer { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px 24px; border-top: 1px solid var(--line); padding-block: 22px; color: var(--muted); font: .88rem/1.65 var(--font-mono); overflow-wrap: anywhere; }
-    .page-footer a { padding-block: 10px; text-decoration: none; }
-    .page-footer a:hover { color: var(--text); text-decoration: underline; }
     /* 스크립트 없이도 모든 내용을 읽을 수 있는 등장 효과. */
     .reveal.in { animation: appear .65s cubic-bezier(.2,.8,.2,1) both; }
     .reveal.d1.in { animation-delay: .08s; }
@@ -85,7 +83,6 @@
       .page-header { min-height: 80px; gap: 16px; }
       .page-nav { gap: 18px; }
       .page-nav a { font-size: .94rem; }
-      .page-footer { align-items: flex-start; }
     }
     @media (prefers-reduced-motion: reduce) {
       html { scroll-behavior: auto; }
@@ -94,11 +91,9 @@
     }
     .community-intro { display: flex; align-items: flex-end; justify-content: space-between; gap: 40px; padding-block: 48px 36px; }
     .community-intro h1 { margin: 0; font-size: clamp(3.4rem, 7vw, 6.5rem); font-weight: 500; line-height: 1.05; letter-spacing: -.055em; }
-    .community-intro p { margin: 0 0 4px; color: var(--muted); max-width: 29ch; font-size: 1.05rem; }
     /* 화면을 세 개의 큰 입구로 나누며 각 구역 전체가 링크다. */
-    .community-gates { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); margin-bottom: 56px; border: 1px solid var(--line); }
-    .community-gate { position: relative; display: flex; flex-direction: column; min-width: 0; min-height: clamp(460px, 53svh, 620px); padding: 28px clamp(24px, 2.5vw, 40px) 32px; color: var(--text); background: var(--bg); text-decoration: none; }
-    .community-gate + .community-gate { border-left: 1px solid var(--line); }
+    .community-gates { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; margin-bottom: 56px; }
+    .community-gate { position: relative; display: flex; flex-direction: column; min-width: 0; min-height: clamp(460px, 53svh, 620px); padding: 28px clamp(24px, 2.5vw, 40px) 32px; border: 1px solid var(--line); border-radius: 20px; color: var(--text); background: var(--bg); text-decoration: none; transition: transform .3s cubic-bezier(.2,.8,.2,1); }
     .community-gate:nth-child(2) { background: var(--text); color: var(--bg); }
     .gate-kicker { display: flex; align-items: center; justify-content: space-between; gap: 12px; font: .88rem var(--font-mono); }
     .gate-arrow { font-size: 1.8rem; line-height: 1; transition: transform .25s; }
@@ -107,6 +102,7 @@
     .gate-copy h2 { margin: 0; font-size: clamp(2rem, 3.8vw, 3.4rem); font-weight: 500; line-height: 1.08; letter-spacing: -.05em; }
     .gate-copy p { margin: 16px 0 0; max-width: 27ch; min-height: 3.3em; font-size: 1rem; color: var(--muted); }
     .community-gate:nth-child(2) .gate-copy p { color: inherit; }
+    .community-gate:hover { transform: translateY(-5px); }
     .community-gate:hover .gate-arrow { transform: translate(4px, -4px); }
     .community-gate:hover .gate-art svg { transform: translateY(-8px) rotate(-4deg); }
     .community-gate:hover h2, .community-gate:focus-visible h2 { text-decoration: underline; text-underline-offset: 8px; }
@@ -114,10 +110,8 @@
     @media (max-width: 860px) {
       .community-intro { display: block; padding-block: 36px 30px; }
       .community-intro h1 { font-size: clamp(3.3rem, 9vw, 5rem); }
-      .community-intro p { margin: 18px 0 0; max-width: 40ch; }
       .community-gates { grid-template-columns: 1fr; margin-bottom: 36px; }
       .community-gate { min-height: 290px; padding: 24px; }
-      .community-gate + .community-gate { border-left: 0; border-top: 1px solid var(--line); }
       .gate-art { position: absolute; right: 22px; top: 54px; padding: 0; min-height: 0; width: 112px; height: 112px; }
       .gate-art svg { width: 100%; }
       .gate-copy { margin-top: 96px; }
@@ -129,9 +123,17 @@
       .gate-art { width: 88px; height: 88px; top: 58px; }
       .gate-copy { margin-top: 84px; }
     }
+
+    /* 커뮤니티 입구와 돌아가기 링크에 같은 장막 전환을 적용한다. */
+    .nav-transition { display: none; position: fixed; inset: 0; z-index: 60; place-items: center; background: var(--text); color: var(--bg); pointer-events: none; }
+    .nav-transition span { font-size: clamp(2.8rem, 8vw, 7rem); font-weight: 500; letter-spacing: -.055em; }
+    .is-leaving .nav-transition { display: grid; animation: community-cover .45s cubic-bezier(.76,0,.24,1) both; }
+    @keyframes community-cover { from { transform: translateY(101%); border-radius: 32% 32% 0 0; } to { transform: translateY(0); border-radius: 0; } }
+    @media (prefers-reduced-motion: reduce) { .is-leaving .nav-transition { display: none; } }
   </style>
 </head>
 <body>
+  <div class="nav-transition" aria-hidden="true"><span id="transitionName"></span></div>
   <a class="skip-link" href="#main">Skip to content</a>
   <div class="page-shell">
     <header class="page-header">
@@ -145,7 +147,6 @@
     <main id="main" tabindex="-1">
       <header class="community-intro">
         <h1>Community.</h1>
-        <p>Three places to join in.<br>Make yourself at home.</p>
       </header>
       <div class="community-gates">
         <a class="community-gate" href="board.html">
@@ -171,11 +172,6 @@
         </a>
       </div>
     </main>
-    <footer class="page-footer">
-      <span>© 2026 OOO</span>
-      <span>Email · OOOOO [at] OOOOOO</span>
-      <a href="https://github.com/afoc824" target="_blank" rel="noopener noreferrer">GitHub ↗</a>
-    </footer>
   </div>
   <script>
     // 테마 저장에 실패하더라도 전환 기능은 유지한다.
@@ -214,6 +210,35 @@
       document.querySelectorAll(".reveal").forEach(function (element) { observer.observe(element); });
     })();
 
+  </script>
+
+  <script>
+    // 보조 클릭은 기본 탐색을 유지하고, 뒤로 돌아오면 장막을 초기화한다.
+    (function () {
+      var root = document.documentElement;
+      var label = document.getElementById("transitionName");
+      var timer, recovery, leaving = false;
+      function reset() {
+        clearTimeout(timer); clearTimeout(recovery);
+        leaving = false; root.classList.remove("is-leaving");
+      }
+      document.querySelectorAll(".community-gate, .page-nav a[href='community.html']:not([aria-current]), .content-end a[href='community.html']").forEach(function (link) {
+        link.addEventListener("click", function (event) {
+          if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || link.hasAttribute("download") || (link.target && link.target !== "_self")) return;
+          if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+          event.preventDefault();
+          if (leaving) return;
+          leaving = true;
+          var heading = link.querySelector("h2");
+          label.textContent = heading ? heading.textContent : "Community";
+          root.classList.add("is-leaving");
+          timer = window.setTimeout(function () { window.location.assign(link.href); }, 470);
+          recovery = window.setTimeout(reset, 2200);
+        });
+      });
+      window.addEventListener("pageshow", reset);
+      window.addEventListener("keydown", function (event) { if (event.key === "Escape" && leaving) reset(); });
+    })();
   </script>
 </body>
 </html>

@@ -23,22 +23,23 @@
   <meta name="description" content="OOO · Undergraduate researcher, Department of OOOO, OO University.">
   <meta property="og:type" content="website">
   <meta property="og:title" content="Profile — 824">
-  <meta property="og:description" content="A little about OOO. Interests, history, and notes.">
+  <meta property="og:description" content="A little about OOO. Research, interests, experience, and education.">
   <style>
     /* 모든 페이지에서 같은 색상과 서체를 사용한다. */
     :root {
       --bg: #f8f8f8; --surface: #eeeeee; --text: #181818;
-      --muted: #626262; --faint: #707070; --line: #d5d5d5; --field: #ffffff;
+      --muted: #444444; --faint: #595959; --line: #d5d5d5; --field: #ffffff;
       --shell: 1440px; --gutter: clamp(22px, 5vw, 80px);
       --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
     }
     [data-theme="dark"] {
       --bg: #141414; --surface: #202020; --text: #f2f2f2;
-      --muted: #aaaaaa; --faint: #9b9b9b; --line: #3c3c3c; --field: #1b1b1b;
+      --muted: #cccccc; --faint: #b5b5b5; --line: #3c3c3c; --field: #1b1b1b;
     }
     *, *::before, *::after { box-sizing: border-box; }
     html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; scroll-padding-top: 28px; }
     body { margin: 0; background: var(--bg); color: var(--text); font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, sans-serif; font-size: 17px; line-height: 1.65; font-feature-settings: "ss01"; }
+    body { font-weight: 450; }
     a { color: inherit; text-underline-offset: 5px; }
     button, input, textarea, select { font: inherit; }
     button, a { touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
@@ -60,19 +61,14 @@
     .theme-toggle { flex: 0 0 auto; display: grid; place-items: center; width: 46px; height: 46px; padding: 0; border: 1px solid var(--line); border-radius: 50%; background: var(--bg); color: var(--text); transition: background .2s, color .2s; }
     .theme-toggle:hover { background: var(--text); color: var(--bg); }
     .theme-toggle svg { width: 20px; height: 20px; }
-    .page-footer { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px 24px; border-top: 1px solid var(--line); padding-block: 22px; color: var(--muted); font: .88rem/1.65 var(--font-mono); overflow-wrap: anywhere; }
-    .page-footer a { padding-block: 10px; text-decoration: none; }
-    .page-footer a:hover { color: var(--text); text-decoration: underline; }
     /* 스크립트 없이도 모든 내용을 읽을 수 있는 등장 효과. */
     .reveal.in { animation: appear .65s cubic-bezier(.2,.8,.2,1) both; }
     .reveal.d1.in { animation-delay: .08s; }
-    .reveal.d2.in { animation-delay: .16s; }
     @keyframes appear { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
     @media (max-width: 600px) {
       .page-header { min-height: 80px; gap: 16px; }
       .page-nav { gap: 18px; }
       .page-nav a { font-size: .94rem; }
-      .page-footer { align-items: flex-start; }
     }
     @media (prefers-reduced-motion: reduce) {
       html { scroll-behavior: auto; }
@@ -82,10 +78,12 @@
     .profile-hero { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(220px, .65fr); align-items: center; gap: 7%; padding-block: 80px 88px; }
     .profile-hero .eyebrow { margin: 0 0 26px; }
     .profile-title { margin: 0; font-size: clamp(3.6rem, 7.8vw, 7.5rem); font-weight: 500; letter-spacing: -.06em; line-height: 1.04; }
-    .profile-title span { color: var(--muted); }
+    .profile-title span { color: var(--text); }
     .profile-intro { margin-top: 34px; max-width: 44ch; }
     .profile-intro p { margin: 0 0 12px; font-size: clamp(1.1rem, 1.8vw, 1.4rem); }
-    .profile-intro p + p { color: var(--muted); font-size: 1.05rem; }
+    .profile-intro p + p { color: var(--text); font-size: 1.05rem; }
+    .now-link { display: inline-flex; align-items: center; gap: 10px; min-height: 44px; margin-top: 4px; font-size: 1rem; color: var(--muted); text-decoration: none; }
+    .now-link:hover { color: var(--text); text-decoration: underline; }
     .portrait { position: relative; display: flex; flex-direction: column; justify-content: space-between; aspect-ratio: 4 / 5; background: var(--text); color: var(--bg); padding: 28px; overflow: hidden; }
     .portrait::before, .portrait::after { content: ""; position: absolute; width: 120%; aspect-ratio: 1; left: -10%; top: 15%; border: 1px solid currentColor; border-radius: 50%; opacity: .3; }
     .portrait::after { width: 70%; left: 15%; top: 35%; }
@@ -98,17 +96,19 @@
     .interest-list { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 40px; list-style: none; margin: 0; padding: 0; }
     .interest-list li { padding-top: 22px; border-top: 1px solid var(--line); min-width: 0; }
     .kw { display: block; font-size: 1.65rem; line-height: 1.2; letter-spacing: -.03em; }
-    .kw-desc { display: block; margin-top: 12px; color: var(--muted); font-size: 1.05rem; }
-    .timeline { display: grid; }
+    .kw-desc { display: block; margin-top: 12px; color: var(--text); font-size: 1.05rem; }
+    .timeline { display: grid; list-style: none; margin: 0; padding: 0; }
     .item { display: grid; grid-template-columns: minmax(170px, 24%) minmax(0, 1fr); gap: 16px 40px; padding-block: 28px; border-top: 1px solid var(--line); }
     .year { color: var(--muted); font: .88rem/1.8 var(--font-mono); padding-top: 3px; }
-    .role { font-size: 1.2rem; font-weight: 550; line-height: 1.5; }
-    .detail { display: block; margin-top: 6px; font-size: 1.05rem; color: var(--muted); }
-    .empty { margin: 0; color: var(--muted); font-size: 1.1rem; }
-    .profile-end { padding-block: 54px 64px; border-top: 1px solid var(--line); }
-    .profile-end p { margin: 0 0 18px; }
-    .profile-end a { display: flex; align-items: center; justify-content: space-between; gap: 24px; text-decoration: none; font-size: clamp(2rem, 4.8vw, 4.5rem); font-weight: 500; letter-spacing: -.05em; line-height: 1.1; }
-    .profile-end a:hover { text-decoration: underline; }
+    .role { margin: 0; font-size: 1.2rem; font-weight: 550; line-height: 1.5; }
+    .detail { display: block; margin-top: 6px; font-size: 1.05rem; color: var(--text); }
+    .research-meta { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px 32px; margin: 26px 0 0; }
+    .research-meta dt { margin-bottom: 6px; color: var(--muted); font: .88rem/1.65 var(--font-mono); }
+    .research-meta dd { margin: 0; font-size: 1.05rem; }
+    .item > div, .research-meta > div { min-width: 0; overflow-wrap: anywhere; }
+    .profile-end { padding-block: 20px 28px; border-top: 1px solid var(--line); }
+    .profile-end a { display: inline-flex; align-items: center; gap: 12px; min-height: 44px; color: var(--muted); text-decoration: none; font-size: 1rem; font-weight: 400; line-height: 1.5; }
+    .profile-end a:hover { color: var(--text); text-decoration: underline; }
     @media (max-width: 900px) {
       .profile-hero { gap: 36px; padding-block: 56px 64px; }
       .profile-title { font-size: clamp(3.6rem, 7.8vw, 6rem); }
@@ -128,7 +128,12 @@
       .section-heading p { margin-top: 14px; }
       .interest-list { grid-template-columns: 1fr; gap: 24px; }
       .item { grid-template-columns: 1fr; gap: 8px; padding-block: 24px; }
-      .profile-end { padding-block: 40px 48px; }
+      .profile-end { padding-block: 16px 24px; }
+    }
+    @media (max-width: 380px) {
+      .page-header { gap: 10px; }
+      .page-nav { gap: 12px; }
+      .research-meta { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -152,6 +157,7 @@
           <div class="profile-intro">
             <p>Hello, I’m OOO.</p>
             <p>Undergraduate researcher in the Department of OOOO at OO University.</p>
+            <a class="now-link" href="now.html">What I’m up to <span aria-hidden="true">↗</span></a>
           </div>
         </div>
         <div class="portrait reveal d1" aria-label="OOO profile monogram">
@@ -160,11 +166,32 @@
           <span class="mono">ALWAYS CURIOUS.</span>
         </div>
       </section>
-      <section class="reading-section" id="interests" aria-labelledby="interests-title">
-        <header class="section-heading reveal">
-          <h2 id="interests-title">Interests</h2>
-          <p class="eyebrow">Things I’m drawn to</p>
-        </header>
+      <!-- 기존 이력 주소는 첫 연구 항목으로 연결하고 각 분야를 따로 읽게 한다. -->
+      <div id="history">
+        <section class="reading-section" id="research" aria-labelledby="research-title">
+          <header class="section-heading reveal">
+            <h2 id="research-title">Research</h2>
+            <p class="eyebrow">Current work</p>
+          </header>
+          <ol class="timeline">
+            <li class="item">
+              <span class="year">Jul 2025 — Present</span>
+              <div>
+                <h3 class="role">Undergraduate Researcher</h3>
+                <span class="detail">OOO Lab, OO University</span>
+                <dl class="research-meta">
+                  <div><dt>Research focus</dt><dd>OOO</dd></div>
+                  <div><dt>Advisor</dt><dd>OOO</dd></div>
+                </dl>
+              </div>
+            </li>
+          </ol>
+        </section>
+        <section class="reading-section" id="interests" aria-labelledby="interests-title">
+          <header class="section-heading reveal">
+            <h2 id="interests-title">Interests</h2>
+            <p class="eyebrow">Things I’m drawn to</p>
+          </header>
           <ul class="interest-list">
             <li>
               <span class="kw">OOO</span>
@@ -179,70 +206,55 @@
               <span class="kw-desc">OOO</span>
             </li>
           </ul>
-      </section>
-      <section class="reading-section" id="history" aria-labelledby="history-title">
-        <header class="section-heading reveal">
-          <h2 id="history-title">History</h2>
-          <p class="eyebrow">The path so far</p>
-        </header>
-        <div class="timeline">
-
-          <div class="item">
-            <span class="year">Jul 2025 — Present</span>
-            <div>
-              <span class="role">Undergraduate Researcher, OOO Lab, OO University</span>
-              <span class="detail">Advisor: OOO · Research on OOO</span>
-            </div>
-          </div>
-
-          <div class="item">
-            <span class="year">2023 — Present</span>
-            <div>
-              <span class="role">Department of OOOOO, OO University</span>
-              <span class="detail">Currently enrolled in Bachelor's program</span>
-            </div>
-          </div>
-
-          <div class="item">
-            <span class="year">2021 — 2022</span>
-            <div>
-              <span class="role">OOOOOOOO OOOOO</span>
-              <span class="detail">Honorably discharged as Sergeant</span>
-            </div>
-          </div>
-
-          <div class="item">
-            <span class="year">2020 — 2023</span>
-            <div>
-              <span class="role">Department of OOOOOO, OO University</span>
-              <span class="detail">Withdrew</span>
-            </div>
-          </div>
-
-          <div class="item">
-            <span class="year">2020</span>
-            <div>
-              <span class="role">Graduated from OO High School</span>
-            </div>
-          </div>
-
-        </div>
-
-      </section>
-      <section class="reading-section" id="posts" aria-labelledby="posts-title">
-        <header class="section-heading reveal"><h2 id="posts-title">Posts</h2></header>
-        <p class="empty">No posts yet.</p>
-      </section>
+        </section>
+        <section class="reading-section" id="experience" aria-labelledby="experience-title">
+          <header class="section-heading reveal">
+            <h2 id="experience-title">Experience</h2>
+            <p class="eyebrow">Beyond the lab</p>
+          </header>
+          <ol class="timeline">
+            <li class="item">
+              <span class="year">2021 — 2022</span>
+              <div>
+                <h3 class="role">OOOOOOOO OOOOO</h3>
+                <span class="detail">Honorably discharged as Sergeant</span>
+              </div>
+            </li>
+          </ol>
+        </section>
+        <section class="reading-section" id="education" aria-labelledby="education-title">
+          <header class="section-heading reveal">
+            <h2 id="education-title">Education</h2>
+            <p class="eyebrow">Academic background</p>
+          </header>
+          <ol class="timeline">
+            <li class="item">
+              <span class="year">2023 — Present</span>
+              <div>
+                <h3 class="role">Department of OOOOO, OO University</h3>
+                <span class="detail">Currently enrolled in Bachelor's program</span>
+              </div>
+            </li>
+            <li class="item">
+              <span class="year">2020 — 2023</span>
+              <div>
+                <h3 class="role">Department of OOOOOO, OO University</h3>
+                <span class="detail">Withdrew</span>
+              </div>
+            </li>
+            <li class="item">
+              <span class="year">2020</span>
+              <div>
+                <h3 class="role">Graduated from OO High School</h3>
+              </div>
+            </li>
+          </ol>
+        </section>
+      </div>
       <div class="profile-end">
-        <p class="eyebrow">There’s room for your thoughts, too.</p>
         <a href="community.html"><span>Join the conversation.</span><span aria-hidden="true">↗</span></a>
       </div>
     </main>
-    <footer class="page-footer">
-      <span>© 2026 OOO</span>
-      <span>Email · OOOOO [at] OOOOOO</span>
-      <a href="https://github.com/afoc824" target="_blank" rel="noopener noreferrer">GitHub ↗</a>
-    </footer>
   </div>
   <script>
     // 테마 저장에 실패하더라도 전환 기능은 유지한다.
